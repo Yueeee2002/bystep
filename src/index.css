@@ -19,6 +19,26 @@
   --font-sans: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
   --header-h: 72px;
   --max: 1080px;
+  --photo-bg: #e8e2d6;
+}
+
+html[data-theme='night'] {
+  --gold: #d4b06a;
+  --gold-deep: #e2c48a;
+  --gold-soft: rgba(212, 176, 106, 0.16);
+  --ink: #f4ece0;
+  --ash: #d4c4b0;
+  --paper: #2a2118;
+  --cream: #32281e;
+  --snow: #3a2f24;
+  --white: #42362a;
+  --line: rgba(244, 236, 224, 0.12);
+  --line-strong: rgba(244, 236, 224, 0.22);
+  --danger: #d98980;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.2);
+  --photo-bg: #4a3b2d;
+  color-scheme: dark;
 }
 
 *,

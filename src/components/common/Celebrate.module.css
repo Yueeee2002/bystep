@@ -1,0 +1,29 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  overflow: hidden;
+}
+
+.bit {
+  position: absolute;
+  top: -10px;
+  font-size: 18px;
+  animation: fall 1.05s ease-in forwards;
+  opacity: 0.85;
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(72vh) rotate(28deg);
+    opacity: 0;
+  }
+}

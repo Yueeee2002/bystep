@@ -1,25 +1,61 @@
+import { useRef } from 'react'
 import type { IExploreCard, ITag, ViewMode } from '@/types'
+import { TAG_COLORS } from '@/types'
+import { getCoverSrc } from '@/utils/models'
+import Stars from '@/components/common/Stars'
 import styles from './CardItem.module.css'
 
 interface CardItemProps {
   card: IExploreCard
   tags: ITag[]
   viewMode: ViewMode
+  selected?: boolean
+  selectMode?: boolean
   onOpen: (id: string) => void
   onDelete: (id: string) => void
+  onPin: (id: string) => void
+  onRate: (id: string, rating: number) => void
+  onLongPress: (id: string) => void
+  onToggleSelect: (id: string) => void
 }
 
-export default function CardItem({ card, tags, viewMode, onOpen, onDelete }: CardItemProps) {
-  const cover = card.images[0]
-  const tagNames = card.tags
-    .map((id) => tags.find((tag) => tag.id === id)?.name)
-    .filter(Boolean)
+export default function CardItem({
+  card,
+  tags,
+  viewMode,
+  selected,
+  selectMode,
+  onOpen,
+  onDelete,
+  onPin,
+  onRate,
+  onLongPress,
+  onToggleSelect,
+}: CardItemProps) {
+  const cover = getCoverSrc(card)
+  const timer = useRef<number | 0>(0)
+  const boundTags = card.tags
+    .map((id) => tags.find((tag) => tag.id === id))
+    .filter((tag): tag is ITag => Boolean(tag))
     .slice(0, 3)
+
+  const startPress = () => {
+    timer.current = window.setTimeout(() => onLongPress(card.id), 480)
+  }
+
+  const cancelPress = () => {
+    if (timer.current) window.clearTimeout(timer.current)
+    timer.current = 0
+  }
 
   return (
     <article
-      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''}`}
-      onClick={() => onOpen(card.id)}
+      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''}`}
+      onClick={() => (selectMode ? onToggleSelect(card.id) : onOpen(card.id))}
+      onPointerDown={startPress}
+      onPointerUp={cancelPress}
+      onPointerCancel={cancelPress}
+      onPointerMove={cancelPress}
     >
       <div className={styles.photo}>
         {cover ? (
@@ -30,6 +66,18 @@ export default function CardItem({ card, tags, viewMode, onOpen, onDelete }: Car
         <span className={`${styles.stamp} ${card.status === 'done' ? styles.done : ''}`}>
           {card.status === 'done' ? '已打卡' : '未打卡'}
         </span>
+        {card.images.length > 1 ? <span className={styles.count}>{card.images.length}P</span> : null}
+        <button
+          type="button"
+          className={`${styles.pin} ${card.pinned ? styles.pinOn : ''}`}
+          aria-label={card.pinned ? '取消置顶' : '置顶'}
+          onClick={(event) => {
+            event.stopPropagation()
+            onPin(card.id)
+          }}
+        >
+          ⌃
+        </button>
         <button
           type="button"
           className={styles.delete}
@@ -41,14 +89,19 @@ export default function CardItem({ card, tags, viewMode, onOpen, onDelete }: Car
         >
           ×
         </button>
+        <div className={styles.stars}>
+          <Stars small value={card.rating} onChange={(rating) => onRate(card.id, rating)} />
+        </div>
       </div>
       <div className={styles.body}>
         <h3>{card.title.trim() || '未命名地点'}</h3>
         {card.address ? <p className={styles.addr}>{card.address}</p> : <p className={styles.addr}>地址未填写</p>}
-        {tagNames.length > 0 ? (
+        {boundTags.length > 0 ? (
           <div className={styles.tags}>
-            {tagNames.map((name) => (
-              <span key={name}>{name}</span>
+            {boundTags.map((tag) => (
+              <span key={tag.id} style={{ background: TAG_COLORS[tag.color].bg, color: TAG_COLORS[tag.color].fg }}>
+                {tag.name}
+              </span>
             ))}
           </div>
         ) : null}

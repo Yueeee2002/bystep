@@ -8,15 +8,23 @@ import UploadModal from '@/components/common/UploadModal'
 import EditModal from '@/components/common/EditModal'
 import TagModal from '@/components/common/TagModal'
 import Lightbox from '@/components/common/Lightbox'
+import Celebrate from '@/components/common/Celebrate'
+import Loading from '@/components/common/Loading'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 
 export default function App() {
+  const theme = useConfigStore((state) => state.theme)
+
   useEffect(() => {
     const config = useConfigStore.getState()
     useCardStore.getState().setStatusFilter(config.defaultFilter)
     useCardStore.getState().setViewMode(config.viewMode)
   }, [])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
 
   return (
     <>
@@ -30,6 +38,8 @@ export default function App() {
       <TagModal />
       <ConfirmDialog />
       <Lightbox />
+      <Celebrate />
+      <Loading />
       <Toast />
     </>
   )

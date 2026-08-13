@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
 import { useUiStore } from '@/store/uiStore'
+import { TAG_COLOR_ORDER, TAG_COLORS } from '@/types'
+import type { TagColor } from '@/types'
 import styles from './TagModal.module.css'
 
 export default function TagModal() {
@@ -10,13 +13,15 @@ export default function TagModal() {
   const closeTags = useUiStore((state) => state.closeTags)
   const openConfirm = useUiStore((state) => state.openConfirm)
   const showToast = useUiStore((state) => state.showToast)
-  const { tags, addTag, updateTag, deleteTag } = useTagData()
+  const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
+  const [color, setColor] = useState<TagColor>('mocha')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
+  const [dragFrom, setDragFrom] = useState<number | null>(null)
 
   const handleAdd = () => {
-    const created = addTag(name)
+    const created = addTag(name, color)
     if (!created) {
       showToast(name.trim() ? '标签已存在或无效' : '请输入标签名', 'error')
       return
@@ -26,7 +31,7 @@ export default function TagModal() {
   }
 
   const handleUpdate = (id: string) => {
-    const ok = updateTag(id, editingName)
+    const ok = updateTag(id, { name: editingName })
     if (!ok) {
       showToast('标签名重复或为空', 'error')
       return
@@ -46,6 +51,12 @@ export default function TagModal() {
         showToast('标签已删除', 'info')
       },
     })
+  }
+
+  const onDrop = (to: number) => {
+    if (dragFrom === null) return
+    moveTag(dragFrom, to)
+    setDragFrom(null)
   }
 
   return (
@@ -69,11 +80,32 @@ export default function TagModal() {
         />
         <Button onClick={handleAdd}>新增</Button>
       </div>
+      <div className={styles.colors}>
+        {TAG_COLOR_ORDER.map((item) => (
+          <button
+            key={item}
+            type="button"
+            className={`${styles.swatch} ${color === item ? styles.swatchOn : ''}`}
+            style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
+            onClick={() => setColor(item)}
+          >
+            {TAG_COLORS[item].label}
+          </button>
+        ))}
+      </div>
 
       <ul className={styles.list}>
         {tags.length === 0 ? <li className={styles.empty}>还没有标签。想怎么分类，就轻轻写下。</li> : null}
-        {tags.map((tag) => (
-          <li key={tag.id}>
+        {tags.map((tag, index) => (
+          <li
+            key={tag.id}
+            draggable
+            onDragStart={() => setDragFrom(index)}
+            onDragOver={(event: DragEvent<HTMLLIElement>) => event.preventDefault()}
+            onDrop={() => onDrop(index)}
+            onDragEnd={() => setDragFrom(null)}
+            className={dragFrom === index ? styles.dragging : ''}
+          >
             {editingId === tag.id ? (
               <>
                 <input
@@ -90,8 +122,21 @@ export default function TagModal() {
               </>
             ) : (
               <>
-                <span>{tag.name}</span>
-                <div>
+                <span className={styles.item}>
+                  <i style={{ background: TAG_COLORS[tag.color].bg }} />
+                  {tag.name}
+                </span>
+                <div className={styles.actions}>
+                  {TAG_COLOR_ORDER.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={styles.dot}
+                      style={{ background: TAG_COLORS[item].bg }}
+                      aria-label={TAG_COLORS[item].label}
+                      onClick={() => updateTag(tag.id, { color: item })}
+                    />
+                  ))}
                   <Button
                     variant="text"
                     onClick={() => {

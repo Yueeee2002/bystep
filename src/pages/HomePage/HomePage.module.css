@@ -30,6 +30,41 @@
   letter-spacing: 0.18em;
 }
 
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.ticker {
+  font-size: 13px;
+  color: var(--gold-deep);
+  margin: -8px 0 16px;
+  letter-spacing: 0.06em;
+}
+
+.rating {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.dash {
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--ash);
+  letter-spacing: 0.04em;
+}
+
+.foot {
+  margin-top: 18px;
+  padding-bottom: 12px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: var(--ink);
+  opacity: 0.72;
+}
+
 .greet {
   font-family: var(--font-serif);
   color: var(--ink);

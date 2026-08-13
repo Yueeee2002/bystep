@@ -1,6 +1,13 @@
 const MAX_EDGE = 720
 const JPEG_QUALITY = 0.72
 const MAX_FILE_SIZE = 12 * 1024 * 1024
+const ACCEPT_TYPES = new Set(['image/jpeg', 'image/png', 'image/jpg'])
+
+export function isAcceptedImage(file: File): boolean {
+  if (ACCEPT_TYPES.has(file.type)) return true
+  const name = file.name.toLowerCase()
+  return name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png')
+}
 
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -21,8 +28,8 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 export async function compressImageToBase64(file: File): Promise<string> {
-  if (!file.type.startsWith('image/')) {
-    throw new Error('仅支持图片文件')
+  if (!isAcceptedImage(file)) {
+    throw new Error('仅支持 JPG / PNG 图片')
   }
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('单张图片请控制在 12MB 以内')
@@ -38,7 +45,7 @@ export async function compressImageToBase64(file: File): Promise<string> {
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('无法压缩图片')
+  if (!ctx) throw new Error('无法处理图片')
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, 0, width, height)
   ctx.drawImage(img, 0, 0, width, height)
@@ -47,8 +54,12 @@ export async function compressImageToBase64(file: File): Promise<string> {
 }
 
 export async function compressImages(files: File[]): Promise<string[]> {
+  const accepted = Array.from(files).filter(isAcceptedImage)
+  if (accepted.length === 0) {
+    throw new Error('请选择 JPG 或 PNG 图片')
+  }
   const results: string[] = []
-  for (const file of files) {
+  for (const file of accepted) {
     results.push(await compressImageToBase64(file))
   }
   return results

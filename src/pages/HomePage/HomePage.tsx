@@ -1,15 +1,18 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SearchBar from '@/components/Filter/SearchBar'
 import StatusFilterBar from '@/components/Filter/StatusFilter'
 import TagFilter from '@/components/Filter/TagFilter'
 import CardGrid from '@/components/Card/CardGrid'
 import Button from '@/components/common/Button'
+import BatchBar from '@/components/common/BatchBar'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
 import { filterCards } from '@/utils/filterCards'
+import { collectDashboard, countWeeklyPlans } from '@/utils/models'
+import { composeGreeting, GREETINGS, pickRandom } from '@/utils/copy'
 import type { ViewMode } from '@/types'
 import styles from './HomePage.module.css'
 
@@ -40,20 +43,34 @@ export default function HomePage() {
   const searchQuery = useCardStore((state) => state.searchQuery)
   const statusFilter = useCardStore((state) => state.statusFilter)
   const selectedTagIds = useCardStore((state) => state.selectedTagIds)
+  const minRating = useCardStore((state) => state.minRating)
   const viewMode = useCardStore((state) => state.viewMode)
   const setSearchQuery = useCardStore((state) => state.setSearchQuery)
   const setStatusFilter = useCardStore((state) => state.setStatusFilter)
+  const setMinRating = useCardStore((state) => state.setMinRating)
   const toggleTagFilter = useCardStore((state) => state.toggleTagFilter)
   const setViewMode = useCardStore((state) => state.setViewMode)
   const deleteCard = useCardStore((state) => state.deleteCard)
+  const togglePin = useCardStore((state) => state.togglePin)
+  const setRating = useCardStore((state) => state.setRating)
+  const batchUpdate = useCardStore((state) => state.batchUpdate)
+  const batchAddTag = useCardStore((state) => state.batchAddTag)
   const tags = useTagStore((state) => state.tags)
   const nickname = useConfigStore((state) => state.nickname)
+  const theme = useConfigStore((state) => state.theme)
   const persistViewMode = useConfigStore((state) => state.setViewMode)
+  const toggleTheme = useConfigStore((state) => state.toggleTheme)
   const openUpload = useUiStore((state) => state.openUpload)
   const openEdit = useUiStore((state) => state.openEdit)
   const openTags = useUiStore((state) => state.openTags)
   const openConfirm = useUiStore((state) => state.openConfirm)
   const showToast = useUiStore((state) => state.showToast)
+  const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const selectMode = selectedIds.length > 0
+  const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
+  const stats = useMemo(() => collectDashboard(cards), [cards])
+  const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
 
   const filtered = useMemo(
     () =>
@@ -61,12 +78,12 @@ export default function HomePage() {
         query: searchQuery,
         status: statusFilter,
         selectedTagIds,
+        minRating,
         tags,
       }),
-    [cards, searchQuery, statusFilter, selectedTagIds, tags],
+    [cards, searchQuery, statusFilter, selectedTagIds, minRating, tags],
   )
 
-  const greeting = nickname.trim() ? `${nickname.trim()}，今天想去哪走走？` : '今天想去哪走走？'
   const isEmptyAll = cards.length === 0
   const isEmptyFilter = !isEmptyAll && filtered.length === 0
 
@@ -98,23 +115,45 @@ export default function HomePage() {
             <p>把种草的店，轻轻收好</p>
           </div>
         </div>
-        <Link to="/settings" className="icon-btn" aria-label="设置">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
-            <path
-              d="M12 3.5v2.2M12 18.3v2.2M4.9 6.5l1.6 1.6M17.5 16.9l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.5l1.6-1.6M17.5 7.1l1.6-1.6"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-            />
-          </svg>
-        </Link>
+        <div className={styles.headerActions}>
+          <button type="button" className="icon-btn" aria-label="切换主题" onClick={toggleTheme}>
+            {theme === 'night' ? '☾' : '☀'}
+          </button>
+          <Link to="/settings" className="icon-btn" aria-label="设置">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+              <path
+                d="M12 3.5v2.2M12 18.3v2.2M4.9 6.5l1.6 1.6M17.5 16.9l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.5l1.6-1.6M17.5 7.1l1.6-1.6"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+            </svg>
+          </Link>
+        </div>
       </header>
 
       <p className={styles.greet}>{greeting}</p>
+      {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <StatusFilterBar value={statusFilter} onChange={setStatusFilter} />
+      <div className={styles.rating}>
+        {[
+          { value: 0, label: '不限星级' },
+          { value: 3, label: '3星以上' },
+          { value: 5, label: '只要5星' },
+        ].map((item) => (
+          <button
+            key={item.value}
+            type="button"
+            className={`chip ${minRating === item.value ? 'active' : ''}`}
+            onClick={() => setMinRating(item.value)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
       <TagFilter tags={tags} selectedIds={selectedTagIds} onToggle={toggleTagFilter} onManage={openTags} />
 
       <div className={styles.toolbar}>
@@ -122,6 +161,15 @@ export default function HomePage() {
           <Button onClick={openUpload}>上传图片</Button>
           <Button variant="ghost" onClick={openTags}>
             标签管理
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              if (selectMode) setSelectedIds([])
+              else if (filtered[0]) setSelectedIds([filtered[0].id])
+            }}
+          >
+            {selectMode ? '退出多选' : '多选'}
           </Button>
         </div>
         <div className={styles.views} role="group" aria-label="视图切换">
@@ -152,8 +200,8 @@ export default function HomePage() {
             <span />
             <span />
           </div>
-          <h2>还没有留下脚步</h2>
-          <p>把抖音、小红书里种草的截图收进来。周末想出门时，再慢慢翻一翻。</p>
+          <h2>行囊尚空</h2>
+          <p>把偶遇的小店，一一收纳进来吧</p>
           <Button onClick={openUpload}>开始收纳</Button>
         </section>
       ) : isEmptyFilter ? (
@@ -166,10 +214,44 @@ export default function HomePage() {
           cards={filtered}
           tags={tags}
           viewMode={viewMode}
+          selectedIds={selectedIds}
+          selectMode={selectMode}
           onOpen={openEdit}
           onDelete={handleDelete}
+          onPin={(id) => {
+            togglePin(id)
+            showToast('置顶已更新', 'success')
+          }}
+          onRate={setRating}
+          onLongPress={(id) => setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+          onToggleSelect={(id) =>
+            setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+          }
         />
       )}
+
+      {selectMode ? (
+        <BatchBar
+          count={selectedIds.length}
+          tags={tags}
+          onAddTag={(tagId) => {
+            batchAddTag(selectedIds, tagId)
+            showToast('已批量添加标签', 'success')
+          }}
+          onStatus={(status) => {
+            batchUpdate(selectedIds, { status })
+            if (status === 'done') triggerCelebrate()
+            showToast('已批量更新状态', 'success')
+            setSelectedIds([])
+          }}
+          onCancel={() => setSelectedIds([])}
+        />
+      ) : null}
+
+      <p className={styles.dash}>
+        总共收藏：{stats.total}家｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
+      </p>
+      <footer className={styles.foot}>留步・收藏每一场不期而遇的探店</footer>
     </div>
   )
 }

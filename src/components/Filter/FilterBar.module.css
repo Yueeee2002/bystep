@@ -56,10 +56,19 @@
 }
 
 .tags {
+  margin-top: 10px;
+}
+
+.tagMeta {
+  font-size: 12px;
+  color: var(--ash);
+  margin-bottom: 6px;
+}
+
+.tagRow {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 10px;
 }
 
 .tagScroll {

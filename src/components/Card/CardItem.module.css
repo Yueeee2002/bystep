@@ -4,23 +4,34 @@
   padding: 10px 10px 16px;
   box-shadow: var(--shadow-soft);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative;
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow);
 }
 
-.card:hover .delete {
+.card:hover .delete,
+.card:hover .pin {
   opacity: 1;
+}
+
+.selected {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.pinned {
+  box-shadow: 0 10px 24px rgba(204, 162, 81, 0.18);
 }
 
 .photo {
   position: relative;
   overflow: hidden;
   border-radius: 4px;
-  background: #e8e2d6;
+  background: var(--photo-bg, #e8e2d6);
   aspect-ratio: 4 / 3;
 }
 
@@ -55,20 +66,56 @@
   border-color: var(--gold);
 }
 
+.count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(22, 22, 22, 0.62);
+  color: #fff;
+}
+
+.pin,
 .delete {
   position: absolute;
   top: 8px;
-  right: 8px;
   width: 28px;
   height: 28px;
   border: 0;
   border-radius: 50%;
   background: rgba(22, 22, 22, 0.72);
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.pin {
+  right: 42px;
+}
+
+.pinOn {
+  opacity: 1;
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.delete {
+  right: 8px;
+  font-size: 18px;
+}
+
+.stars {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 5px;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.88);
 }
 
 .body {
@@ -98,8 +145,6 @@
 
 .tags span {
   font-size: 11px;
-  color: var(--gold-deep);
-  background: var(--gold-soft);
   border-radius: 999px;
   padding: 3px 8px;
 }
@@ -126,7 +171,8 @@
 }
 
 @media (hover: none) {
-  .delete {
+  .delete,
+  .pin {
     opacity: 1;
   }
 }

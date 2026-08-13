@@ -5,11 +5,15 @@ import type { IExploreCard, ITag } from '@/types'
 function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id' | 'title'>): IExploreCard {
   return {
     images: [],
+    coverIndex: 0,
     address: '',
     tags: [],
     status: 'pending',
     notes: '',
     review: '',
+    rating: 0,
+    pinned: false,
+    plannedAt: '',
     createdAt: 1,
     updatedAt: 1,
     ...patch,
@@ -17,8 +21,8 @@ function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id' | 'title'>)
 }
 
 const tags: ITag[] = [
-  { id: 't1', name: '咖啡' },
-  { id: 't2', name: '展览' },
+  { id: 't1', name: '咖啡', color: 'mocha' },
+  { id: 't2', name: '展览', color: 'mint' },
 ]
 
 describe('filterCards', () => {
@@ -91,5 +95,26 @@ describe('filterCards', () => {
     expect(
       filterCards(cards, { query: '咖啡', status: 'all', selectedTagIds: [], tags }).map((item) => item.id),
     ).toEqual(['c', 'a'])
+  })
+
+  it('keeps pinned cards at the top', () => {
+    const mixed = [
+      card({ id: 'a', title: 'a', createdAt: 10 }),
+      card({ id: 'b', title: 'b', createdAt: 30, pinned: true }),
+      card({ id: 'c', title: 'c', createdAt: 20 }),
+    ]
+    expect(
+      filterCards(mixed, { query: '', status: 'all', selectedTagIds: [], tags }).map((item) => item.id),
+    ).toEqual(['b', 'c', 'a'])
+  })
+
+  it('filters by minimum rating', () => {
+    const rated = [
+      card({ id: 'a', title: 'a', rating: 2 }),
+      card({ id: 'b', title: 'b', rating: 5 }),
+    ]
+    expect(
+      filterCards(rated, { query: '', status: 'all', selectedTagIds: [], tags, minRating: 3 }).map((item) => item.id),
+    ).toEqual(['b'])
   })
 })

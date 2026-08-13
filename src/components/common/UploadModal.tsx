@@ -13,13 +13,15 @@ export default function UploadModal() {
   const closeUpload = useUiStore((state) => state.closeUpload)
   const showToast = useUiStore((state) => state.showToast)
   const addCardsFromImages = useCardStore((state) => state.addCardsFromImages)
+  const setBusy = useUiStore((state) => state.setBusy)
   const [previews, setPreviews] = useState<string[]>([])
   const [dragging, setDragging] = useState(false)
-  const [busy, setBusy] = useState(false)
+  const [busy, setLocalBusy] = useState(false)
 
   const reset = () => {
     setPreviews([])
     setDragging(false)
+    setLocalBusy(false)
     setBusy(false)
   }
 
@@ -34,6 +36,7 @@ export default function UploadModal() {
       showToast('请选择图片文件', 'error')
       return
     }
+    setLocalBusy(true)
     setBusy(true)
     try {
       const images = await compressImages(files)
@@ -41,9 +44,10 @@ export default function UploadModal() {
     } catch (error) {
       showToast(error instanceof Error ? error.message : '图片处理失败', 'error')
     } finally {
+      setLocalBusy(false)
       setBusy(false)
     }
-  }, [showToast])
+  }, [showToast, setBusy])
 
   const onDrop = async (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault()
@@ -76,7 +80,7 @@ export default function UploadModal() {
       >
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,.jpg,.jpeg,.png"
           multiple
           className="sr-only"
           onChange={(event) => {

@@ -30,13 +30,15 @@ export function filterCards(
     status: StatusFilter
     selectedTagIds: string[]
     tags: ITag[]
+    minRating?: number
   },
 ): IExploreCard[] {
-  const { query, status, selectedTagIds, tags } = options
+  const { query, status, selectedTagIds, tags, minRating = 0 } = options
 
   return cards
     .filter((card) => {
       if (status !== 'all' && card.status !== status) return false
+      if (minRating > 0 && card.rating < minRating) return false
       if (selectedTagIds.length > 0) {
         const matched = selectedTagIds.some((id) => card.tags.includes(id))
         if (!matched) return false
@@ -44,7 +46,10 @@ export function filterCards(
       return cardMatchesQuery(card, query, tags)
     })
     .slice()
-    .sort((a, b) => b.createdAt - a.createdAt)
+    .sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+      return b.createdAt - a.createdAt
+    })
 }
 
 export function createId(): string {

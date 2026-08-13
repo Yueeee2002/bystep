@@ -1,10 +1,12 @@
 import { APP_VERSION } from '@/types'
 import type { IAppConfig, IBackupPayload, IExploreCard, ITag } from '@/types'
+import { normalizeCard, normalizeTag } from '@/utils/models'
 
 export const DEFAULT_CONFIG: IAppConfig = {
   nickname: '',
   defaultFilter: 'all',
   viewMode: 'grid',
+  theme: 'cream',
 }
 
 export function buildBackupPayload(
@@ -41,8 +43,14 @@ export function parseBackupPayload(raw: string): IBackupPayload {
   return {
     version: typeof data.version === 'string' ? data.version : APP_VERSION,
     exportedAt: typeof data.exportedAt === 'number' ? data.exportedAt : Date.now(),
-    cards: data.cards,
-    tags: data.tags,
+    cards: data.cards.map((card) => normalizeCard(card)),
+    tags: data.tags.map((tag, index) =>
+      normalizeTag({
+        id: tag.id || `tag_${index}`,
+        name: tag.name || `标签${index + 1}`,
+        color: tag.color,
+      }),
+    ),
     config: {
       ...DEFAULT_CONFIG,
       ...(data.config ?? {}),

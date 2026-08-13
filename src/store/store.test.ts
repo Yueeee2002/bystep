@@ -11,6 +11,7 @@ describe('tag and card binding', () => {
       searchQuery: '',
       statusFilter: 'all',
       selectedTagIds: [],
+      minRating: 0,
       viewMode: 'grid',
     })
   })
@@ -35,6 +36,10 @@ describe('tag and card binding', () => {
           status: 'pending',
           notes: '',
           review: '',
+          coverIndex: 0,
+          rating: 0,
+          pinned: false,
+          plannedAt: '',
           createdAt: 1,
           updatedAt: 1,
         },

@@ -3,6 +3,24 @@
   gap: 10px;
 }
 
+.colors {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.swatchOn {
+  border-color: var(--gold);
+}
+
 .list {
   list-style: none;
   margin: 18px 0 0;
@@ -20,10 +38,39 @@
   border-radius: 14px;
   padding: 10px 12px;
   border: 1px solid var(--line);
+  cursor: grab;
 }
 
-.list li span {
+.dragging {
+  opacity: 0.55;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--ink);
+}
+
+.item i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
 }
 
 .empty {

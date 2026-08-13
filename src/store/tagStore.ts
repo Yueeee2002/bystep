@@ -1,14 +1,16 @@
 import { create } from 'zustand'
-import type { ITag } from '@/types'
+import type { ITag, TagColor } from '@/types'
 import { createId } from '@/utils/filterCards'
+import { moveItem, normalizeTag } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 
 interface TagState {
   tags: ITag[]
   hydrate: (tags: ITag[]) => void
-  addTag: (name: string) => ITag | null
-  updateTag: (id: string, name: string) => boolean
+  addTag: (name: string, color?: TagColor) => ITag | null
+  updateTag: (id: string, patch: Partial<Pick<ITag, 'name' | 'color'>>) => boolean
   deleteTag: (id: string) => void
+  moveTag: (from: number, to: number) => void
   replaceAll: (tags: ITag[]) => void
 }
 
@@ -21,16 +23,18 @@ function normalizeName(name: string) {
 }
 
 export const useTagStore = create<TagState>((set, get) => ({
-  tags: load<ITag[]>(STORAGE_KEYS.tags, []),
+  tags: load<ITag[]>(STORAGE_KEYS.tags, []).map((tag) =>
+    normalizeTag({ id: tag.id, name: tag.name, color: tag.color }),
+  ),
 
-  hydrate: (tags) => set({ tags }),
+  hydrate: (tags) => set({ tags: tags.map((tag) => normalizeTag(tag)) }),
 
-  addTag: (rawName) => {
+  addTag: (rawName, color = 'mocha') => {
     const name = normalizeName(rawName)
     if (!name) return null
     const exists = get().tags.some((tag) => tag.name === name)
     if (exists) return null
-    const tag: ITag = { id: createId(), name }
+    const tag: ITag = { id: createId(), name, color }
     set((state) => {
       const tags = [...state.tags, tag]
       persistTags(tags)
@@ -39,13 +43,17 @@ export const useTagStore = create<TagState>((set, get) => ({
     return tag
   },
 
-  updateTag: (id, rawName) => {
-    const name = normalizeName(rawName)
+  updateTag: (id, patch) => {
+    const current = get().tags.find((tag) => tag.id === id)
+    if (!current) return false
+    const name = patch.name !== undefined ? normalizeName(patch.name) : current.name
     if (!name) return false
     const duplicated = get().tags.some((tag) => tag.name === name && tag.id !== id)
     if (duplicated) return false
     set((state) => {
-      const tags = state.tags.map((tag) => (tag.id === id ? { ...tag, name } : tag))
+      const tags = state.tags.map((tag) =>
+        tag.id === id ? normalizeTag({ ...tag, ...patch, name }) : tag,
+      )
       persistTags(tags)
       return { tags }
     })
@@ -60,8 +68,17 @@ export const useTagStore = create<TagState>((set, get) => ({
     })
   },
 
+  moveTag: (from, to) => {
+    set((state) => {
+      const tags = moveItem(state.tags, from, to)
+      persistTags(tags)
+      return { tags }
+    })
+  },
+
   replaceAll: (tags) => {
-    persistTags(tags)
-    set({ tags })
+    const next = tags.map((tag) => normalizeTag(tag))
+    persistTags(next)
+    set({ tags: next })
   },
 }))

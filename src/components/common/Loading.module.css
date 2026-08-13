@@ -1,0 +1,39 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  display: grid;
+  place-items: center;
+  background: rgba(247, 244, 238, 0.46);
+  backdrop-filter: blur(2px);
+}
+
+.paws {
+  display: flex;
+  gap: 10px;
+  font-size: 22px;
+}
+
+.paws span {
+  animation: paw 0.9s ease-in-out infinite;
+}
+
+.paws span:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.paws span:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+@keyframes paw {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}

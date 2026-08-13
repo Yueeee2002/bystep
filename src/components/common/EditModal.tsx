@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
+import GalleryEditor from '@/components/common/GalleryEditor'
+import Stars from '@/components/common/Stars'
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
+import { TAG_COLORS } from '@/types'
 import type { CardStatus } from '@/types'
 import styles from './EditModal.module.css'
 
@@ -14,6 +17,10 @@ interface Draft {
   review: string
   status: CardStatus
   tags: string[]
+  images: string[]
+  coverIndex: number
+  rating: number
+  plannedAt: string
 }
 
 const emptyDraft: Draft = {
@@ -23,16 +30,20 @@ const emptyDraft: Draft = {
   review: '',
   status: 'pending',
   tags: [],
+  images: [],
+  coverIndex: 0,
+  rating: 0,
+  plannedAt: '',
 }
 
 export default function EditModal() {
   const open = useUiStore((state) => state.editOpen)
   const editingCardId = useUiStore((state) => state.editingCardId)
   const closeEdit = useUiStore((state) => state.closeEdit)
-  const openLightbox = useUiStore((state) => state.openLightbox)
   const openConfirm = useUiStore((state) => state.openConfirm)
   const openTags = useUiStore((state) => state.openTags)
   const showToast = useUiStore((state) => state.showToast)
+  const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const cards = useCardStore((state) => state.cards)
   const updateCard = useCardStore((state) => state.updateCard)
   const deleteCard = useCardStore((state) => state.deleteCard)
@@ -50,8 +61,12 @@ export default function EditModal() {
       review: card.review,
       status: card.status,
       tags: card.tags,
+      images: card.images,
+      coverIndex: card.coverIndex,
+      rating: card.rating,
+      plannedAt: card.plannedAt,
     })
-    setImageIndex(0)
+    setImageIndex(card.coverIndex)
   }, [card])
 
   if (!card) {
@@ -62,12 +77,12 @@ export default function EditModal() {
     )
   }
 
-  const currentImage = card.images[imageIndex] ?? card.images[0]
-
   const save = () => {
+    const becameDone = card.status !== 'done' && draft.status === 'done'
     updateCard(card.id, draft)
     showToast('已保存', 'success')
     closeEdit()
+    if (becameDone) triggerCelebrate()
   }
 
   const requestDelete = () => {
@@ -96,30 +111,16 @@ export default function EditModal() {
       wide
     >
       <div className={styles.layout}>
-        <div className={styles.gallery}>
-          {currentImage ? (
-            <button type="button" className={styles.hero} onClick={() => openLightbox(currentImage)}>
-              <img src={currentImage} alt={draft.title || '点位图片'} />
-              <span>点击放大</span>
-            </button>
-          ) : (
-            <div className={styles.heroEmpty}>暂无图片</div>
-          )}
-          {card.images.length > 1 ? (
-            <div className={styles.thumbs}>
-              {card.images.map((src, index) => (
-                <button
-                  key={src.slice(0, 20) + index}
-                  type="button"
-                  className={index === imageIndex ? styles.thumbActive : ''}
-                  onClick={() => setImageIndex(index)}
-                >
-                  <img src={src} alt="" />
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        <GalleryEditor
+          images={draft.images}
+          coverIndex={draft.coverIndex}
+          activeIndex={imageIndex}
+          title={draft.title}
+          onChange={(next) => {
+            setDraft((prev) => ({ ...prev, images: next.images, coverIndex: next.coverIndex }))
+            setImageIndex(next.activeIndex)
+          }}
+        />
 
         <div className={styles.form}>
           <label className="field">
@@ -138,11 +139,23 @@ export default function EditModal() {
               onChange={(event) => setDraft((prev) => ({ ...prev, address: event.target.value }))}
             />
           </label>
+          <div className="field">
+            <span>心愿星级</span>
+            <Stars value={draft.rating} onChange={(rating) => setDraft((prev) => ({ ...prev, rating }))} />
+          </div>
           <label className="field">
-            <span>备注</span>
+            <span>计划探店日期</span>
+            <input
+              type="date"
+              value={draft.plannedAt}
+              onChange={(event) => setDraft((prev) => ({ ...prev, plannedAt: event.target.value }))}
+            />
+          </label>
+          <label className="field">
+            <span>种草备注</span>
             <textarea
               value={draft.notes}
-              placeholder="种草亮点、营业时间、必点…"
+              placeholder="未打卡时写下种草理由、店铺亮点、必点…"
               onChange={(event) => setDraft((prev) => ({ ...prev, notes: event.target.value }))}
             />
           </label>
@@ -151,23 +164,28 @@ export default function EditModal() {
             <span>标签</span>
             <div className={styles.tagRow}>
               {tags.length === 0 ? <p className={styles.hint}>还没有标签</p> : null}
-              {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  type="button"
-                  className={`chip ${draft.tags.includes(tag.id) ? 'active' : ''}`}
-                  onClick={() =>
-                    setDraft((prev) => ({
-                      ...prev,
-                      tags: prev.tags.includes(tag.id)
-                        ? prev.tags.filter((id) => id !== tag.id)
-                        : [...prev.tags, tag.id],
-                    }))
-                  }
-                >
-                  {tag.name}
-                </button>
-              ))}
+              {tags.map((tag) => {
+                const palette = TAG_COLORS[tag.color]
+                const active = draft.tags.includes(tag.id)
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    className={`chip ${active ? 'active' : ''}`}
+                    style={{ background: palette.bg, color: palette.fg, borderColor: active ? 'var(--gold)' : 'transparent' }}
+                    onClick={() =>
+                      setDraft((prev) => ({
+                        ...prev,
+                        tags: prev.tags.includes(tag.id)
+                          ? prev.tags.filter((id) => id !== tag.id)
+                          : [...prev.tags, tag.id],
+                      }))
+                    }
+                  >
+                    {tag.name}
+                  </button>
+                )
+              })}
               <button type="button" className="chip" onClick={openTags}>
                 管理标签
               </button>
@@ -195,10 +213,10 @@ export default function EditModal() {
           </div>
 
           <label className="field">
-            <span>探店心得</span>
+            <span>探店复盘心得</span>
             <textarea
               value={draft.review}
-              placeholder="去过之后，留下一句给未来的自己"
+              placeholder="打卡后写下真实体验、测评感受"
               onChange={(event) => setDraft((prev) => ({ ...prev, review: event.target.value }))}
             />
           </label>

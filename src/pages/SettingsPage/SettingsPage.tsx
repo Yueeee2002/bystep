@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const replaceTags = useTagStore((state) => state.replaceAll)
   const nickname = useConfigStore((state) => state.nickname)
   const defaultFilter = useConfigStore((state) => state.defaultFilter)
+  const theme = useConfigStore((state) => state.theme)
   const setNickname = useConfigStore((state) => state.setNickname)
   const setDefaultFilter = useConfigStore((state) => state.setDefaultFilter)
   const replaceConfig = useConfigStore((state) => state.replaceAll)
@@ -36,6 +37,7 @@ export default function SettingsPage() {
       nickname,
       defaultFilter,
       viewMode,
+      theme,
     })
     downloadJson(`liubu-backup-${new Date().toISOString().slice(0, 10)}.json`, payload)
     showToast('备份已导出', 'success')
@@ -73,7 +75,7 @@ export default function SettingsPage() {
         clearAllExploreData()
         replaceCards([])
         replaceTags([])
-        const next: IAppConfig = { nickname: '', defaultFilter: 'all', viewMode: 'grid' }
+        const next: IAppConfig = { nickname: '', defaultFilter: 'all', viewMode: 'grid', theme: 'cream' }
         replaceConfig(next)
         setStatusFilter('all')
         setDraftName('')
