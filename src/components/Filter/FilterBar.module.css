@@ -1,0 +1,91 @@
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--snow);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 16px;
+  height: 48px;
+  color: var(--ash);
+}
+
+.search input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.search:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.status {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.statusBtn {
+  border: 0;
+  background: transparent;
+  color: var(--ash);
+  padding: 8px 4px;
+  font-size: 14px;
+  position: relative;
+}
+
+.statusActive {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.statusActive::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 2px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tagScroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  flex: 1;
+  scrollbar-width: none;
+}
+
+.tagScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--ash);
+  opacity: 0.8;
+}
+
+.manage {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gold-deep);
+  font-size: 13px;
+  padding: 6px 0;
+}

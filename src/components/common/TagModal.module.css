@@ -1,0 +1,33 @@
+.add {
+  display: flex;
+  gap: 10px;
+}
+
+.list {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--snow);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+}
+
+.list li span {
+  color: var(--ink);
+}
+
+.empty {
+  justify-content: center;
+  color: var(--ash);
+  font-size: 13px;
+}
