@@ -314,18 +314,130 @@
   box-shadow: 0 10px 22px rgba(204, 162, 81, 0.32);
 }
 
-:global(html[data-viewport='mobile']) .pocket {
-  top: auto;
-  right: 16px;
-  left: 16px;
-  bottom: calc(86px + env(safe-area-inset-bottom));
-  width: auto;
-  min-height: 0;
+.pcFilters {
+  display: block;
+}
+
+.mobileFilters {
+  display: none;
+}
+
+.filterToggle,
+.moreToggle {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 16px;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--snow);
+  color: var(--ink);
   font-size: 15px;
+  letter-spacing: 0.06em;
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease,
+    border-color 0.25s ease;
+}
+
+.filterToggle:active,
+.moreToggle:active {
+  transform: scale(0.98);
+  background: #f4efe8;
+}
+
+.filterToggleOpen,
+.moreToggleOpen {
+  background: color-mix(in srgb, var(--snow) 86%, #ffffff);
+  border-color: var(--gold);
+}
+
+.moreToggle {
+  margin-top: 16px;
+  font-size: 14px;
+  padding: 10px 14px;
+}
+
+.chevron {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--ash);
+  transition: transform 0.3s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.foldOpen {
+  grid-template-rows: 1fr;
+}
+
+.foldInner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.foldOpen > .foldInner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.foldLabel {
+  margin: 14px 0 8px;
+  font-size: 12px;
+  color: var(--ash);
+  letter-spacing: 0.08em;
+}
+
+.sortChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.moreActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.moreActions :global(.btn) {
+  width: 100%;
+}
+
+.mobileUpload {
+  margin: 12px 0 18px;
+}
+
+.mobileUpload :global(.btn) {
+  width: 100%;
+}
+
+:global(html[data-viewport='mobile']) .pcFilters {
+  display: none;
+}
+
+:global(html[data-viewport='mobile']) .mobileFilters {
+  display: block;
+}
+
+:global(html.no-motion) .fold,
+:global(html.no-motion) .foldInner,
+:global(html.no-motion) .chevron {
+  transition: none;
 }

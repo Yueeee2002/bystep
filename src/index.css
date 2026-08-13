@@ -41,10 +41,9 @@ html[data-theme='night'] {
   color-scheme: dark;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+img {
+  image-rendering: auto;
+  image-rendering: high-quality;
 }
 
 html,
@@ -427,6 +426,15 @@ html.drawer-open .app-shell {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--ink);
+}
+
+.chip.active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
 .sr-only {

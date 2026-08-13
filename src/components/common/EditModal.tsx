@@ -10,6 +10,7 @@ import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
 import { tagsForGroup } from '@/utils/filterCards'
+import { alignedThumbs } from '@/utils/models'
 import { TagCategoryMismatchError } from '@/utils/tagRules'
 import type { CardStatus, CategoryGroup } from '@/types'
 import styles from './EditModal.module.css'
@@ -22,6 +23,7 @@ interface Draft {
   status: CardStatus
   tags: string[]
   images: string[]
+  thumbs: string[]
   coverIndex: number
   rating: number
   plannedAt: string
@@ -37,6 +39,7 @@ const emptyDraft: Draft = {
   status: 'pending',
   tags: [],
   images: [],
+  thumbs: [],
   coverIndex: 0,
   rating: 0,
   plannedAt: '',
@@ -73,6 +76,7 @@ export default function EditModal() {
       status: card.status,
       tags: card.tags,
       images: card.images,
+      thumbs: alignedThumbs(card.images, card.thumbs),
       coverIndex: card.coverIndex,
       rating: card.rating,
       plannedAt: card.plannedAt,
@@ -136,11 +140,17 @@ export default function EditModal() {
       <div className={styles.layout}>
         <GalleryEditor
           images={draft.images}
+          thumbs={draft.thumbs}
           coverIndex={draft.coverIndex}
           activeIndex={imageIndex}
           title={draft.title}
           onChange={(next) => {
-            setDraft((prev) => ({ ...prev, images: next.images, coverIndex: next.coverIndex }))
+            setDraft((prev) => ({
+              ...prev,
+              images: next.images,
+              thumbs: next.thumbs,
+              coverIndex: next.coverIndex,
+            }))
             setImageIndex(next.activeIndex)
           }}
         />

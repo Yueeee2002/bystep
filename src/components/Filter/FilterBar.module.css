@@ -480,3 +480,98 @@
 :global(html[data-viewport='mobile']) .statusBtn {
   min-height: 44px;
 }
+
+.chipFilter {
+  display: grid;
+  gap: 8px;
+}
+
+.selectedRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.selectedChip,
+.pickChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  min-height: 40px;
+  font-size: 14px;
+  background: var(--snow);
+  color: var(--ink);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.selectedChip:active,
+.pickChip:active,
+.filterChip:active,
+.sortBtn:active,
+.filterBtn:active {
+  transform: scale(0.96);
+  filter: brightness(0.94);
+}
+
+.selectedChip span {
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.pickChip {
+  color: var(--gold-deep);
+  border-style: dashed;
+}
+
+.pickChipOn {
+  border-style: solid;
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.chipFold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.chipFoldOpen {
+  grid-template-rows: 1fr;
+}
+
+.chipFoldInner {
+  overflow: hidden;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.chipFoldOpen .chipFoldInner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chipFoldInner .reset {
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chipFold,
+  .chipFoldInner,
+  .selectedChip,
+  .pickChip {
+    animation: none;
+    transition: none;
+  }
+}

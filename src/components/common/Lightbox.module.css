@@ -25,9 +25,14 @@
 
 .panel img {
   max-height: 78vh;
+  max-width: 100%;
   width: auto;
   margin: 0 auto;
   border-radius: 12px;
+  object-fit: contain;
+  image-rendering: auto;
+  image-rendering: high-quality;
+  -ms-interpolation-mode: bicubic;
 }
 
 .arrow {

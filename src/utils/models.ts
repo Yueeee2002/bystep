@@ -4,9 +4,16 @@ export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 
-export function getCoverSrc(card: Pick<IExploreCard, 'images' | 'coverIndex'>): string | undefined {
+export function alignedThumbs(images: string[], thumbs?: string[]): string[] {
+  return images.map((img, i) => thumbs?.[i] || img)
+}
+
+export function getCoverSrc(
+  card: Pick<IExploreCard, 'images' | 'coverIndex'> & { thumbs?: string[] },
+): string | undefined {
   if (card.images.length === 0) return undefined
-  return card.images[clamp(card.coverIndex, 0, card.images.length - 1)] ?? card.images[0]
+  const i = clamp(card.coverIndex ?? 0, 0, card.images.length - 1)
+  return card.thumbs?.[i] || card.images[i] || card.thumbs?.[0] || card.images[0]
 }
 
 export function moveItem<T>(list: T[], from: number, to: number): T[] {
@@ -41,10 +48,12 @@ export function removeImageAt(
 
 export function normalizeCard(raw: Partial<IExploreCard> & Pick<IExploreCard, 'id'>): IExploreCard {
   const images = Array.isArray(raw.images) ? raw.images.filter(Boolean) : []
+  const thumbs = Array.isArray(raw.thumbs) ? raw.thumbs.filter((item): item is string => typeof item === 'string') : undefined
   return {
     id: raw.id,
     title: raw.title ?? '',
     images,
+    thumbs: thumbs && thumbs.length > 0 ? thumbs : undefined,
     coverIndex: clamp(raw.coverIndex ?? 0, 0, Math.max(0, images.length - 1)),
     address: raw.address ?? '',
     lat: raw.lat,

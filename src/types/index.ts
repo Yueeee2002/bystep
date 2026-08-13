@@ -13,7 +13,10 @@ export type SortMode = 'newest' | 'oldest' | 'starDesc' | 'starAsc' | 'checkedFi
 export interface IExploreCard {
   id: string
   title: string
+  /** 原始高清图（data URL 或远程地址），预览弹窗使用 */
   images: string[]
+  /** 卡片封面缩略图（长边 720、居中裁切），与 images 一一对应；缺省时回退到原图 */
+  thumbs?: string[]
   coverIndex: number
   address: string
   lat?: number
