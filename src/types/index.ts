@@ -75,7 +75,7 @@ export const CATEGORY_META: Record<
   },
   other: {
     tab: '野趣小仓',
-    radio: '城市风物',
+    radio: '野趣小仓',
     hint: '书店、市集、展览与路上的风景',
     mapColor: '#c5cdd6',
   },

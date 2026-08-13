@@ -11,8 +11,9 @@
 - 网格 / 列表两种视图，封面展示与「3P」图集角标
 - 自定义彩色标签、拖拽排序、批量打标签 / 改状态
 - 心愿星级、卡片置顶、计划探店日期与本周提醒
-- 一级品类 Tab：全部 / 食肆小店 / 野趣小仓；标签栏右侧可切换排序
-- 照片以独立副本收纳，清理手机相册原图不影响页面展示
+- 一级品类 Tab：全部 / 食肆小店 / 野趣小仓
+- 首页标签收入「标签筛选」弹窗，支持按大类勾选；筛选交给首页 Tab，标签管理页只做增删改
+- 照片先在浏览器生成独立副本；后端 `liubu-server` 就绪后可一键切到服务器本地磁盘存储（不用 OSS）
 - 导出 / 导入 JSON 备份（含图集、封面与顺序），支持清空数据
 
 ## 本地开发
@@ -35,6 +36,19 @@ npm run preview
 npm test
 npm run lint
 ```
+
+## 图片存储
+
+开发阶段默认把图片压缩后存在浏览器（`src/api/imageStore.ts` 中 `BACKEND_READY: false`）。本地磁盘后端见 `liubu-server/`：
+
+```bash
+cd liubu-server
+cp .env.example .env
+npm install
+npm run dev
+```
+
+服务就绪后把 `BACKEND_READY` 改为 `true`，前端页面不用改。数据映射：食肆小店 → `catering`，野趣小仓 → `other`。
 
 ## 数据说明
 

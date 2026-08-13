@@ -98,10 +98,10 @@ export function collectDashboard(cards: IExploreCard[], tab: 'all' | CategoryGro
   const words = cards.reduce((sum, card) => sum + card.notes.trim().length + card.review.trim().length, 0)
   const totalLine =
     tab === 'catering'
-      ? `总共收录：${cards.length} 家美味小店`
+      ? `总共收录 ${cards.length} 家美味小店`
       : tab === 'other'
-        ? `总共收录：${cards.length} 处城市美好风物`
-        : `总共收录：${cards.length} 条记录`
+        ? `总共收录 ${cards.length} 处有趣小间`
+        : `总共收录 ${cards.length} 条城市小记`
   return {
     total: cards.length,
     pending,

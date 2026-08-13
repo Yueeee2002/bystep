@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
-import { uploadImages } from '@/api/imageStore'
+import { getUploadHint, uploadImages } from '@/api/imageStore'
 import { StorageQuotaError } from '@/utils/storage'
 import { tagsForGroup } from '@/utils/filterCards'
 import { useCardStore } from '@/store/cardStore'
@@ -127,7 +127,7 @@ export default function UploadModal() {
         <strong>点击或拖拽上传</strong>
         <span>支持一次多张，确认后会生成未打卡卡片</span>
       </label>
-      <p className={styles.note}>温馨小记：照片已妥善存放，可清理手机相册原图释放存储空间哦。</p>
+      <p className={styles.note}>{getUploadHint()}</p>
 
       {tags.length > 0 ? (
         <div className={styles.tagBox}>

@@ -54,6 +54,7 @@ export default function HomePage() {
   const setCategoryTab = useCardStore((state) => state.setCategoryTab)
   const setSortMode = useCardStore((state) => state.setSortMode)
   const toggleTagFilter = useCardStore((state) => state.toggleTagFilter)
+  const clearTagFilters = useCardStore((state) => state.clearTagFilters)
   const setViewMode = useCardStore((state) => state.setViewMode)
   const deleteCard = useCardStore((state) => state.deleteCard)
   const togglePin = useCardStore((state) => state.togglePin)
@@ -165,10 +166,11 @@ export default function HomePage() {
         ))}
       </div>
       <TagFilter
-        tags={visibleTags}
+        tags={tags}
         selectedIds={selectedTagIds}
         sortMode={sortMode}
         onToggle={toggleTagFilter}
+        onReset={clearTagFilters}
         onManage={openTags}
         onSortChange={setSortMode}
       />

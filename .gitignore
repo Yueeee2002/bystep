@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# 后端本地环境与上传文件
+liubu-server/.env
+liubu-server/public/upload/*
+!liubu-server/public/upload/.gitkeep
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -55,39 +55,19 @@
   border-radius: 2px;
 }
 
-.tags {
-  margin-top: 10px;
-}
-
-.tagMeta {
-  font-size: 12px;
-  color: var(--ash);
-  margin-bottom: 6px;
-}
-
-.tagRow {
+.controlRow {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.tagScroll {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px 2px 8px;
-  flex: 1;
-  scrollbar-width: none;
-}
-
-.tagScroll::-webkit-scrollbar {
-  display: none;
+  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .hint {
   font-size: 13px;
   color: var(--ash);
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 .manage {
@@ -96,7 +76,120 @@
   background: transparent;
   color: var(--gold-deep);
   font-size: 13px;
-  padding: 6px 0;
+  padding: 6px 4px;
+}
+
+.filterWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.filterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--snow);
+  color: var(--ash);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.filterBtn:hover,
+.filterBtn[data-open],
+.filterOn {
+  border-color: var(--gold);
+  color: var(--ink);
+  background: var(--gold-soft);
+}
+
+.filterBtn em {
+  font-style: normal;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.filterPanel {
+  z-index: 40;
+  margin-top: 8px;
+  width: min(360px, calc(100vw - 32px));
+  outline: none;
+}
+
+.filterInner {
+  padding: 16px 16px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--snow);
+  box-shadow: var(--shadow-soft);
+}
+
+.filterInner h3 {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.filterGroup {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.filterGroup p {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--ash);
+  letter-spacing: 0.08em;
+}
+
+.filterChips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scrollbar-width: none;
+}
+
+.filterChips::-webkit-scrollbar {
+  display: none;
+}
+
+.filterFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.reset,
+.close {
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.reset {
+  color: var(--ash);
+}
+
+.close {
+  color: var(--gold-deep);
 }
 
 .tabs {

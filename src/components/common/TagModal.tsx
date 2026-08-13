@@ -5,8 +5,22 @@ import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
 import { useUiStore } from '@/store/uiStore'
 import { TAG_COLOR_ORDER, TAG_COLORS, CATEGORY_META } from '@/types'
-import type { CategoryGroup, CategoryTab, TagColor } from '@/types'
+import type { CategoryGroup, TagColor } from '@/types'
 import styles from './TagModal.module.css'
+
+interface TagForm {
+  id: string | null
+  name: string
+  group: CategoryGroup
+  color: TagColor
+}
+
+const emptyForm = (name = '', color: TagColor = 'mocha'): TagForm => ({
+  id: null,
+  name,
+  group: 'catering',
+  color,
+})
 
 export default function TagModal() {
   const open = useUiStore((state) => state.tagsOpen)
@@ -15,31 +29,39 @@ export default function TagModal() {
   const showToast = useUiStore((state) => state.showToast)
   const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
-  const [color, setColor] = useState<TagColor>('mocha')
-  const [group, setGroup] = useState<CategoryGroup>('catering')
-  const [filter, setFilter] = useState<CategoryTab>('all')
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editingName, setEditingName] = useState('')
+  const [presetColor, setPresetColor] = useState<TagColor>('mocha')
+  const [form, setForm] = useState<TagForm | null>(null)
   const [dragFrom, setDragFrom] = useState<number | null>(null)
 
-  const handleAdd = () => {
-    const created = addTag(name, color, group)
-    if (!created) {
-      showToast(name.trim() ? '标签已存在或无效' : '请输入标签名', 'error')
-      return
-    }
-    setName('')
-    showToast('标签已添加', 'success')
+  const closeForm = () => setForm(null)
+
+  const openCreate = () => {
+    setForm(emptyForm(name, presetColor))
   }
 
-  const handleUpdate = (id: string) => {
-    const ok = updateTag(id, { name: editingName })
-    if (!ok) {
-      showToast('标签名重复或为空', 'error')
-      return
+  const openEdit = (tag: { id: string; name: string; group: CategoryGroup; color: TagColor }) => {
+    setForm({ id: tag.id, name: tag.name, group: tag.group, color: tag.color })
+  }
+
+  const handleSaveForm = () => {
+    if (!form) return
+    if (form.id) {
+      const ok = updateTag(form.id, { name: form.name, group: form.group, color: form.color })
+      if (!ok) {
+        showToast('标签名重复或为空', 'error')
+        return
+      }
+      showToast('标签已更新', 'success')
+    } else {
+      const created = addTag(form.name, form.color, form.group)
+      if (!created) {
+        showToast(form.name.trim() ? '标签已存在或无效' : '请输入标签名', 'error')
+        return
+      }
+      setName('')
+      showToast('标签已添加', 'success')
     }
-    setEditingId(null)
-    showToast('标签已更新', 'success')
+    closeForm()
   }
 
   const handleDelete = (id: string, tagName: string) => {
@@ -61,98 +83,79 @@ export default function TagModal() {
     setDragFrom(null)
   }
 
-  const visible = filter === 'all' ? tags : tags.filter((tag) => tag.group === filter)
-
   return (
     <Modal
       open={open}
       title="标签管理"
       onClose={() => {
         if (useUiStore.getState().confirmOpen) return
+        if (form) {
+          closeForm()
+          return
+        }
         closeTags()
       }}
     >
-      <div className={styles.add}>
-        <input
-          className="input"
-          value={name}
-          placeholder="新标签，例如：咖啡 / 展览 / 夜色"
-          onChange={(event) => setName(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') handleAdd()
-          }}
-        />
-        <Button onClick={handleAdd}>新增</Button>
-      </div>
-      <div className={styles.colors}>
-        {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
-          <button
-            key={key}
-            type="button"
-            className={`${styles.swatch} ${group === key ? styles.swatchOn : ''}`}
-            onClick={() => setGroup(key)}
-          >
-            {CATEGORY_META[key].tab}
-          </button>
-        ))}
-      </div>
-      <div className={styles.colors}>
-        {TAG_COLOR_ORDER.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className={`${styles.swatch} ${color === item ? styles.swatchOn : ''}`}
-            style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
-            onClick={() => setColor(item)}
-          >
-            {TAG_COLORS[item].label}
-          </button>
-        ))}
-      </div>
+      <div className={styles.body}>
+        <div className={styles.add}>
+          <input
+            className="input"
+            value={name}
+            placeholder="新标签，例如：咖啡 / 展览 / 夜色"
+            onChange={(event) => setName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') openCreate()
+            }}
+          />
+          <Button className={styles.addBtn} onClick={openCreate} aria-label="新增标签">
+            新增
+          </Button>
+        </div>
 
-      <div className={styles.colors}>
-        {(['all', 'catering', 'other'] as CategoryTab[]).map((key) => (
-          <button
-            key={key}
-            type="button"
-            className={`${styles.swatch} ${filter === key ? styles.swatchOn : ''}`}
-            onClick={() => setFilter(key)}
-          >
-            {key === 'all' ? '全部标签' : CATEGORY_META[key].tab}
-          </button>
-        ))}
-      </div>
+        <section className={styles.section}>
+          <p className={styles.sectionLabel}>所属顶级大类</p>
+          <div className={styles.row}>
+            {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+              <span key={key} className={styles.locked}>
+                {CATEGORY_META[key].tab}
+              </span>
+            ))}
+          </div>
+        </section>
 
-      <ul className={styles.list}>
-        {visible.length === 0 ? <li className={styles.empty}>还没有标签。想怎么分类，就轻轻写下。</li> : null}
-        {visible.map((tag) => {
-          const index = tags.findIndex((item) => item.id === tag.id)
-          return (
-          <li
-            key={tag.id}
-            draggable
-            onDragStart={() => setDragFrom(index)}
-            onDragOver={(event: DragEvent<HTMLLIElement>) => event.preventDefault()}
-            onDrop={() => onDrop(index)}
-            onDragEnd={() => setDragFrom(null)}
-            className={dragFrom === index ? styles.dragging : ''}
-          >
-            {editingId === tag.id ? (
-              <>
-                <input
-                  className="input"
-                  value={editingName}
-                  onChange={(event) => setEditingName(event.target.value)}
-                />
-                <Button variant="primary" onClick={() => handleUpdate(tag.id)}>
-                  保存
-                </Button>
-                <Button variant="text" onClick={() => setEditingId(null)}>
-                  取消
-                </Button>
-              </>
-            ) : (
-              <>
+        <section className={styles.section}>
+          <p className={styles.sectionLabel}>标签配色预设</p>
+          <div className={styles.row}>
+            {TAG_COLOR_ORDER.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`${styles.swatch} ${presetColor === item ? styles.swatchOn : ''}`}
+                style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
+                onClick={() => setPresetColor(item)}
+              >
+                {TAG_COLORS[item].label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <p className={styles.sectionLabel}>已创建标签列表</p>
+          <ul className={styles.list}>
+            {tags.length === 0 ? (
+              <li className={styles.empty}>还没有标签。想怎么分类，就轻轻写下。</li>
+            ) : null}
+            {tags.map((tag, index) => (
+              <li
+                key={tag.id}
+                draggable
+                onDragStart={() => setDragFrom(index)}
+                onDragOver={(event: DragEvent<HTMLLIElement>) => event.preventDefault()}
+                onDrop={() => onDrop(index)}
+                onDragEnd={() => setDragFrom(null)}
+                className={dragFrom === index ? styles.dragging : ''}
+              >
                 <span className={styles.item}>
                   <i style={{ background: TAG_COLORS[tag.color].bg }} />
                   {tag.name}
@@ -163,31 +166,78 @@ export default function TagModal() {
                     <button
                       key={item}
                       type="button"
-                      className={styles.dot}
+                      className={`${styles.dot} ${tag.color === item ? styles.dotOn : ''}`}
                       style={{ background: TAG_COLORS[item].bg }}
                       aria-label={TAG_COLORS[item].label}
                       onClick={() => updateTag(tag.id, { color: item })}
                     />
                   ))}
-                  <Button
-                    variant="text"
-                    onClick={() => {
-                      setEditingId(tag.id)
-                      setEditingName(tag.name)
-                    }}
-                  >
+                  <Button variant="text" onClick={() => openEdit(tag)}>
                     编辑
                   </Button>
                   <Button variant="danger-ghost" onClick={() => handleDelete(tag.id, tag.name)}>
                     删除
                   </Button>
                 </div>
-              </>
-            )}
-          </li>
-          )
-        })}
-      </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {form ? (
+          <div className={styles.sheetMask}>
+            <div className={styles.sheet} role="dialog" aria-labelledby="tag-form-title">
+              <h3 id="tag-form-title">{form.id ? '编辑标签' : '新增标签'}</h3>
+              <label className="field">
+                <span>标签名称</span>
+                <input
+                  className="input"
+                  value={form.name}
+                  placeholder="例如：咖啡 / 展览 / 夜色"
+                  onChange={(event) => setForm({ ...form, name: event.target.value })}
+                />
+              </label>
+              <div className="field">
+                <span>归属大类（必选）</span>
+                <div className={styles.row}>
+                  {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`${styles.choice} ${form.group === key ? styles.choiceOn : ''}`}
+                      onClick={() => setForm({ ...form, group: key })}
+                    >
+                      {CATEGORY_META[key].radio}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="field">
+                <span>标签底色</span>
+                <div className={styles.row}>
+                  {TAG_COLOR_ORDER.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`${styles.swatch} ${form.color === item ? styles.swatchOn : ''}`}
+                      style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
+                      onClick={() => setForm({ ...form, color: item })}
+                    >
+                      {TAG_COLORS[item].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.sheetActions}>
+                <Button variant="ghost" onClick={closeForm}>
+                  取消
+                </Button>
+                <Button onClick={handleSaveForm}>保存</Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
     </Modal>
   )
 }
