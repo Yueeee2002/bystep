@@ -1,0 +1,156 @@
+.page {
+  max-width: 680px;
+}
+
+.card {
+  background: var(--snow);
+  border-radius: 22px;
+  padding: 8px 8px 10px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.card h2 {
+  font-size: 16px;
+  margin: 12px 12px 6px;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  padding: 14px 12px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.item em {
+  font-style: normal;
+  color: var(--ash);
+  font-size: 13px;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.item:hover {
+  background: var(--gold-soft);
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.select {
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 12px;
+}
+
+.sheet {
+  display: grid;
+  gap: 14px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9a9086;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.bubble {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f4eee4;
+  font-size: 13px;
+}
+
+.bubble button {
+  border: 0;
+  background: transparent;
+  color: var(--gold-deep);
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px dashed var(--gold);
+  background: var(--gold-soft);
+  overflow: hidden;
+  padding: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.list i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.article {
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+@media (max-width: 560px) {
+  .item {
+    min-height: 48px;
+  }
+}

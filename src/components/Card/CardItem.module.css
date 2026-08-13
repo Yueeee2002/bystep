@@ -1,0 +1,265 @@
+.card {
+  background: var(--snow);
+  border-radius: 8px 8px 22px 22px;
+  padding: 10px 10px 16px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative;
+  animation: riseIn 0.28s ease both;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 18px;
+  height: 18px;
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(22, 22, 22, 0.06) 50%);
+  border-radius: 0 0 16px 0;
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 10px 16px 28px rgba(22, 22, 22, 0.08);
+  }
+
+  .card:hover::after {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+  }
+
+  .card:hover .photo img {
+    transform: scale(1.04);
+  }
+
+  .card:hover .delete,
+  .card:hover .pin {
+    opacity: 1;
+  }
+}
+
+.selected {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.pinned {
+  box-shadow: 0 10px 24px rgba(204, 162, 81, 0.18);
+}
+
+.photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--photo-bg, #e8e2d6);
+  aspect-ratio: 4 / 3;
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.28s ease;
+}
+
+.placeholder {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--ash);
+  font-size: 13px;
+}
+
+.stamp {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 4px 8px;
+  border: 1px solid var(--gold);
+  color: var(--ink);
+  background: rgba(255, 252, 247, 0.88);
+}
+
+.done {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.count {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(22, 22, 22, 0.62);
+  color: #fff;
+}
+
+.pin,
+.delete {
+  position: absolute;
+  top: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(22, 22, 22, 0.72);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.pin {
+  right: 42px;
+}
+
+.pinOn {
+  opacity: 1;
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.delete {
+  right: 8px;
+  font-size: 18px;
+}
+
+.stars {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 5px;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.88);
+}
+
+.body {
+  padding: 12px 6px 0;
+}
+
+.body h3 {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.addr {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ash);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.tags span {
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.listCard {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 18px;
+  align-items: stretch;
+}
+
+.listCard .photo {
+  aspect-ratio: 1;
+  min-height: 100%;
+}
+
+.listCard .body {
+  padding: 8px 8px 8px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flash {
+  animation: cardFlash 1s ease;
+}
+
+.dragging {
+  opacity: 0.55;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cardFlash {
+  0%,
+  100% {
+    box-shadow: var(--shadow-soft);
+  }
+  35% {
+    box-shadow: 0 0 0 6px var(--gold-soft);
+  }
+}
+
+@media (hover: none) {
+  .delete,
+  .pin {
+    opacity: 1;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 8px 8px 12px;
+    border-radius: 8px 8px 16px 16px;
+  }
+
+  .body {
+    padding: 10px 4px 0;
+  }
+
+  .body h3 {
+    font-size: 14px;
+  }
+
+  .addr {
+    font-size: 11px;
+  }
+
+  .stamp,
+  .count {
+    font-size: 10px;
+  }
+
+  .listCard {
+    grid-template-columns: 88px 1fr;
+    gap: 10px;
+  }
+}

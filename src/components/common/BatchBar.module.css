@@ -1,0 +1,23 @@
+.bar {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: var(--snow);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow);
+  margin-top: 18px;
+}
+
+.select {
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 10px;
+}

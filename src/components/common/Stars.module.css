@@ -1,0 +1,57 @@
+.row {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gold);
+}
+
+.star svg {
+  width: 100%;
+  height: 100%;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+.on svg {
+  fill: currentColor;
+}
+
+.lift {
+  transform: translateY(-2px);
+}
+
+.bounce {
+  animation: starPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes starPop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.12);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.small .star {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 560px) {
+  .small .star {
+    width: 13px;
+    height: 13px;
+  }
+}

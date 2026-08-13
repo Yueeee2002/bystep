@@ -1,0 +1,124 @@
+.drop {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 148px;
+  border: 1.5px dashed var(--gold);
+  border-radius: 18px;
+  background: var(--gold-soft);
+  color: var(--ink);
+  text-align: center;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.drop span {
+  font-size: 13px;
+  color: var(--ash);
+}
+
+.note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #9a9086;
+  line-height: 1.7;
+}
+
+.group {
+  margin-bottom: 16px;
+}
+
+.group > span,
+.tagBox > span {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.radios {
+  display: flex;
+  gap: 8px;
+}
+
+.radio {
+  border: 1px solid var(--line);
+  background: var(--snow);
+  color: var(--ash);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.radioOn {
+  border-color: var(--gold);
+  color: var(--ink);
+  background: var(--gold-soft);
+}
+
+.groupHint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #9a9086;
+}
+
+.tagBox {
+  margin-top: 16px;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dragging {
+  background: rgba(204, 162, 81, 0.28);
+  transform: rotate(-1.4deg) scale(0.98);
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e8e2d6;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(22, 22, 22, 0.7);
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 560px) {
+  .preview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

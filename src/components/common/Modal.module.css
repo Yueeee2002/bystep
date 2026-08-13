@@ -1,0 +1,87 @@
+.root {
+  position: relative;
+  z-index: 50;
+}
+
+.elevated {
+  z-index: 70;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 22, 22, 0.38);
+  backdrop-filter: blur(6px);
+  animation: fade 0.22s ease;
+}
+
+.wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  overflow: auto;
+}
+
+.panel {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(90dvh, 860px);
+  overflow: auto;
+  background: var(--cream);
+  border-radius: 28px 28px 18px 18px;
+  padding: 22px 20px 20px;
+  box-shadow: var(--shadow);
+  animation: sheet 0.28s ease;
+}
+
+.wide {
+  width: min(720px, 100%);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  margin: 0;
+}
+
+@media (min-width: 720px) {
+  .wrap {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .panel {
+    border-radius: 24px;
+    padding: 28px;
+  }
+}
+
+@keyframes sheet {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
