@@ -1,28 +1,29 @@
 import { create } from 'zustand'
-import type { IAppConfig, StatusFilter, ThemeMode } from '@/types'
-import { DEFAULT_CONFIG } from '@/utils/backup'
+import type { IAppConfig, StatusFilter } from '@/types'
+import { normalizeConfig } from '@/utils/backup'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 
 interface ConfigState extends IAppConfig {
   hydrate: (config: IAppConfig) => void
+  patchConfig: (patch: Partial<IAppConfig>) => void
   setNickname: (nickname: string) => void
   setMotto: (motto: string) => void
+  setAvatar: (avatar: string) => void
+  setPhone: (phone: string) => void
+  setPasswordSet: (passwordSet: boolean) => void
+  setHomeSlogan: (homeSlogan: string) => void
   setDefaultFilter: (defaultFilter: IAppConfig['defaultFilter']) => void
   setViewMode: (viewMode: IAppConfig['viewMode']) => void
-  setTheme: (theme: ThemeMode) => void
+  setTheme: (theme: IAppConfig['theme']) => void
   toggleTheme: () => void
+  setCalendarView: (calendarView: IAppConfig['calendarView']) => void
+  setMotion: (motion: boolean) => void
+  setCategoryLabels: (categoryLabels: IAppConfig['categoryLabels']) => void
+  setCustomTagColors: (customTagColors: IAppConfig['customTagColors']) => void
+  setArchiveFolders: (archiveFolders: IAppConfig['archiveFolders']) => void
+  setCloudBackup: (cloudBackup: boolean) => void
   replaceAll: (config: IAppConfig) => void
   applyDefaultFilter: () => StatusFilter
-}
-
-function snapshot(state: IAppConfig): IAppConfig {
-  return {
-    nickname: state.nickname,
-    motto: state.motto,
-    defaultFilter: state.defaultFilter,
-    viewMode: state.viewMode,
-    theme: state.theme,
-  }
 }
 
 function persistConfig(config: IAppConfig) {
@@ -30,41 +31,34 @@ function persistConfig(config: IAppConfig) {
 }
 
 export const useConfigStore = create<ConfigState>((set, get) => {
-  const initial = { ...DEFAULT_CONFIG, ...load<Partial<IAppConfig>>(STORAGE_KEYS.config, {}) }
+  const initial = normalizeConfig(load<Partial<IAppConfig>>(STORAGE_KEYS.config, {}))
+  const patchConfig = (patch: Partial<IAppConfig>) => {
+    const next = normalizeConfig({ ...get(), ...patch })
+    persistConfig(next)
+    set(next)
+  }
   return {
     ...initial,
-    hydrate: (config) => set(config),
-    setNickname: (nickname) => {
-      const next = snapshot({ ...get(), nickname })
-      persistConfig(next)
-      set({ nickname })
-    },
-    setMotto: (motto) => {
-      const next = snapshot({ ...get(), motto })
-      persistConfig(next)
-      set({ motto })
-    },
-    setDefaultFilter: (defaultFilter) => {
-      const next = snapshot({ ...get(), defaultFilter })
-      persistConfig(next)
-      set({ defaultFilter })
-    },
-    setViewMode: (viewMode) => {
-      const next = snapshot({ ...get(), viewMode })
-      persistConfig(next)
-      set({ viewMode })
-    },
-    setTheme: (theme) => {
-      const next = snapshot({ ...get(), theme })
-      persistConfig(next)
-      set({ theme })
-    },
-    toggleTheme: () => {
-      const theme = get().theme === 'night' ? 'cream' : 'night'
-      get().setTheme(theme)
-    },
+    hydrate: (config) => set(normalizeConfig(config)),
+    patchConfig,
+    setNickname: (nickname) => patchConfig({ nickname }),
+    setMotto: (motto) => patchConfig({ motto }),
+    setAvatar: (avatar) => patchConfig({ avatar }),
+    setPhone: (phone) => patchConfig({ phone }),
+    setPasswordSet: (passwordSet) => patchConfig({ passwordSet }),
+    setHomeSlogan: (homeSlogan) => patchConfig({ homeSlogan }),
+    setDefaultFilter: (defaultFilter) => patchConfig({ defaultFilter }),
+    setViewMode: (viewMode) => patchConfig({ viewMode }),
+    setTheme: (theme) => patchConfig({ theme }),
+    toggleTheme: () => patchConfig({ theme: get().theme === 'night' ? 'cream' : 'night' }),
+    setCalendarView: (calendarView) => patchConfig({ calendarView }),
+    setMotion: (motion) => patchConfig({ motion }),
+    setCategoryLabels: (categoryLabels) => patchConfig({ categoryLabels }),
+    setCustomTagColors: (customTagColors) => patchConfig({ customTagColors }),
+    setArchiveFolders: (archiveFolders) => patchConfig({ archiveFolders }),
+    setCloudBackup: (cloudBackup) => patchConfig({ cloudBackup }),
     replaceAll: (config) => {
-      const next = { ...DEFAULT_CONFIG, ...config }
+      const next = normalizeConfig(config)
       persistConfig(next)
       set(next)
     },

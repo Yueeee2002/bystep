@@ -2,14 +2,16 @@ import { useMemo, useState } from 'react'
 import AppHeader from '@/components/layout/AppHeader'
 import EmptyNote from '@/components/common/EmptyNote'
 import { useCardStore } from '@/store/cardStore'
+import { useConfigStore } from '@/store/configStore'
 import { useUiStore } from '@/store/uiStore'
-import { CATEGORY_META } from '@/types'
 import { cardVisitDate } from '@/utils/dates'
 import styles from './ArchivePage.module.css'
 
 export default function ArchivePage() {
   const cards = useCardStore((state) => state.cards)
   const archiveCards = useCardStore((state) => state.archiveCards)
+  const labels = useConfigStore((state) => state.categoryLabels)
+  const folders = useConfigStore((state) => state.archiveFolders)
   const openEdit = useUiStore((state) => state.openEdit)
   const showToast = useUiStore((state) => state.showToast)
   const [hover, setHover] = useState<'catering' | 'other' | null>(null)
@@ -32,8 +34,8 @@ export default function ArchivePage() {
   }, [live])
 
   return (
-    <div className="app-shell page-enter">
-      <AppHeader subtitle="把走过的月份，收成一册" />
+    <div className="app-shell">
+      <AppHeader title="归档合集" />
       <section className={styles.stickers}>
         <button
           type="button"
@@ -42,7 +44,7 @@ export default function ArchivePage() {
           onMouseEnter={() => setHover('catering')}
           onMouseLeave={() => setHover(null)}
         >
-          食肆小店
+          {labels.catering}
           {hover === 'catering' ? <em>{catering} 条</em> : <span>{Math.round((catering / total) * 100)}%</span>}
         </button>
         <button
@@ -52,7 +54,7 @@ export default function ArchivePage() {
           onMouseEnter={() => setHover('other')}
           onMouseLeave={() => setHover(null)}
         >
-          野趣小仓
+          {labels.other}
           {hover === 'other' ? <em>{other} 条</em> : <span>{Math.round((other / total) * 100)}%</span>}
         </button>
       </section>
@@ -68,7 +70,7 @@ export default function ArchivePage() {
                 <li key={card.id}>
                   <button type="button" onClick={() => openEdit(card.id)}>
                     {card.title.trim() || '未命名地点'}
-                    <span>{CATEGORY_META[card.categoryGroup].tab}</span>
+                    <span>{labels[card.categoryGroup]}</span>
                   </button>
                 </li>
               ))}
@@ -77,32 +79,34 @@ export default function ArchivePage() {
         ))
       )}
 
-      <section className={styles.pocket}>
-        <h2>收纳袋</h2>
-        {archived.length === 0 ? (
-          <p>多选首页卡片后，可以收进这里，需要时再展开。</p>
-        ) : (
-          <ul>
-            {archived.map((card) => (
-              <li key={card.id}>
-                <button type="button" onClick={() => openEdit(card.id)}>
-                  {card.title.trim() || '未命名地点'}
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-text"
-                  onClick={() => {
-                    archiveCards([card.id], false)
-                    showToast('已从收纳袋取出', 'success')
-                  }}
-                >
-                  取出
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {folders.map((folder) => (
+        <section key={folder.id} className={styles.pocket}>
+          <h2>{folder.name}</h2>
+          {archived.length === 0 ? (
+            <p>多选首页卡片后，可以收进这里，需要时再展开。</p>
+          ) : (
+            <ul>
+              {archived.map((card) => (
+                <li key={card.id}>
+                  <button type="button" onClick={() => openEdit(card.id)}>
+                    {card.title.trim() || '未命名地点'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-text"
+                    onClick={() => {
+                      archiveCards([card.id], false)
+                      showToast('已从收纳袋取出', 'success')
+                    }}
+                  >
+                    取出
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))}
     </div>
   )
 }

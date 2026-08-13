@@ -4,7 +4,6 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
-  transition: transform 0.25s ease;
   position: sticky;
   top: 0;
   z-index: 20;
@@ -16,19 +15,14 @@
 }
 
 .compact {
-  transform: none;
-}
-
-.exit {
-  min-height: 40px;
-  padding: 8px 14px;
-  font-size: 13px;
+  box-shadow: 0 8px 18px rgba(22, 22, 22, 0.04);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .logoMark {
@@ -37,52 +31,65 @@
   flex-shrink: 0;
 }
 
-.brand h1 {
+.brand h1,
+.sub h1 {
   font-size: 28px;
   letter-spacing: 0.12em;
   line-height: 1;
 }
 
-.brand p {
+.slogan {
   margin-top: 4px;
   font-size: 12px;
   letter-spacing: 0.18em;
+  color: var(--ash);
 }
 
-@media (max-width: 720px) {
-  .header {
-    align-items: flex-start;
-    margin-bottom: 12px;
-    padding-top: calc(10px + env(safe-area-inset-top));
-  }
+.sloganIn {
+  animation: sloganIn 0.28s ease;
+}
 
-  .brand {
-    gap: 8px;
-  }
+.subLead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
 
-  .logoMark {
-    width: 32px;
-    height: 32px;
-  }
+.sub h1 {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
 
-  .brand h1 {
-    font-size: 22px;
-  }
+.back {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
 
-  .brand p {
-    max-width: 42vw;
-    letter-spacing: 0.08em;
-    line-height: 1.4;
-  }
+.back:hover {
+  transform: scale(1.06);
+  background: var(--gold-soft);
+  box-shadow: 0 0 0 6px var(--gold-soft);
+}
 
-  .menuBtn {
-    width: 44px;
-    height: 44px;
-  }
+.back:active {
+  transform: scale(0.94);
 }
 
 .headerActions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -108,5 +115,59 @@
   }
   50% {
     transform: translateY(-2px);
+  }
+}
+
+@keyframes sloganIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .header {
+    margin-bottom: 12px;
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .logoMark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand h1 {
+    font-size: 22px;
+  }
+
+  .sub h1 {
+    font-size: 18px;
+  }
+
+  .slogan {
+    max-width: 46vw;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+  }
+
+  .menuBtn,
+  .back {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (hover: none) {
+  .back:hover {
+    transform: none;
+    box-shadow: none;
   }
 }

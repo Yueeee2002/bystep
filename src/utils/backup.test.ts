@@ -36,6 +36,7 @@ describe('backup', () => {
     expect(parsed.tags[0].name).toBe('咖啡')
     expect(parsed.cards[0].coverIndex).toBe(0)
     expect(parsed.config.nickname).toBe('小雨')
+    expect(parsed.config.homeSlogan).toBeDefined()
   })
 
   it('rejects invalid json', () => {

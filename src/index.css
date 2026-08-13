@@ -168,6 +168,36 @@ html.drawer-open .app-shell {
   animation: rise 0.45s ease;
 }
 
+.page-slide-home .app-shell {
+  animation: slideFromLeft 0.25s ease;
+}
+
+.page-slide-sub .app-shell {
+  animation: slideFromRight 0.25s ease;
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -427,10 +457,19 @@ html.is-idle .app-shell h1 {
   html.is-idle .app-shell h1,
   .btn.shake,
   .field input,
-  .page-enter {
+  .page-enter,
+  .page-slide-home .app-shell,
+  .page-slide-sub .app-shell {
     animation: none !important;
     transition: none !important;
   }
+}
+
+html.no-motion *,
+html.no-motion *::before,
+html.no-motion *::after {
+  animation: none !important;
+  transition: none !important;
 }
 
 @media (max-width: 720px) {

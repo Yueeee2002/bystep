@@ -1,4 +1,4 @@
-import { CATEGORY_META } from '@/types'
+import { useConfigStore } from '@/store/configStore'
 import type { CategoryGroup } from '@/types'
 import styles from './CategoryRadios.module.css'
 
@@ -8,9 +8,11 @@ interface CategoryRadiosProps {
 }
 
 export default function CategoryRadios({ value, onChange }: CategoryRadiosProps) {
+  const labels = useConfigStore((state) => state.categoryLabels)
+  const keys: CategoryGroup[] = ['catering', 'other']
   return (
     <div className={styles.radios}>
-      {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+      {keys.map((key) => (
         <button
           key={key}
           type="button"
@@ -18,7 +20,7 @@ export default function CategoryRadios({ value, onChange }: CategoryRadiosProps)
           onClick={() => onChange(key)}
         >
           <i className={styles.mark} aria-hidden="true" />
-          {CATEGORY_META[key].radio}
+          {labels[key]}
         </button>
       ))}
     </div>

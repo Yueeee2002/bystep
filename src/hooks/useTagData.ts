@@ -1,6 +1,6 @@
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
-import type { CategoryGroup, TagColor } from '@/types'
+import type { CategoryGroup } from '@/types'
 
 export function useTagData() {
   const tags = useTagStore((state) => state.tags)
@@ -9,9 +9,9 @@ export function useTagData() {
   const moveTag = useTagStore((state) => state.moveTag)
   const replaceAll = useTagStore((state) => state.replaceAll)
 
-  const addTag = (name: string, color?: TagColor, group?: CategoryGroup) => addTagRaw(name, color, group)
+  const addTag = (name: string, color?: string, group?: CategoryGroup) => addTagRaw(name, color, group)
 
-  const updateTag = (id: string, patch: Partial<{ name: string; color: TagColor; group: CategoryGroup }>) => {
+  const updateTag = (id: string, patch: Partial<{ name: string; color: string; group: CategoryGroup }>) => {
     const current = useTagStore.getState().tags.find((tag) => tag.id === id)
     const ok = updateTagRaw(id, patch)
     if (ok && patch.group && current && patch.group !== current.group) {

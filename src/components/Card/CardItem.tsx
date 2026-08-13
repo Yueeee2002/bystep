@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import type { IExploreCard, ITag, ViewMode } from '@/types'
-import { TAG_COLORS } from '@/types'
+import { resolveTagColor } from '@/utils/palette'
 import { getCoverSrc } from '@/utils/models'
+import { useConfigStore } from '@/store/configStore'
 import Stars from '@/components/common/Stars'
 import styles from './CardItem.module.css'
 
@@ -40,6 +41,7 @@ export default function CardItem({
 }: CardItemProps) {
   const cover = getCoverSrc(card)
   const timer = useRef<number | 0>(0)
+  const extras = useConfigStore((state) => state.customTagColors)
   const boundTags = card.tags
     .map((id) => tags.find((tag) => tag.id === id))
     .filter((tag): tag is ITag => Boolean(tag))
@@ -124,7 +126,7 @@ export default function CardItem({
         {boundTags.length > 0 ? (
           <div className={styles.tags}>
             {boundTags.map((tag) => (
-              <span key={tag.id} style={{ background: TAG_COLORS[tag.color].bg, color: TAG_COLORS[tag.color].fg }}>
+              <span key={tag.id} style={{ background: resolveTagColor(tag.color, extras).bg, color: resolveTagColor(tag.color, extras).fg }}>
                 {tag.name}
               </span>
             ))}

@@ -4,32 +4,34 @@ import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
 import { useUiStore } from '@/store/uiStore'
-import { TAG_COLOR_ORDER, TAG_COLORS, CATEGORY_META } from '@/types'
-import type { CategoryGroup, TagColor } from '@/types'
+import { TAG_COLOR_ORDER } from '@/types'
+import type { CategoryGroup } from '@/types'
+import { useConfigStore } from '@/store/configStore'
+import { resolveTagColor } from '@/utils/palette'
 import styles from './TagModal.module.css'
 
 interface TagForm {
   id: string | null
   name: string
   group: CategoryGroup | null
-  color: TagColor
+  color: string
 }
 
-const emptyForm = (name = '', color: TagColor = 'mocha'): TagForm => ({
+const emptyForm = (name = '', color: string = 'mocha'): TagForm => ({
   id: null,
   name,
   group: null,
   color,
 })
 
-export default function TagModal() {
+export default function TagModal({ asPage = false }: { asPage?: boolean }) {
   const open = useUiStore((state) => state.tagsOpen)
   const closeTags = useUiStore((state) => state.closeTags)
   const showToast = useUiStore((state) => state.showToast)
   const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
-  const [presetColor, setPresetColor] = useState<TagColor>('mocha')
-  const [previewColor, setPreviewColor] = useState<TagColor | null>(null)
+  const [presetColor, setPresetColor] = useState<string>('mocha')
+  const [previewColor, setPreviewColor] = useState<string | null>(null)
   const [form, setForm] = useState<TagForm | null>(null)
   const [groupError, setGroupError] = useState(false)
   const [shakeSave, setShakeSave] = useState(false)
@@ -53,7 +55,7 @@ export default function TagModal() {
     setForm(emptyForm(name, presetColor))
   }
 
-  const openEdit = (tag: { id: string; name: string; group: CategoryGroup; color: TagColor }) => {
+  const openEdit = (tag: { id: string; name: string; group: CategoryGroup; color: string }) => {
     setGroupError(false)
     setForm({ id: tag.id, name: tag.name, group: tag.group, color: tag.color })
   }
@@ -115,22 +117,14 @@ export default function TagModal() {
     showToast('标签已删除', 'info')
   }
 
+  const labels = useConfigStore((state) => state.categoryLabels)
+  const extras = useConfigStore((state) => state.customTagColors)
+  const palette = [...TAG_COLOR_ORDER, ...extras.map((item) => item.id)]
+  const swatch = (color: string) => resolveTagColor(color, extras)
   const groups: CategoryGroup[] = ['catering', 'other']
 
-  return (
-    <Modal
-      open={open}
-      title="标签管理"
-      onClose={() => {
-        if (useUiStore.getState().confirmOpen) return
-        if (form) {
-          closeForm()
-          return
-        }
-        closeTags()
-      }}
-    >
-      <div className={styles.body}>
+  const body = (
+    <div className={styles.body}>
         <div className={styles.add}>
           <input
             className="input"
@@ -149,7 +143,7 @@ export default function TagModal() {
           </Button>
         </div>
         {name.trim() ? (
-          <span className={styles.previewChip} style={{ background: TAG_COLORS[presetColor].bg, color: TAG_COLORS[presetColor].fg }}>
+          <span className={styles.previewChip} style={{ background: swatch(presetColor).bg, color: swatch(presetColor).fg }}>
             {name.trim()}
           </span>
         ) : null}
@@ -159,7 +153,7 @@ export default function TagModal() {
           <div className={styles.row}>
             {groups.map((key) => (
               <span key={key} className={styles.locked}>
-                {CATEGORY_META[key].tab}
+                {labels[key]}
               </span>
             ))}
           </div>
@@ -168,17 +162,17 @@ export default function TagModal() {
         <section className={styles.section}>
           <p className={styles.sectionLabel}>标签配色预设</p>
           <div className={styles.row}>
-            {TAG_COLOR_ORDER.map((item) => (
+            {palette.map((item) => (
               <button
                 key={item}
                 type="button"
                 className={`${styles.swatch} ${presetColor === item ? styles.swatchOn : ''}`}
-                style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
+                style={{ background: swatch(item).bg, color: swatch(item).fg }}
                 onClick={() => setPresetColor(item)}
                 onMouseEnter={() => setPreviewColor(item)}
                 onMouseLeave={() => setPreviewColor(null)}
               >
-                {TAG_COLORS[item].label}
+                {swatch(item).label}
               </button>
             ))}
           </div>
@@ -222,7 +216,7 @@ export default function TagModal() {
                   <span className={`${styles.arrow} ${expanded ? styles.arrowOpen : ''}`} aria-hidden="true">
                     ▶
                   </span>
-                  {CATEGORY_META[group].tab}
+                  {labels[group]}
                   <em>{items.length}</em>
                 </button>
                 <div className={styles.foldBody}>
@@ -246,10 +240,10 @@ export default function TagModal() {
                           } ${previewColor === tag.color ? styles.preview : ''}`}
                         >
                           <span className={styles.item}>
-                            <i style={{ background: TAG_COLORS[tag.color].bg }} />
+                            <i style={{ background: swatch(tag.color).bg }} />
                             {tag.name}
-                            <em>{CATEGORY_META[tag.group].tab}</em>
-                            <b>{TAG_COLORS[tag.color].label}</b>
+                            <em>{labels[tag.group]}</em>
+                            <b>{swatch(tag.color).label}</b>
                           </span>
                           <div className={styles.actions}>
                             <Button variant="text" className={styles.editBtn} onClick={() => openEdit(tag)}>
@@ -300,7 +294,7 @@ export default function TagModal() {
               <div className="field">
                 <span>所属顶级大类（必选）</span>
                 <div className={styles.row}>
-                  {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+                  {groups.map((key) => (
                     <button
                       key={key}
                       type="button"
@@ -310,7 +304,7 @@ export default function TagModal() {
                         setGroupError(false)
                       }}
                     >
-                      {CATEGORY_META[key].radio}
+                      {labels[key]}
                     </button>
                   ))}
                 </div>
@@ -319,15 +313,15 @@ export default function TagModal() {
               <div className="field">
                 <span>标签配色预设</span>
                 <div className={styles.row}>
-                  {TAG_COLOR_ORDER.map((item) => (
+                  {palette.map((item) => (
                     <button
                       key={item}
                       type="button"
                       className={`${styles.swatch} ${form.color === item ? styles.swatchOn : ''}`}
-                      style={{ background: TAG_COLORS[item].bg, color: TAG_COLORS[item].fg }}
+                      style={{ background: swatch(item).bg, color: swatch(item).fg }}
                       onClick={() => setForm({ ...form, color: item })}
                     >
-                      {TAG_COLORS[item].label}
+                      {swatch(item).label}
                     </button>
                   ))}
                 </div>
@@ -343,7 +337,25 @@ export default function TagModal() {
             </div>
           </div>
         ) : null}
-      </div>
+    </div>
+  )
+
+  if (asPage) return body
+
+  return (
+    <Modal
+      open={open}
+      title="标签管理"
+      onClose={() => {
+        if (useUiStore.getState().confirmOpen) return
+        if (form) {
+          closeForm()
+          return
+        }
+        closeTags()
+      }}
+    >
+      {body}
     </Modal>
   )
 }

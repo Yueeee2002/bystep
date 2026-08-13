@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
-import { TAG_COLORS } from '@/types'
+import { resolveTagColor } from '@/utils/palette'
 import type { ITag } from '@/types'
 import { TAG_EMPTY_COPY } from '@/utils/tagRules'
+import { useConfigStore } from '@/store/configStore'
 import styles from './TagPicker.module.css'
 
 interface TagPickerProps {
@@ -28,6 +29,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
 }
 
 export default function TagPicker({ tags, selectedIds, onChange, onManage, slideKey }: TagPickerProps) {
+  const extras = useConfigStore((state) => state.customTagColors)
   const [query, setQuery] = useState('')
   const selected = useMemo(
     () => tags.filter((tag) => selectedIds.includes(tag.id)),
@@ -67,7 +69,7 @@ export default function TagPicker({ tags, selectedIds, onChange, onManage, slide
       {selected.length > 0 ? (
         <div className={styles.picked}>
           {selected.map((tag) => {
-            const palette = TAG_COLORS[tag.color]
+            const palette = resolveTagColor(tag.color, extras)
             return (
               <button
                 key={tag.id}
@@ -107,7 +109,7 @@ export default function TagPicker({ tags, selectedIds, onChange, onManage, slide
             <div className={styles.none}>没有匹配的标签</div>
           ) : (
             filtered.map((tag, index) => {
-              const palette = TAG_COLORS[tag.color]
+              const palette = resolveTagColor(tag.color, extras)
               const active = selectedIds.includes(tag.id)
               return (
                 <ComboboxOption

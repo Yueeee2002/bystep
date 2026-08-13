@@ -17,7 +17,14 @@ export default function Modal({ open, title, onClose, children, wide, elevated }
       <div className={styles.backdrop} />
       <div className={styles.wrap}>
         <DialogPanel className={`${styles.panel} ${wide ? styles.wide : ''}`}>
-          {title ? <DialogTitle className={styles.title}>{title}</DialogTitle> : null}
+          <div className={styles.titleRow}>
+            <button type="button" className={styles.back} aria-label="返回" onClick={onClose}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 5 8 12l7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {title ? <DialogTitle className={styles.title}>{title}</DialogTitle> : <span className={styles.title} />}
+          </div>
           {children}
         </DialogPanel>
       </div>

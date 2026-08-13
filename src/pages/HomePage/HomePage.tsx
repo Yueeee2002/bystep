@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { DragEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import SearchBar from '@/components/Filter/SearchBar'
 import StatusFilterBar from '@/components/Filter/StatusFilter'
 import TagFilter from '@/components/Filter/TagFilter'
@@ -48,10 +49,10 @@ export default function HomePage() {
   const persistViewMode = useConfigStore((state) => state.setViewMode)
   const openUpload = useUiStore((state) => state.openUpload)
   const openEdit = useUiStore((state) => state.openEdit)
-  const openTags = useUiStore((state) => state.openTags)
   const openConfirm = useUiStore((state) => state.openConfirm)
   const showToast = useUiStore((state) => state.showToast)
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
+  const navigate = useNavigate()
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
@@ -106,7 +107,7 @@ export default function HomePage() {
 
   return (
     <div className="app-shell page-enter">
-      <AppHeader badge={weekly > 0} />
+      <AppHeader home badge={weekly > 0} />
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 
@@ -136,14 +137,14 @@ export default function HomePage() {
         sortMode={sortMode}
         onToggle={toggleTagFilter}
         onReset={clearTagFilters}
-        onManage={openTags}
+        onManage={() => navigate('/tags')}
         onSortChange={setSortMode}
       />
 
       <div className={styles.toolbar}>
         <div className={styles.actions}>
           <Button onClick={() => openUpload()}>上传图片</Button>
-          <Button variant="ghost" onClick={openTags}>
+          <Button variant="ghost" onClick={() => navigate('/tags')}>
             标签管理
           </Button>
           <Button

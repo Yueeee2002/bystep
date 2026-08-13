@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import type { CategoryTab, ITag, SortMode } from '@/types'
-import { CATEGORY_META, TAG_COLORS } from '@/types'
+import { useConfigStore } from '@/store/configStore'
+import { resolveTagColor } from '@/utils/palette'
 import type { CategoryGroup } from '@/types'
 import { filterGroupsForTab, isCrossCategory } from '@/utils/tagRules'
 import SortMenu from '@/components/Filter/SortMenu'
@@ -31,6 +32,8 @@ export default function TagFilter({
   onSortChange,
 }: TagFilterProps) {
   const [shaking, setShaking] = useState(false)
+  const labels = useConfigStore((state) => state.categoryLabels)
+  const extras = useConfigStore((state) => state.customTagColors)
   const visible = filterGroupsForTab(categoryTab)
   const cross = categoryTab === 'all' && isCrossCategory(selectedIds, tags)
 
@@ -67,13 +70,13 @@ export default function TagFilter({
                     }`}
                   >
                     <div className={styles.filterGroupInner}>
-                      <p>{CATEGORY_META[group].tab}</p>
+                      <p>{labels[group]}</p>
                       <div className={`${styles.filterChips} ${shaking ? styles.shake : ''}`}>
                         {items.length === 0 ? (
                           <span className={styles.hint}>还没有这一类的标签</span>
                         ) : (
                           items.map((tag) => {
-                            const palette = TAG_COLORS[tag.color]
+                            const palette = resolveTagColor(tag.color, extras)
                             const active = selectedIds.includes(tag.id)
                             return (
                               <button

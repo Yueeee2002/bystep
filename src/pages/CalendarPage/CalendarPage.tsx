@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import AppHeader from '@/components/layout/AppHeader'
 import EmptyNote from '@/components/common/EmptyNote'
 import { useCardStore } from '@/store/cardStore'
+import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
-import { TAG_COLORS } from '@/types'
+import { resolveTagColor } from '@/utils/palette'
 import type { CategoryTab, IExploreCard } from '@/types'
 import {
   buildMonthCells,
@@ -46,11 +47,14 @@ export default function CalendarPage() {
   const openUpload = useUiStore((state) => state.openUpload)
   const showToast = useUiStore((state) => state.showToast)
   const popDate = useUiStore((state) => state.popDate)
+  const calendarView = useConfigStore((state) => state.calendarView)
+  const labels = useConfigStore((state) => state.categoryLabels)
+  const extras = useConfigStore((state) => state.customTagColors)
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [anchor, setAnchor] = useState(now)
   const [tab, setTab] = useState<CategoryTab>('all')
-  const [mode, setMode] = useState<'month' | 'week'>('month')
+  const [mode, setMode] = useState<'month' | 'week'>(calendarView)
   const [selected, setSelected] = useState<string | null>(null)
   const [bubble, setBubble] = useState<string | null>(null)
   const [flip, setFlip] = useState<'left' | 'right' | ''>('')
@@ -158,7 +162,7 @@ export default function CalendarPage() {
 
   return (
     <div className="app-shell page-enter">
-      <AppHeader subtitle="把出门的日子，轻轻圈上" badge={streak >= 3} />
+      <AppHeader title="打卡日历" badge={streak >= 3} />
       <div className={styles.top}>
         <button type="button" className={styles.nav} onClick={() => turn(-1)} aria-label={mode === 'week' ? '上一周' : '上月'}>
           ←
@@ -176,8 +180,8 @@ export default function CalendarPage() {
           {(
             [
               ['all', '全部'],
-              ['catering', '食肆小店'],
-              ['other', '野趣小仓'],
+              ['catering', labels.catering],
+              ['other', labels.other],
             ] as const
           ).map(([value, label]) => (
             <button
@@ -224,7 +228,7 @@ export default function CalendarPage() {
       </div>
 
       <p key={`${tab}-${stats.total}-${stats.catering}-${stats.other}`} className={styles.foot}>
-        当月总计打卡：{stats.total} 次・食肆小店 {stats.catering} 次・野趣小仓 {stats.other} 次
+        当月总计打卡：{stats.total} 次・{labels.catering} {stats.catering} 次・{labels.other} {stats.other} 次
       </p>
 
       {stats.total === 0 ? (
@@ -246,10 +250,10 @@ export default function CalendarPage() {
       {selected ? (
         <aside className={styles.drawer}>
           <div className={styles.drawerHead}>
-            <h3>{selected}</h3>
-            <button type="button" className="btn btn-text" onClick={() => setSelected(null)}>
-              关闭
+            <button type="button" className={styles.back} aria-label="返回" onClick={() => setSelected(null)}>
+              ←
             </button>
+            <h3>{selected}</h3>
           </div>
           {dayCards.length === 0 ? (
             <div className={styles.emptyDay}>
@@ -264,14 +268,14 @@ export default function CalendarPage() {
                 <li key={card.id}>
                   <button type="button" onClick={() => openEdit(card.id)}>
                     <b>{card.title.trim() || '未命名地点'}</b>
-                    <span>{card.categoryGroup === 'catering' ? '食肆小店' : '野趣小仓'}</span>
+                    <span>{card.categoryGroup === 'catering' ? labels.catering : labels.other}</span>
                     <em>
                       {card.tags
                         .map((id) => tags.find((tag) => tag.id === id))
                         .filter(Boolean)
                         .slice(0, 3)
                         .map((tag) => (
-                          <i key={tag!.id} style={{ background: TAG_COLORS[tag!.color].bg }} />
+                          <i key={tag!.id} style={{ background: resolveTagColor(tag!.color, extras).bg }} />
                         ))}
                     </em>
                   </button>

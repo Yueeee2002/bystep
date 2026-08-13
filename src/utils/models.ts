@@ -71,7 +71,9 @@ const TAG_COLOR_SET = new Set<TagColor>(['mocha', 'mint', 'apricot', 'haze'])
 const TAG_GROUP_SET = new Set<CategoryGroup>(['catering', 'other'])
 
 export function normalizeTag(raw: Partial<ITag> & Pick<ITag, 'id' | 'name'>): ITag {
-  const color = raw.color && TAG_COLOR_SET.has(raw.color) ? raw.color : 'mocha'
+  const rawColor = typeof raw.color === 'string' ? raw.color : 'mocha'
+  const color =
+    TAG_COLOR_SET.has(rawColor as TagColor) || rawColor.startsWith('custom_') ? rawColor : 'mocha'
   const group = raw.group && TAG_GROUP_SET.has(raw.group) ? raw.group : 'catering'
   return { id: raw.id, name: raw.name, color, group }
 }

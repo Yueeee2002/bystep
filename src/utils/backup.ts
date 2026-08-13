@@ -1,13 +1,52 @@
-import { APP_VERSION } from '@/types'
+import { APP_VERSION, CATEGORY_META, DEFAULT_HOME_SLOGAN } from '@/types'
 import type { IAppConfig, IBackupPayload, IExploreCard, ITag } from '@/types'
 import { normalizeCard, normalizeTag } from '@/utils/models'
 
 export const DEFAULT_CONFIG: IAppConfig = {
   nickname: '',
   motto: '',
+  avatar: '',
+  phone: '',
+  passwordSet: false,
+  homeSlogan: DEFAULT_HOME_SLOGAN,
   defaultFilter: 'all',
   viewMode: 'grid',
   theme: 'cream',
+  calendarView: 'month',
+  motion: true,
+  categoryLabels: {
+    catering: CATEGORY_META.catering.tab,
+    other: CATEGORY_META.other.tab,
+  },
+  customTagColors: [],
+  archiveFolders: [{ id: 'pocket', name: '收纳袋' }],
+  cloudBackup: false,
+}
+
+export function normalizeConfig(raw: Partial<IAppConfig> = {}): IAppConfig {
+  const catering = raw.categoryLabels?.catering?.trim() || DEFAULT_CONFIG.categoryLabels.catering
+  const other = raw.categoryLabels?.other?.trim() || DEFAULT_CONFIG.categoryLabels.other
+  const slogan = (raw.homeSlogan ?? DEFAULT_HOME_SLOGAN).trim().slice(0, 20)
+  return {
+    nickname: raw.nickname ?? '',
+    motto: raw.motto ?? '',
+    avatar: typeof raw.avatar === 'string' ? raw.avatar : '',
+    phone: typeof raw.phone === 'string' ? raw.phone : '',
+    passwordSet: Boolean(raw.passwordSet),
+    homeSlogan: slogan || DEFAULT_HOME_SLOGAN,
+    defaultFilter: raw.defaultFilter === 'pending' ? 'pending' : 'all',
+    viewMode: raw.viewMode === 'list' ? 'list' : 'grid',
+    theme: raw.theme === 'night' ? 'night' : 'cream',
+    calendarView: raw.calendarView === 'week' ? 'week' : 'month',
+    motion: raw.motion !== false,
+    categoryLabels: { catering, other },
+    customTagColors: Array.isArray(raw.customTagColors) ? raw.customTagColors : [],
+    archiveFolders:
+      Array.isArray(raw.archiveFolders) && raw.archiveFolders.length > 0
+        ? raw.archiveFolders
+        : DEFAULT_CONFIG.archiveFolders,
+    cloudBackup: Boolean(raw.cloudBackup),
+  }
 }
 
 export function buildBackupPayload(
@@ -53,10 +92,7 @@ export function parseBackupPayload(raw: string): IBackupPayload {
         group: tag.group,
       }),
     ),
-    config: {
-      ...DEFAULT_CONFIG,
-      ...(data.config ?? {}),
-    },
+    config: normalizeConfig(data.config ?? {}),
   }
 }
 

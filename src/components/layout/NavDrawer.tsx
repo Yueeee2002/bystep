@@ -7,15 +7,17 @@ import styles from './NavDrawer.module.css'
 
 const LINKS = [
   { to: '/', label: '首页', icon: '⌂' },
+  { to: '/profile', label: '个人主页', icon: '人' },
   { to: '/calendar', label: '打卡日历', icon: '日' },
-  { to: '/archive', label: '归档', icon: '册' },
+  { to: '/tags', label: '标签管理', icon: '签' },
+  { to: '/archive', label: '归档合集', icon: '册' },
+  { to: '/stats', label: '数据统计', icon: '计' },
   { to: '/settings', label: '设置', icon: '○' },
 ]
 
 export default function NavDrawer() {
   const open = useUiStore((state) => state.drawerOpen)
   const closeDrawer = useUiStore((state) => state.closeDrawer)
-  const openTags = useUiStore((state) => state.openTags)
   const cards = useCardStore((state) => state.cards)
   const weekly = countWeeklyPlans(cards)
   const archived = cards.filter((card) => card.archived).length
@@ -61,17 +63,6 @@ export default function NavDrawer() {
               {link.to === '/archive' && archived > 0 ? <em /> : null}
             </NavLink>
           ))}
-          <button
-            type="button"
-            className={styles.link}
-            onClick={() => {
-              closeDrawer()
-              openTags()
-            }}
-          >
-            <span>签</span>
-            标签管理
-          </button>
         </nav>
       </aside>
     </div>

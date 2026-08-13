@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import HomePage from '@/pages/HomePage/HomePage'
 import SettingsPage from '@/pages/SettingsPage/SettingsPage'
 import CalendarPage from '@/pages/CalendarPage/CalendarPage'
 import ArchivePage from '@/pages/ArchivePage/ArchivePage'
+import ProfilePage from '@/pages/ProfilePage/ProfilePage'
+import StatsPage from '@/pages/StatsPage/StatsPage'
+import TagsPage from '@/pages/TagsPage/TagsPage'
 import Toast from '@/components/common/Toast'
 import ConfirmDialog from '@/components/common/ConfirmDialog'
 import UploadModal from '@/components/common/UploadModal'
@@ -20,7 +23,10 @@ import { useUiStore } from '@/store/uiStore'
 
 export default function App() {
   const theme = useConfigStore((state) => state.theme)
+  const motion = useConfigStore((state) => state.motion)
   const drawerOpen = useUiStore((state) => state.drawerOpen)
+  const location = useLocation()
+  const pageClass = location.pathname === '/' ? 'page-slide-home' : 'page-slide-sub'
 
   useEffect(() => {
     const config = useConfigStore.getState()
@@ -30,10 +36,11 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
+    document.documentElement.classList.toggle('no-motion', !motion)
     document.documentElement.classList.add('theme-flip')
     const timer = window.setTimeout(() => document.documentElement.classList.remove('theme-flip'), 320)
     return () => window.clearTimeout(timer)
-  }, [theme])
+  }, [theme, motion])
 
   useEffect(() => {
     document.documentElement.classList.toggle('drawer-open', drawerOpen)
@@ -87,13 +94,18 @@ export default function App() {
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/archive" element={<ArchivePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <div key={location.pathname} className={pageClass}>
+        <Routes location={location}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/tags" element={<TagsPage />} />
+          <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/stats" element={<StatsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
       <NavDrawer />
       <UploadModal />
       <EditModal />

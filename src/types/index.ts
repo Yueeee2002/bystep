@@ -2,6 +2,7 @@ export type CardStatus = 'pending' | 'done'
 export type StatusFilter = 'all' | 'pending' | 'done'
 export type ViewMode = 'grid' | 'list'
 export type ThemeMode = 'cream' | 'night'
+export type CalendarViewMode = 'month' | 'week'
 export type TagColor = 'mocha' | 'mint' | 'apricot' | 'haze'
 export type CategoryGroup = 'catering' | 'other'
 export type CategoryTab = 'all' | CategoryGroup
@@ -34,16 +35,38 @@ export interface IExploreCard {
 export interface ITag {
   id: string
   name: string
-  color: TagColor
+  color: string
   group: CategoryGroup
+}
+
+export interface ICustomTagColor {
+  id: string
+  label: string
+  bg: string
+  fg: string
+}
+
+export interface IArchiveFolder {
+  id: string
+  name: string
 }
 
 export interface IAppConfig {
   nickname: string
   motto: string
+  avatar: string
+  phone: string
+  passwordSet: boolean
+  homeSlogan: string
   defaultFilter: 'all' | 'pending'
   viewMode: ViewMode
   theme: ThemeMode
+  calendarView: CalendarViewMode
+  motion: boolean
+  categoryLabels: Record<CategoryGroup, string>
+  customTagColors: ICustomTagColor[]
+  archiveFolders: IArchiveFolder[]
+  cloudBackup: boolean
 }
 
 export interface IBackupPayload {
@@ -56,6 +79,14 @@ export interface IBackupPayload {
 
 export const APP_VERSION = 'V1.2'
 export const APP_NAME = '留步'
+export const DEFAULT_HOME_SLOGAN = '把种草的店，轻轻收好'
+export const SLOGAN_EXAMPLES = [
+  '收集每一次烟火与闲逛',
+  '记录城市里的温柔落脚地',
+  '慢慢逛，好好吃，认真生活',
+  '收纳日常所有小美好',
+  '奔赴下一场市井浪漫',
+]
 
 export const TAG_COLORS: Record<TagColor, { bg: string; fg: string; label: string }> = {
   mocha: { bg: '#e8d5b7', fg: '#5c4630', label: '奶咖' },

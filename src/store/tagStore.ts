@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { CategoryGroup, ITag, TagColor } from '@/types'
+import type { CategoryGroup, ITag } from '@/types'
 import { createId } from '@/utils/filterCards'
 import { moveItem, normalizeTag } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
@@ -7,7 +7,7 @@ import { load, save, STORAGE_KEYS } from '@/utils/storage'
 interface TagState {
   tags: ITag[]
   hydrate: (tags: ITag[]) => void
-  addTag: (name: string, color?: TagColor, group?: CategoryGroup) => ITag | null
+  addTag: (name: string, color?: string, group?: CategoryGroup) => ITag | null
   updateTag: (id: string, patch: Partial<Pick<ITag, 'name' | 'color' | 'group'>>) => boolean
   deleteTag: (id: string) => void
   moveTag: (from: number, to: number) => void
