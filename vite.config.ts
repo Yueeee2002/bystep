@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
+  base: process.env.GITHUB_PAGES === 'true' ? '/bystep/' : '/',
   plugins: [react()],
   resolve: {
     alias: {
