@@ -1,0 +1,99 @@
+.stickers {
+  display: flex;
+  gap: 10px;
+  min-height: 92px;
+  margin-bottom: 28px;
+}
+
+.blob {
+  border: 0;
+  border-radius: 22px;
+  min-width: 88px;
+  padding: 16px;
+  text-align: left;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.blob:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow);
+}
+
+.meal {
+  background: #e8d5b7;
+}
+
+.leaf {
+  background: #d4ead9;
+}
+
+.blob span,
+.blob em {
+  font-size: 18px;
+  font-family: var(--font-serif);
+}
+
+.month {
+  margin-bottom: 22px;
+  animation: page 0.28s ease;
+}
+
+.month h2,
+.pocket h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.month ul,
+.pocket ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.month button,
+.pocket li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--snow);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: var(--ink);
+  text-align: left;
+}
+
+.month span {
+  font-size: 12px;
+  color: var(--ash);
+}
+
+.pocket {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.pocket p {
+  color: var(--ash);
+  font-size: 13px;
+}
+
+@keyframes page {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

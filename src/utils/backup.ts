@@ -50,6 +50,7 @@ export function parseBackupPayload(raw: string): IBackupPayload {
         id: tag.id || `tag_${index}`,
         name: tag.name || `标签${index + 1}`,
         color: tag.color,
+        group: tag.group,
       }),
     ),
     config: {

@@ -1,0 +1,114 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(22, 22, 22, 0.28);
+  animation: fade 0.22s ease;
+}
+
+.panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(280px, 84vw);
+  background: var(--cream);
+  padding: 28px 18px 24px;
+  box-shadow: var(--shadow);
+  animation: slide 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.panel p {
+  font-family: var(--font-serif);
+  color: var(--ink);
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ash);
+  padding: 12px 10px;
+  border-radius: 14px;
+  font-size: 15px;
+  text-align: left;
+}
+
+.link span {
+  width: 22px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.link:hover {
+  background: var(--gold-soft);
+}
+
+.on {
+  color: var(--ink);
+  background: var(--gold-soft);
+}
+
+.on span {
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+.link em {
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: hop 1.1s ease-in-out infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(-18px);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}

@@ -65,6 +65,30 @@
   opacity: 0.72;
 }
 
+.pocket {
+  position: fixed;
+  right: 16px;
+  top: 28%;
+  z-index: 30;
+  width: 92px;
+  min-height: 120px;
+  border: 1.5px dashed var(--gold);
+  border-radius: 18px 8px 18px 8px;
+  background: rgba(255, 248, 238, 0.92);
+  color: var(--ink);
+  font-size: 13px;
+  padding: 12px 8px;
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.pocket span {
+  font-size: 11px;
+  color: var(--ash);
+}
+
 .greet {
   font-family: var(--font-serif);
   color: var(--ink);

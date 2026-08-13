@@ -162,10 +162,56 @@ html[data-theme='night'] .locked {
   overflow: hidden;
 }
 
-.emptyCopy {
-  margin: 0;
-  font-size: 13px;
+.listHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.listHead .sectionLabel {
+  margin-bottom: 0;
+}
+
+.foldAll {
+  border: 0;
+  background: transparent;
+  color: var(--gold-deep);
+  font-size: 12px;
+}
+
+.dropOn {
+  outline: 1.5px dashed var(--gold);
+  outline-offset: 4px;
+  border-radius: 14px;
+}
+
+.previewChip {
+  display: inline-flex;
+  margin-top: 8px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: #f4eee4;
   color: var(--ash);
+  font-size: 11px;
+  animation: rise 0.22s ease;
+}
+
+.bubble button {
+  border: 0;
+  background: transparent;
+  color: var(--gold-deep);
+  font-size: 11px;
 }
 
 .item b {

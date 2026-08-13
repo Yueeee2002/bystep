@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styles from './Stars.module.css'
 
 interface StarsProps {
@@ -7,17 +8,29 @@ interface StarsProps {
 }
 
 export default function Stars({ value, onChange, small }: StarsProps) {
+  const [hover, setHover] = useState(0)
+  const [pop, setPop] = useState(false)
+  const shown = hover || value
+
   return (
-    <div className={`${styles.row} ${small ? styles.small : ''}`} role="img" aria-label={`期待值 ${value} 星`}>
+    <div
+      className={`${styles.row} ${small ? styles.small : ''}`}
+      role="img"
+      aria-label={`期待值 ${value} 星`}
+      onMouseLeave={() => setHover(0)}
+    >
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
-          className={`${styles.star} ${star <= value ? styles.on : ''}`}
+          className={`${styles.star} ${star <= shown ? styles.on : ''} ${hover && star <= hover ? styles.lift : ''} ${pop && star <= value ? styles.bounce : ''}`}
           aria-label={`${star} 星`}
+          onMouseEnter={() => setHover(star)}
           onClick={(event) => {
             event.stopPropagation()
             onChange?.(star === value ? 0 : star)
+            setPop(true)
+            window.setTimeout(() => setPop(false), 280)
           }}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">

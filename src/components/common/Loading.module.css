@@ -8,32 +8,62 @@
   backdrop-filter: blur(2px);
 }
 
-.paws {
-  display: flex;
-  gap: 10px;
-  font-size: 22px;
+.book {
+  position: relative;
+  width: 42px;
+  height: 32px;
 }
 
-.paws span {
-  animation: paw 0.9s ease-in-out infinite;
+.book span {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px 8px 8px 3px;
+  background: var(--snow);
+  border: 1px solid var(--line);
+  transform-origin: left center;
 }
 
-.paws span:nth-child(2) {
-  animation-delay: 0.12s;
+.book span:first-child {
+  background: #e8d5b7;
 }
 
-.paws span:nth-child(3) {
-  animation-delay: 0.24s;
+.book span:last-child {
+  animation: flip 0.9s ease-in-out infinite;
+  background: var(--gold-soft);
 }
 
-@keyframes paw {
+.dots {
+  margin-top: 10px;
+  font-family: var(--font-serif);
+  color: var(--ink);
+  letter-spacing: 0.12em;
+}
+
+.dots span {
+  opacity: 0.2;
+  animation: dot 0.9s ease-in-out infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes flip {
   0%,
   100% {
-    transform: translateY(0);
-    opacity: 0.35;
+    transform: rotateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: rotateY(-42deg);
+  }
+}
+
+@keyframes dot {
+  50% {
     opacity: 1;
   }
 }

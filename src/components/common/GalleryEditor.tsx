@@ -27,6 +27,7 @@ export default function GalleryEditor({
   const fileRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
   const [dragFrom, setDragFrom] = useState<number | null>(null)
+  const [pasted, setPasted] = useState(false)
 
   const current = images[activeIndex] ?? images[0]
 
@@ -35,6 +36,8 @@ export default function GalleryEditor({
     try {
       const added = await uploadImages(Array.from(fileList))
       const nextImages = [...images, ...added]
+      setPasted(true)
+      window.setTimeout(() => setPasted(false), 1200)
       onChange({
         images: nextImages,
         coverIndex: images.length === 0 ? 0 : coverIndex,
@@ -126,6 +129,7 @@ export default function GalleryEditor({
               </>
             ) : null}
             <span className={styles.hint}>点击放大</span>
+            {pasted ? <span className={styles.pasted}>已粘贴</span> : null}
           </>
         ) : (
           <div className={styles.empty}>把照片拖到这里</div>

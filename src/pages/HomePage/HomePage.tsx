@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import type { DragEvent } from 'react'
 import SearchBar from '@/components/Filter/SearchBar'
 import StatusFilterBar from '@/components/Filter/StatusFilter'
 import TagFilter from '@/components/Filter/TagFilter'
@@ -7,6 +7,8 @@ import CategoryTabs from '@/components/Filter/CategoryTabs'
 import CardGrid from '@/components/Card/CardGrid'
 import Button from '@/components/common/Button'
 import BatchBar from '@/components/common/BatchBar'
+import AppHeader from '@/components/layout/AppHeader'
+import EmptyNote from '@/components/common/EmptyNote'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
@@ -16,28 +18,6 @@ import { collectDashboard, countWeeklyPlans } from '@/utils/models'
 import { composeGreeting, GREETINGS, pickRandom } from '@/utils/copy'
 import type { ViewMode } from '@/types'
 import styles from './HomePage.module.css'
-
-function Logo() {
-  return (
-    <svg className={styles.logoMark} viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#cca251" />
-      <path
-        d="M9.2 20.4c1.6-1.1 2.1-2.8 1.2-4.1-.9-1.3-2.8-1.6-4.1-.5-1.3 1-1.5 2.9-.5 4.1.9 1.2 2.4 1.3 3.4.5Z"
-        fill="#161616"
-      />
-      <ellipse cx="8.6" cy="13.2" rx="1.7" ry="2.4" transform="rotate(-18 8.6 13.2)" fill="#161616" />
-      <ellipse cx="12.1" cy="12.1" rx="1.35" ry="1.9" transform="rotate(-8 12.1 12.1)" fill="#161616" />
-      <ellipse cx="14.8" cy="13.4" rx="1.1" ry="1.55" transform="rotate(8 14.8 13.4)" fill="#161616" />
-      <path
-        d="M22.8 11.6c-1.6 1.1-2.1 2.8-1.2 4.1.9 1.3 2.8 1.6 4.1.5 1.3-1 1.5-2.9.5-4.1-.9-1.2-2.4-1.3-3.4-.5Z"
-        fill="#161616"
-      />
-      <ellipse cx="23.4" cy="18.8" rx="1.7" ry="2.4" transform="rotate(162 23.4 18.8)" fill="#161616" />
-      <ellipse cx="19.9" cy="19.9" rx="1.35" ry="1.9" transform="rotate(172 19.9 19.9)" fill="#161616" />
-      <ellipse cx="17.2" cy="18.6" rx="1.1" ry="1.55" transform="rotate(-172 17.2 18.6)" fill="#161616" />
-    </svg>
-  )
-}
 
 export default function HomePage() {
   const cards = useCardStore((state) => state.cards)
@@ -61,11 +41,11 @@ export default function HomePage() {
   const setRating = useCardStore((state) => state.setRating)
   const batchUpdate = useCardStore((state) => state.batchUpdate)
   const batchAddTag = useCardStore((state) => state.batchAddTag)
+  const moveCard = useCardStore((state) => state.moveCard)
+  const archiveCards = useCardStore((state) => state.archiveCards)
   const tags = useTagStore((state) => state.tags)
   const nickname = useConfigStore((state) => state.nickname)
-  const theme = useConfigStore((state) => state.theme)
   const persistViewMode = useConfigStore((state) => state.setViewMode)
-  const toggleTheme = useConfigStore((state) => state.toggleTheme)
   const openUpload = useUiStore((state) => state.openUpload)
   const openEdit = useUiStore((state) => state.openEdit)
   const openTags = useUiStore((state) => state.openTags)
@@ -73,6 +53,7 @@ export default function HomePage() {
   const showToast = useUiStore((state) => state.showToast)
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [compact, setCompact] = useState(false)
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
   const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
@@ -93,9 +74,16 @@ export default function HomePage() {
   )
 
   const stats = useMemo(() => collectDashboard(filtered, categoryTab), [filtered, categoryTab])
-  const tabEmpty = cards.filter((card) => categoryTab === 'all' || card.categoryGroup === categoryTab).length === 0
-  const isEmptyAll = cards.length === 0
+  const tabEmpty = cards.filter((card) => !card.archived && (categoryTab === 'all' || card.categoryGroup === categoryTab)).length === 0
+  const isEmptyAll = cards.filter((card) => !card.archived).length === 0
   const isEmptyFilter = !isEmptyAll && !tabEmpty && filtered.length === 0
+
+  useEffect(() => {
+    const onScroll = () => setCompact(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const changeView = (mode: ViewMode) => {
     setViewMode(mode)
@@ -115,34 +103,18 @@ export default function HomePage() {
     })
   }
 
+  const pocket = (event: DragEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    const ids = selectedIds.length > 0 ? selectedIds : [event.dataTransfer.getData('text/plain')].filter(Boolean)
+    if (ids.length === 0) return
+    archiveCards(ids, true)
+    setSelectedIds([])
+    showToast('已收纳入册', 'success')
+  }
+
   return (
     <div className="app-shell page-enter">
-      <header className={styles.header}>
-        <div className={styles.brand}>
-          <Logo />
-          <div>
-            <h1>留步</h1>
-            <p>把种草的店，轻轻收好</p>
-          </div>
-        </div>
-        <div className={styles.headerActions}>
-          <Link to="/settings" className="icon-btn" aria-label="个人中心">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="8.2" r="3.05" stroke="currentColor" strokeWidth="1.35" />
-              <path
-                d="M5.4 18.6c.7-3.1 3.3-4.9 6.6-4.9s5.9 1.8 6.6 4.9"
-                stroke="currentColor"
-                strokeWidth="1.35"
-                strokeLinecap="round"
-              />
-            </svg>
-          </Link>
-          <button type="button" className="icon-btn" aria-label="切换主题" onClick={toggleTheme}>
-            {theme === 'night' ? '☾' : '☀'}
-          </button>
-        </div>
-      </header>
-
+      <AppHeader compact={compact} badge={weekly > 0} />
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 
@@ -178,7 +150,7 @@ export default function HomePage() {
 
       <div className={styles.toolbar}>
         <div className={styles.actions}>
-          <Button onClick={openUpload}>上传图片</Button>
+          <Button onClick={() => openUpload()}>上传图片</Button>
           <Button variant="ghost" onClick={openTags}>
             标签管理
           </Button>
@@ -214,27 +186,11 @@ export default function HomePage() {
       </div>
 
       {isEmptyAll ? (
-        <section className={styles.empty}>
-          <div className={styles.emptyArt} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <h2>行囊尚空</h2>
-          <p>把偶遇的小店，一一收纳进来吧</p>
-          <Button onClick={openUpload}>开始收纳</Button>
-        </section>
+        <EmptyNote title="行囊尚空" text="把偶遇的小店，一一收纳进来吧" action={{ label: '开始收纳', onClick: () => openUpload() }} />
       ) : tabEmpty ? (
-        <section className={styles.empty}>
-          <h2>这一格还空着</h2>
-          <p>换个品类看看，或把新的遇见轻轻收进来。</p>
-          <Button onClick={openUpload}>开始收纳</Button>
-        </section>
+        <EmptyNote title="这一格还空着" text="换个品类看看，或把新的遇见轻轻收进来。" action={{ label: '开始收纳', onClick: () => openUpload() }} />
       ) : isEmptyFilter ? (
-        <section className={styles.empty}>
-          <h2>没有符合条件的点位</h2>
-          <p>换个关键词，或把筛选放宽一些，也许它还在。</p>
-        </section>
+        <EmptyNote title="没有符合条件的点位" text="换个关键词，或把筛选放宽一些，也许它还在。" />
       ) : (
         <CardGrid
           cards={filtered}
@@ -249,6 +205,7 @@ export default function HomePage() {
             showToast('置顶已更新', 'success')
           }}
           onRate={setRating}
+          onMove={moveCard}
           onLongPress={(id) => setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]))}
           onToggleSelect={(id) =>
             setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
@@ -257,21 +214,37 @@ export default function HomePage() {
       )}
 
       {selectMode ? (
-        <BatchBar
-          count={selectedIds.length}
-          tags={visibleTags}
-          onAddTag={(tagId) => {
-            batchAddTag(selectedIds, tagId)
-            showToast('已批量添加标签', 'success')
-          }}
-          onStatus={(status) => {
-            batchUpdate(selectedIds, { status })
-            if (status === 'done') triggerCelebrate()
-            showToast('已批量更新状态', 'success')
-            setSelectedIds([])
-          }}
-          onCancel={() => setSelectedIds([])}
-        />
+        <>
+          <button
+            type="button"
+            className={styles.pocket}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={pocket}
+            onClick={() => {
+              archiveCards(selectedIds, true)
+              setSelectedIds([])
+              showToast('已收纳入册', 'success')
+            }}
+          >
+            收纳袋
+            <span>把选中的卡片轻轻放进来</span>
+          </button>
+          <BatchBar
+            count={selectedIds.length}
+            tags={visibleTags}
+            onAddTag={(tagId) => {
+              batchAddTag(selectedIds, tagId)
+              showToast('已批量添加标签', 'success')
+            }}
+            onStatus={(status) => {
+              batchUpdate(selectedIds, { status })
+              if (status === 'done') triggerCelebrate()
+              showToast('已批量更新状态', 'success')
+              setSelectedIds([])
+            }}
+            onCancel={() => setSelectedIds([])}
+          />
+        </>
       ) : null}
 
       <p className={styles.dash}>

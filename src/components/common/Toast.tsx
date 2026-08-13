@@ -8,7 +8,7 @@ export default function Toast() {
 
   useEffect(() => {
     if (!toast) return
-    const timer = window.setTimeout(clearToast, 2400)
+    const timer = window.setTimeout(clearToast, 3000)
     return () => window.clearTimeout(timer)
   }, [toast, clearToast])
 

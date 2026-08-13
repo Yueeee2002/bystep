@@ -1,5 +1,6 @@
 import type { IExploreCard, ITag, ViewMode } from '@/types'
 import CardItem from '@/components/Card/CardItem'
+import { useUiStore } from '@/store/uiStore'
 import styles from './CardGrid.module.css'
 
 interface CardGridProps {
@@ -14,6 +15,7 @@ interface CardGridProps {
   onRate: (id: string, rating: number) => void
   onLongPress: (id: string) => void
   onToggleSelect: (id: string) => void
+  onMove?: (fromId: string, toId: string) => void
 }
 
 export default function CardGrid({
@@ -28,10 +30,13 @@ export default function CardGrid({
   onRate,
   onLongPress,
   onToggleSelect,
+  onMove,
 }: CardGridProps) {
+  const highlightCardId = useUiStore((state) => state.highlightCardId)
+
   return (
     <div className={viewMode === 'grid' ? styles.grid : styles.list}>
-      {cards.map((card) => (
+      {cards.map((card, index) => (
         <CardItem
           key={card.id}
           card={card}
@@ -39,12 +44,15 @@ export default function CardGrid({
           viewMode={viewMode}
           selected={selectedIds.includes(card.id)}
           selectMode={selectMode}
+          highlight={highlightCardId === card.id}
+          index={index}
           onOpen={onOpen}
           onDelete={onDelete}
           onPin={onPin}
           onRate={onRate}
           onLongPress={onLongPress}
           onToggleSelect={onToggleSelect}
+          onMove={onMove}
         />
       ))}
     </div>

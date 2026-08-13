@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { saveRecord } from '../controller/recordController'
+import { listCalendar, saveRecord } from '../controller/recordController'
 
 const router = Router()
 
 router.post('/api/records', saveRecord)
+router.get('/api/calendar', listCalendar)
 
 export default router

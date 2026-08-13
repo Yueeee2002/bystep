@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS records (
   category_group ENUM('catering','other') NOT NULL COMMENT '大类：catering=食肆小店 other=野趣小仓',
   star TINYINT COMMENT '星级1-5',
   is_check_in TINYINT DEFAULT 0 COMMENT '是否已打卡 0否1是',
+  visit_date DATE COMMENT '打卡日期',
   address TEXT COMMENT '地址',
   note TEXT COMMENT '种草备注',
   create_time DATETIME DEFAULT CURRENT_TIMESTAMP

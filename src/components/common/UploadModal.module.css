@@ -74,6 +74,7 @@
 
 .dragging {
   background: rgba(204, 162, 81, 0.28);
+  transform: rotate(-1.4deg) scale(0.98);
 }
 
 .preview {

@@ -25,7 +25,6 @@ const emptyForm = (name = '', color: TagColor = 'mocha'): TagForm => ({
 export default function TagModal() {
   const open = useUiStore((state) => state.tagsOpen)
   const closeTags = useUiStore((state) => state.closeTags)
-  const openConfirm = useUiStore((state) => state.openConfirm)
   const showToast = useUiStore((state) => state.showToast)
   const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
@@ -40,6 +39,8 @@ export default function TagModal() {
     other: true,
   })
   const [dragFrom, setDragFrom] = useState<number | null>(null)
+  const [dropGroup, setDropGroup] = useState<CategoryGroup | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
 
   const closeForm = () => {
     setForm(null)
@@ -89,23 +90,29 @@ export default function TagModal() {
     closeForm()
   }
 
-  const handleDelete = (id: string, tagName: string) => {
-    openConfirm({
-      title: `删除标签「${tagName}」？`,
-      message: '删除后，所有卡片上的这个标签都会被解除。',
-      confirmText: '删除标签',
-      danger: true,
-      onConfirm: () => {
-        deleteTag(id)
-        showToast('标签已删除', 'info')
-      },
-    })
-  }
-
   const onDrop = (to: number) => {
     if (dragFrom === null) return
     moveTag(dragFrom, to)
     setDragFrom(null)
+  }
+
+  const dropToGroup = (group: CategoryGroup) => {
+    if (dragFrom === null) return
+    const tag = tags[dragFrom]
+    if (tag && tag.group !== group) {
+      updateTag(tag.id, { group })
+      setFlashId(tag.id)
+      window.setTimeout(() => setFlashId(null), 600)
+      showToast('已归入新的大类', 'success')
+    }
+    setDragFrom(null)
+    setDropGroup(null)
+  }
+
+  const confirmDelete = (id: string) => {
+    deleteTag(id)
+    setPendingDelete(null)
+    showToast('标签已删除', 'info')
   }
 
   const groups: CategoryGroup[] = ['catering', 'other']
@@ -138,6 +145,11 @@ export default function TagModal() {
             新增
           </Button>
         </div>
+        {name.trim() ? (
+          <span className={styles.previewChip} style={{ background: TAG_COLORS[presetColor].bg, color: TAG_COLORS[presetColor].fg }}>
+            {name.trim()}
+          </span>
+        ) : null}
 
         <section className={styles.section}>
           <p className={styles.sectionLabel}>所属顶级大类</p>
@@ -170,13 +182,34 @@ export default function TagModal() {
         </section>
 
         <section className={styles.section}>
-          <p className={styles.sectionLabel}>已创建标签列表</p>
+          <div className={styles.listHead}>
+            <p className={styles.sectionLabel}>已创建标签列表</p>
+            <button
+              type="button"
+              className={styles.foldAll}
+              onClick={() => setOpenGroups({ catering: false, other: false })}
+            >
+              全部收拢
+            </button>
+          </div>
           {tags.length === 0 ? <p className={styles.emptyCopy}>还没有标签。想怎么分类，就轻轻写下。</p> : null}
           {groups.map((group) => {
             const items = tags.filter((tag) => tag.group === group)
             const expanded = openGroups[group]
             return (
-              <div key={group} className={`${styles.fold} ${expanded ? '' : styles.foldShut}`}>
+              <div
+                key={group}
+                className={`${styles.fold} ${expanded ? '' : styles.foldShut} ${dropGroup === group ? styles.dropOn : ''}`}
+                onDragOver={(event) => {
+                  event.preventDefault()
+                  setDropGroup(group)
+                }}
+                onDragLeave={() => setDropGroup((prev) => (prev === group ? null : prev))}
+                onDrop={(event) => {
+                  event.preventDefault()
+                  dropToGroup(group)
+                }}
+              >
                 <button
                   type="button"
                   className={`${styles.foldHead} ${expanded ? '' : styles.foldHeadShut}`}
@@ -200,7 +233,10 @@ export default function TagModal() {
                           draggable
                           onDragStart={() => setDragFrom(index)}
                           onDragOver={(event: DragEvent<HTMLLIElement>) => event.preventDefault()}
-                          onDrop={() => onDrop(index)}
+                          onDrop={(event) => {
+                            event.stopPropagation()
+                            onDrop(index)
+                          }}
                           onDragEnd={() => setDragFrom(null)}
                           className={`${dragFrom === index ? styles.dragging : ''} ${
                             flashId === tag.id ? styles.flash : ''
@@ -219,10 +255,21 @@ export default function TagModal() {
                             <Button
                               variant="danger-ghost"
                               className={styles.deleteBtn}
-                              onClick={() => handleDelete(tag.id, tag.name)}
+                              onClick={() => setPendingDelete(pendingDelete === tag.id ? null : tag.id)}
                             >
                               删除
                             </Button>
+                            {pendingDelete === tag.id ? (
+                              <span className={styles.bubble}>
+                                撕掉这枚标签？
+                                <button type="button" onClick={() => confirmDelete(tag.id)}>
+                                  确认
+                                </button>
+                                <button type="button" onClick={() => setPendingDelete(null)}>
+                                  取消
+                                </button>
+                              </span>
+                            ) : null}
                           </div>
                         </li>
                       )

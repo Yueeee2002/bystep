@@ -11,12 +11,15 @@ interface CardItemProps {
   viewMode: ViewMode
   selected?: boolean
   selectMode?: boolean
+  highlight?: boolean
+  index?: number
   onOpen: (id: string) => void
   onDelete: (id: string) => void
   onPin: (id: string) => void
   onRate: (id: string, rating: number) => void
   onLongPress: (id: string) => void
   onToggleSelect: (id: string) => void
+  onMove?: (fromId: string, toId: string) => void
 }
 
 export default function CardItem({
@@ -25,12 +28,15 @@ export default function CardItem({
   viewMode,
   selected,
   selectMode,
+  highlight,
+  index = 0,
   onOpen,
   onDelete,
   onPin,
   onRate,
   onLongPress,
   onToggleSelect,
+  onMove,
 }: CardItemProps) {
   const cover = getCoverSrc(card)
   const timer = useRef<number | 0>(0)
@@ -50,7 +56,21 @@ export default function CardItem({
 
   return (
     <article
-      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''}`}
+      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''} ${highlight ? styles.flash : ''}`}
+      style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
+      draggable={!selectMode}
+      onDragStart={(event) => {
+        event.dataTransfer.setData('text/plain', card.id)
+      }}
+      onDragOver={(event) => {
+        if (!onMove) return
+        event.preventDefault()
+      }}
+      onDrop={(event) => {
+        event.preventDefault()
+        const fromId = event.dataTransfer.getData('text/plain')
+        if (fromId && onMove) onMove(fromId, card.id)
+      }}
       onClick={() => (selectMode ? onToggleSelect(card.id) : onOpen(card.id))}
       onPointerDown={startPress}
       onPointerUp={cancelPress}

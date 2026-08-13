@@ -24,6 +24,8 @@ export default function UploadModal() {
   const addCardsFromImages = useCardStore((state) => state.addCardsFromImages)
   const categoryTab = useCardStore((state) => state.categoryTab)
   const setBusy = useUiStore((state) => state.setBusy)
+  const uploadPrefill = useUiStore((state) => state.uploadPrefill)
+  const flashCard = useUiStore((state) => state.flashCard)
   const allTags = useTagStore((state) => state.tags)
   const [previews, setPreviews] = useState<string[]>([])
   const [dragging, setDragging] = useState(false)
@@ -82,9 +84,15 @@ export default function UploadModal() {
   const confirm = () => {
     if (previews.length === 0) return
     try {
-      addCardsFromImages(previews, { categoryGroup: group, tags: selectedTags })
+      const created = addCardsFromImages(previews, {
+        categoryGroup: group,
+        tags: selectedTags,
+        visitDate: uploadPrefill.visitDate,
+        status: uploadPrefill.status,
+      })
       setSaved(true)
-      showToast(`已收纳 ${previews.length} 个点位`, 'success')
+      if (created[0]) flashCard(created[0].id)
+      showToast('手账记录已妥善保存✨', 'success')
       window.setTimeout(() => handleClose(), 420)
     } catch (error) {
       if (error instanceof TagCategoryMismatchError) {

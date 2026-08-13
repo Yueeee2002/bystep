@@ -25,6 +25,7 @@ interface Draft {
   coverIndex: number
   rating: number
   plannedAt: string
+  visitDate: string
   categoryGroup: CategoryGroup
 }
 
@@ -39,6 +40,7 @@ const emptyDraft: Draft = {
   coverIndex: 0,
   rating: 0,
   plannedAt: '',
+  visitDate: '',
   categoryGroup: 'catering',
 }
 
@@ -49,6 +51,7 @@ export default function EditModal() {
   const openConfirm = useUiStore((state) => state.openConfirm)
   const openTags = useUiStore((state) => state.openTags)
   const showToast = useUiStore((state) => state.showToast)
+  const flashCard = useUiStore((state) => state.flashCard)
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const cards = useCardStore((state) => state.cards)
   const updateCard = useCardStore((state) => state.updateCard)
@@ -72,6 +75,7 @@ export default function EditModal() {
       coverIndex: card.coverIndex,
       rating: card.rating,
       plannedAt: card.plannedAt,
+      visitDate: card.visitDate,
       categoryGroup: card.categoryGroup,
     })
     setImageIndex(card.coverIndex)
@@ -95,7 +99,8 @@ export default function EditModal() {
       return
     }
     setSaved(true)
-    showToast('已保存', 'success')
+    flashCard(card.id)
+    showToast('手账记录已妥善保存✨', 'success')
     if (becameDone) triggerCelebrate()
     window.setTimeout(() => closeEdit(), 420)
   }
@@ -178,6 +183,14 @@ export default function EditModal() {
               type="date"
               value={draft.plannedAt}
               onChange={(event) => setDraft((prev) => ({ ...prev, plannedAt: event.target.value }))}
+            />
+          </label>
+          <label className="field">
+            <span>打卡日期</span>
+            <input
+              type="date"
+              value={draft.visitDate}
+              onChange={(event) => setDraft((prev) => ({ ...prev, visitDate: event.target.value }))}
             />
           </label>
           <label className="field">

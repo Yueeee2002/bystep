@@ -5,7 +5,7 @@ export type ThemeMode = 'cream' | 'night'
 export type TagColor = 'mocha' | 'mint' | 'apricot' | 'haze'
 export type CategoryGroup = 'catering' | 'other'
 export type CategoryTab = 'all' | CategoryGroup
-export type SortMode = 'newest' | 'oldest' | 'starDesc' | 'starAsc' | 'checkedFirst'
+export type SortMode = 'newest' | 'oldest' | 'starDesc' | 'starAsc' | 'checkedFirst' | 'manual'
 
 export interface IExploreCard {
   id: string
@@ -22,6 +22,9 @@ export interface IExploreCard {
   rating: number
   pinned: boolean
   plannedAt: string
+  visitDate: string
+  archived: boolean
+  sortIndex: number
   categoryGroup: CategoryGroup
   likeCount: number
   createdAt: number
@@ -51,7 +54,7 @@ export interface IBackupPayload {
   config: IAppConfig
 }
 
-export const APP_VERSION = 'V1.1'
+export const APP_VERSION = 'V1.2'
 export const APP_NAME = '留步'
 
 export const TAG_COLORS: Record<TagColor, { bg: string; fg: string; label: string }> = {
@@ -87,4 +90,5 @@ export const SORT_OPTIONS: { value: SortMode; label: string }[] = [
   { value: 'starDesc', label: '星级由高至低' },
   { value: 'starAsc', label: '星级由低至高' },
   { value: 'checkedFirst', label: '已打卡内容优先展示' },
+  { value: 'manual', label: '手账贴序' },
 ]

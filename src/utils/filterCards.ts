@@ -39,6 +39,8 @@ export function compareCards(a: IExploreCard, b: IExploreCard, sortMode: SortMod
       const bv = b.status === 'done' ? 0 : 1
       return av - bv || b.createdAt - a.createdAt
     }
+    case 'manual':
+      return (a.sortIndex ?? a.createdAt) - (b.sortIndex ?? b.createdAt) || b.createdAt - a.createdAt
     default:
       return b.createdAt - a.createdAt
   }
@@ -68,6 +70,7 @@ export function filterCards(
 
   return cards
     .filter((card) => {
+      if (card.archived) return false
       if (categoryTab !== 'all' && card.categoryGroup !== categoryTab) return false
       if (status !== 'all' && card.status !== status) return false
       if (minRating > 0 && card.rating < minRating) return false

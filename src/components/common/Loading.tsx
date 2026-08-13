@@ -7,11 +7,15 @@ export default function Loading() {
 
   return (
     <div className={styles.layer} role="status" aria-label="加载中">
-      <div className={styles.paws}>
-        <span>🐾</span>
-        <span>🐾</span>
-        <span>🐾</span>
+      <div className={styles.book} aria-hidden="true">
+        <span />
+        <span />
       </div>
+      <p className={styles.dots}>
+        记下<span>.</span>
+        <span>.</span>
+        <span>.</span>
+      </p>
     </div>
   )
 }

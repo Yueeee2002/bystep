@@ -20,6 +20,7 @@ npm run dev
 - 新建标签：`POST /api/tags`（`tag_name`、`category_group` 必填）
 - 修改标签归属：`PATCH /api/tags/:id`
 - 保存点位：`POST /api/records`（校验所有 `tag_ids` 必须与点位 `category_group` 一致，否则 400）
+- 打卡日历：`GET /api/calendar?year=2026&month=8`，可选 `category_group`
 
 ## 数据库（可选）
 

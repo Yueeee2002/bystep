@@ -2,10 +2,11 @@ import { create } from 'zustand'
 import type { CategoryGroup, CategoryTab, IExploreCard, SortMode, StatusFilter, ViewMode } from '@/types'
 import { filterCards } from '@/utils/filterCards'
 import { createId } from '@/utils/filterCards'
-import { normalizeCard } from '@/utils/models'
+import { moveItem, normalizeCard } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 import { useTagStore } from '@/store/tagStore'
 import { assertTagsMatchGroup } from '@/utils/tagRules'
+import { toIsoDate } from '@/utils/dates'
 
 interface CardState {
   cards: IExploreCard[]
@@ -20,13 +21,15 @@ interface CardState {
   persist: () => void
   addCardsFromImages: (
     images: string[],
-    options?: { categoryGroup?: CategoryGroup; tags?: string[] },
+    options?: { categoryGroup?: CategoryGroup; tags?: string[]; visitDate?: string; status?: IExploreCard['status'] },
   ) => IExploreCard[]
   updateCard: (id: string, patch: Partial<Omit<IExploreCard, 'id' | 'createdAt'>>) => void
   deleteCard: (id: string) => void
   toggleStatus: (id: string) => void
   togglePin: (id: string) => void
   setRating: (id: string, rating: number) => void
+  moveCard: (fromId: string, toId: string) => void
+  archiveCards: (ids: string[], archived?: boolean) => void
   batchUpdate: (ids: string[], patch: Partial<Pick<IExploreCard, 'status' | 'tags'>>) => void
   batchAddTag: (ids: string[], tagId: string) => void
   removeTagFromAll: (tagId: string) => void
@@ -50,7 +53,7 @@ function persistCards(cards: IExploreCard[]) {
 function emptyCard(
   image: string,
   createdAt: number,
-  options?: { categoryGroup?: CategoryGroup; tags?: string[] },
+  options?: { categoryGroup?: CategoryGroup; tags?: string[]; visitDate?: string; status?: IExploreCard['status'] },
 ): IExploreCard {
   return {
     id: createId(),
@@ -59,12 +62,15 @@ function emptyCard(
     coverIndex: 0,
     address: '',
     tags: options?.tags ?? [],
-    status: 'pending',
+    status: options?.status ?? 'pending',
     notes: '',
     review: '',
     rating: 0,
     pinned: false,
     plannedAt: '',
+    visitDate: options?.visitDate ?? '',
+    archived: false,
+    sortIndex: createdAt,
     categoryGroup: options?.categoryGroup ?? 'catering',
     likeCount: 0,
     createdAt,
@@ -92,7 +98,12 @@ export const useCardStore = create<CardState>((set, get) => ({
     assertTagsMatchGroup(options?.tags ?? [], tags, categoryGroup)
     const now = Date.now()
     const created = images.map((image, index) =>
-      emptyCard(image, now + index, { categoryGroup, tags: options?.tags ?? [] }),
+      emptyCard(image, now + index, {
+        categoryGroup,
+        tags: options?.tags ?? [],
+        visitDate: options?.visitDate,
+        status: options?.status,
+      }),
     )
     set((state) => {
       const cards = [...created, ...state.cards]
@@ -108,9 +119,18 @@ export const useCardStore = create<CardState>((set, get) => ({
     const nextGroup = patch.categoryGroup ?? current.categoryGroup
     const nextTags = patch.tags ?? current.tags
     assertTagsMatchGroup(nextTags, useTagStore.getState().tags, nextGroup)
+    const nextStatus = patch.status ?? current.status
+    const nextVisit =
+      patch.visitDate !== undefined
+        ? patch.visitDate
+        : nextStatus === 'done' && !current.visitDate
+          ? toIsoDate()
+          : current.visitDate
     set((state) => {
       const cards = state.cards.map((card) =>
-        card.id === id ? normalizeCard({ ...card, ...patch, tags: nextTags, updatedAt: Date.now() }) : card,
+        card.id === id
+          ? normalizeCard({ ...card, ...patch, tags: nextTags, visitDate: nextVisit, updatedAt: Date.now() })
+          : card,
       )
       persistCards(cards)
       return { cards }
@@ -128,7 +148,11 @@ export const useCardStore = create<CardState>((set, get) => ({
   toggleStatus: (id) => {
     const card = get().cards.find((item) => item.id === id)
     if (!card) return
-    get().updateCard(id, { status: card.status === 'done' ? 'pending' : 'done' })
+    const status = card.status === 'done' ? 'pending' : 'done'
+    get().updateCard(id, {
+      status,
+      visitDate: status === 'done' && !card.visitDate ? toIsoDate() : card.visitDate,
+    })
   },
 
   togglePin: (id) => {
@@ -141,12 +165,41 @@ export const useCardStore = create<CardState>((set, get) => ({
     get().updateCard(id, { rating })
   },
 
-  batchUpdate: (ids, patch) => {
+  moveCard: (fromId, toId) => {
+    if (fromId === toId) return
+    set((state) => {
+      const from = state.cards.findIndex((card) => card.id === fromId)
+      const to = state.cards.findIndex((card) => card.id === toId)
+      if (from < 0 || to < 0) return state
+      const reordered = moveItem(state.cards, from, to).map((card, index) =>
+        normalizeCard({ ...card, sortIndex: index, updatedAt: Date.now() }),
+      )
+      persistCards(reordered)
+      return { cards: reordered, sortMode: 'manual' as const }
+    })
+  },
+
+  archiveCards: (ids, archived = true) => {
     const idSet = new Set(ids)
     set((state) => {
       const cards = state.cards.map((card) =>
-        idSet.has(card.id) ? normalizeCard({ ...card, ...patch, updatedAt: Date.now() }) : card,
+        idSet.has(card.id) ? normalizeCard({ ...card, archived, updatedAt: Date.now() }) : card,
       )
+      persistCards(cards)
+      return { cards }
+    })
+  },
+
+  batchUpdate: (ids, patch) => {
+    const idSet = new Set(ids)
+    set((state) => {
+      const cards = state.cards.map((card) => {
+        if (!idSet.has(card.id)) return card
+        const nextStatus = patch.status ?? card.status
+        const visitDate =
+          nextStatus === 'done' && !card.visitDate && patch.status === 'done' ? toIsoDate() : card.visitDate
+        return normalizeCard({ ...card, ...patch, visitDate, updatedAt: Date.now() })
+      })
       persistCards(cards)
       return { cards }
     })

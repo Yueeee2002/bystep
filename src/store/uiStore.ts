@@ -16,19 +16,26 @@ interface UiState {
   tagsOpen: boolean
   confirmOpen: boolean
   lightboxOpen: boolean
+  drawerOpen: boolean
   editingCardId: string | null
+  highlightCardId: string | null
+  uploadPrefill: { visitDate?: string; status?: IExploreCard['status'] }
   lightboxImages: string[]
   lightboxIndex: number
   confirm: ConfirmOptions | null
   toast: { message: string; type: 'success' | 'error' | 'info' } | null
+  keyHint: string | null
   busy: boolean
   celebrate: 'confetti' | 'clover' | null
-  openUpload: () => void
+  openUpload: (prefill?: { visitDate?: string; status?: IExploreCard['status'] }) => void
   closeUpload: () => void
   openEdit: (cardId: string) => void
   closeEdit: () => void
   openTags: () => void
   closeTags: () => void
+  openDrawer: () => void
+  closeDrawer: () => void
+  flashCard: (cardId: string) => void
   openLightbox: (images: string[], index?: number) => void
   closeLightbox: () => void
   stepLightbox: (delta: number) => void
@@ -36,6 +43,8 @@ interface UiState {
   closeConfirm: () => void
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void
   clearToast: () => void
+  showKeyHint: (text: string) => void
+  clearKeyHint: () => void
   setBusy: (busy: boolean) => void
   triggerCelebrate: () => void
   clearCelebrate: () => void
@@ -48,20 +57,32 @@ export const useUiStore = create<UiState>((set, get) => ({
   tagsOpen: false,
   confirmOpen: false,
   lightboxOpen: false,
+  drawerOpen: false,
   editingCardId: null,
+  highlightCardId: null,
+  uploadPrefill: {},
   lightboxImages: [],
   lightboxIndex: 0,
   confirm: null,
   toast: null,
+  keyHint: null,
   busy: false,
   celebrate: null,
 
-  openUpload: () => set({ uploadOpen: true }),
-  closeUpload: () => set({ uploadOpen: false }),
+  openUpload: (prefill = {}) => set({ uploadOpen: true, uploadPrefill: prefill }),
+  closeUpload: () => set({ uploadOpen: false, uploadPrefill: {} }),
   openEdit: (cardId) => set({ editOpen: true, editingCardId: cardId }),
   closeEdit: () => set({ editOpen: false, editingCardId: null }),
   openTags: () => set({ tagsOpen: true }),
   closeTags: () => set({ tagsOpen: false }),
+  openDrawer: () => set({ drawerOpen: true }),
+  closeDrawer: () => set({ drawerOpen: false }),
+  flashCard: (cardId) => {
+    set({ highlightCardId: cardId })
+    window.setTimeout(() => {
+      if (get().highlightCardId === cardId) set({ highlightCardId: null })
+    }, 1000)
+  },
   openLightbox: (images, index = 0) =>
     set({
       lightboxOpen: true,
@@ -79,6 +100,8 @@ export const useUiStore = create<UiState>((set, get) => ({
   closeConfirm: () => set({ confirmOpen: false, confirm: null }),
   showToast: (message, type = 'info') => set({ toast: { message, type } }),
   clearToast: () => set({ toast: null }),
+  showKeyHint: (text) => set({ keyHint: text }),
+  clearKeyHint: () => set({ keyHint: null }),
   setBusy: (busy) => set({ busy }),
   triggerCelebrate: () => set({ celebrate: Math.random() > 0.5 ? 'confetti' : 'clover' }),
   clearCelebrate: () => set({ celebrate: null }),

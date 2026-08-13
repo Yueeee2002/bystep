@@ -6,11 +6,35 @@
   cursor: pointer;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   position: relative;
+  animation: riseIn 0.28s ease both;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 18px;
+  height: 18px;
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(22, 22, 22, 0.06) 50%);
+  border-radius: 0 0 16px 0;
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow);
+  transform: translateY(-6px);
+  box-shadow: 10px 16px 28px rgba(22, 22, 22, 0.08);
+}
+
+.card:hover::after {
+  opacity: 1;
+  transform: translate(-1px, -1px);
+}
+
+.card:hover .photo img {
+  transform: scale(1.04);
 }
 
 .card:hover .delete,
@@ -39,6 +63,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.28s ease;
 }
 
 .placeholder {
@@ -168,6 +193,35 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.flash {
+  animation: cardFlash 1s ease;
+}
+
+.dragging {
+  opacity: 0.55;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cardFlash {
+  0%,
+  100% {
+    box-shadow: var(--shadow-soft);
+  }
+  35% {
+    box-shadow: 0 0 0 6px var(--gold-soft);
+  }
 }
 
 @media (hover: none) {

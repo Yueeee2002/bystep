@@ -1,0 +1,25 @@
+.hint {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 90;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--snow);
+  border: 1px solid var(--line);
+  color: var(--ash);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  animation: fade 0.22s ease;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

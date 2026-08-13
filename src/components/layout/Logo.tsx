@@ -1,0 +1,21 @@
+export default function Logo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#cca251" />
+      <path
+        d="M9.2 20.4c1.6-1.1 2.1-2.8 1.2-4.1-.9-1.3-2.8-1.6-4.1-.5-1.3 1-1.5 2.9-.5 4.1.9 1.2 2.4 1.3 3.4.5Z"
+        fill="#161616"
+      />
+      <ellipse cx="8.6" cy="13.2" rx="1.7" ry="2.4" transform="rotate(-18 8.6 13.2)" fill="#161616" />
+      <ellipse cx="12.1" cy="12.1" rx="1.35" ry="1.9" transform="rotate(-8 12.1 12.1)" fill="#161616" />
+      <ellipse cx="14.8" cy="13.4" rx="1.1" ry="1.55" transform="rotate(8 14.8 13.4)" fill="#161616" />
+      <path
+        d="M22.8 11.6c-1.6 1.1-2.1 2.8-1.2 4.1.9 1.3 2.8 1.6 4.1.5 1.3-1 1.5-2.9-.5-4.1-.9-1.2-2.4-1.3-3.4-.5Z"
+        fill="#161616"
+      />
+      <ellipse cx="23.4" cy="18.8" rx="1.7" ry="2.4" transform="rotate(162 23.4 18.8)" fill="#161616" />
+      <ellipse cx="19.9" cy="19.9" rx="1.35" ry="1.9" transform="rotate(172 19.9 19.9)" fill="#161616" />
+      <ellipse cx="17.2" cy="18.6" rx="1.1" ry="1.55" transform="rotate(-172 17.2 18.6)" fill="#161616" />
+    </svg>
+  )
+}

@@ -18,6 +18,9 @@ function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id' | 'title'>)
     likeCount: 0,
     createdAt: 1,
     updatedAt: 1,
+    visitDate: '',
+    archived: false,
+    sortIndex: 1,
     ...patch,
   }
 }
