@@ -41,7 +41,12 @@ export default function NavDrawer() {
         onClick={closeDrawer}
       />
       <aside className={`${styles.panel} ${open ? '' : styles.panelOut}`}>
-        <p>手账目录</p>
+        <div className={styles.head}>
+          <p>手账目录</p>
+          <button type="button" className={styles.close} aria-label="关闭目录" onClick={closeDrawer}>
+            ×
+          </button>
+        </div>
         <nav>
           {LINKS.map((link) => (
             <NavLink

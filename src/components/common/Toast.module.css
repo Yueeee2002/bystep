@@ -1,7 +1,7 @@
 .toast {
   position: fixed;
   right: 18px;
-  bottom: 28px;
+  bottom: calc(28px + env(safe-area-inset-bottom));
   left: auto;
   transform: none;
   z-index: 80;
@@ -44,4 +44,12 @@
 html[data-theme='night'] .toast {
   background: #3a2f24;
   color: #f4ece0;
+}
+
+@media (max-width: 720px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+  }
 }

@@ -1,6 +1,6 @@
 .bar {
   position: sticky;
-  bottom: 16px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
   z-index: 8;
   display: flex;
   flex-wrap: wrap;

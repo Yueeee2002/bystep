@@ -48,3 +48,10 @@
   width: 15px;
   height: 15px;
 }
+
+@media (max-width: 560px) {
+  .small .star {
+    width: 13px;
+    height: 13px;
+  }
+}

@@ -23,23 +23,25 @@
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 10px 16px 28px rgba(22, 22, 22, 0.08);
-}
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 10px 16px 28px rgba(22, 22, 22, 0.08);
+  }
 
-.card:hover::after {
-  opacity: 1;
-  transform: translate(-1px, -1px);
-}
+  .card:hover::after {
+    opacity: 1;
+    transform: translate(-1px, -1px);
+  }
 
-.card:hover .photo img {
-  transform: scale(1.04);
-}
+  .card:hover .photo img {
+    transform: scale(1.04);
+  }
 
-.card:hover .delete,
-.card:hover .pin {
-  opacity: 1;
+  .card:hover .delete,
+  .card:hover .pin {
+    opacity: 1;
+  }
 }
 
 .selected {
@@ -228,5 +230,36 @@
   .delete,
   .pin {
     opacity: 1;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 8px 8px 12px;
+    border-radius: 8px 8px 16px 16px;
+  }
+
+  .body {
+    padding: 10px 4px 0;
+  }
+
+  .body h3 {
+    font-size: 14px;
+  }
+
+  .addr {
+    font-size: 11px;
+  }
+
+  .stamp,
+  .count {
+    font-size: 10px;
+  }
+
+  .listCard {
+    grid-template-columns: 88px 1fr;
+    gap: 10px;
   }
 }

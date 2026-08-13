@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import AppHeader from '@/components/layout/AppHeader'
 import Button from '@/components/common/Button'
 import { useCardStore } from '@/store/cardStore'
@@ -93,7 +94,7 @@ export default function SettingsPage() {
 
   return (
     <div className={`app-shell page-enter ${styles.page}`}>
-      <AppHeader subtitle="把留步，安成自己喜欢的样子" />
+      <AppHeader subtitle="把留步，安成自己喜欢的样子" exitToHome />
 
       <section className={styles.card}>
         <h2>个性化</h2>
@@ -218,6 +219,10 @@ export default function SettingsPage() {
           下一次迭代预告：地图视图、路线规划和云端轻同步。地址已经按结构化文本保存，随时可以走向远方。
         </p>
       </section>
+
+      <Link to="/" className={`btn btn-primary ${styles.exit}`}>
+        返回首页
+      </Link>
     </div>
   )
 }

@@ -9,9 +9,10 @@ interface AppHeaderProps {
   compact?: boolean
   badge?: boolean
   subtitle?: string
+  exitToHome?: boolean
 }
 
-export default function AppHeader({ compact, badge, subtitle = '把种草的店，轻轻收好' }: AppHeaderProps) {
+export default function AppHeader({ compact, badge, subtitle = '把种草的店，轻轻收好', exitToHome }: AppHeaderProps) {
   const openDrawer = useUiStore((state) => state.openDrawer)
   const theme = useConfigStore((state) => state.theme)
   const toggleTheme = useConfigStore((state) => state.toggleTheme)
@@ -40,17 +41,23 @@ export default function AppHeader({ compact, badge, subtitle = '把种草的店�
         </div>
       </div>
       <div className={styles.headerActions}>
-        <Link to="/settings" className="icon-btn" aria-label="个人中心">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="8.2" r="3.05" stroke="currentColor" strokeWidth="1.35" />
-            <path
-              d="M5.4 18.6c.7-3.1 3.3-4.9 6.6-4.9s5.9 1.8 6.6 4.9"
-              stroke="currentColor"
-              strokeWidth="1.35"
-              strokeLinecap="round"
-            />
-          </svg>
-        </Link>
+        {exitToHome ? (
+          <Link to="/" className={`btn btn-ghost ${styles.exit}`}>
+            退出
+          </Link>
+        ) : (
+          <Link to="/settings" className="icon-btn" aria-label="个人中心">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8.2" r="3.05" stroke="currentColor" strokeWidth="1.35" />
+              <path
+                d="M5.4 18.6c.7-3.1 3.3-4.9 6.6-4.9s5.9 1.8 6.6 4.9"
+                stroke="currentColor"
+                strokeWidth="1.35"
+                strokeLinecap="round"
+              />
+            </svg>
+          </Link>
+        )}
         <button type="button" className="icon-btn" aria-label="切换主题" onClick={toggleTheme}>
           {theme === 'night' ? '☾' : '☀'}
         </button>

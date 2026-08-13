@@ -15,7 +15,7 @@
   border: 0;
   background: transparent;
   outline: none;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--ink);
 }
 
@@ -28,6 +28,13 @@
   display: flex;
   gap: 8px;
   margin-top: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.status::-webkit-scrollbar {
+  display: none;
 }
 
 .statusBtn {
@@ -37,6 +44,8 @@
   padding: 8px 4px;
   font-size: 14px;
   position: relative;
+  flex-shrink: 0;
+  min-height: 40px;
 }
 
 .statusActive {
@@ -332,6 +341,13 @@
   align-items: baseline;
   gap: 2px;
   margin: 0 0 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tabWrap {
@@ -356,6 +372,8 @@
   position: relative;
   letter-spacing: 0.08em;
   opacity: 0.62;
+  white-space: nowrap;
+  min-height: 40px;
   transition:
     color 0.2s ease,
     opacity 0.2s ease,

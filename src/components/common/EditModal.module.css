@@ -39,3 +39,19 @@
     align-items: start;
   }
 }
+
+@media (max-width: 560px) {
+  .actions,
+  .right {
+    flex-wrap: wrap;
+  }
+
+  .right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .right :global(.btn) {
+    flex: 1;
+  }
+}

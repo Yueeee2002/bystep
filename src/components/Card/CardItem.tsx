@@ -58,7 +58,12 @@ export default function CardItem({
     <article
       className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''} ${highlight ? styles.flash : ''}`}
       style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
-      draggable={!selectMode}
+      draggable={
+        !selectMode &&
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      }
       onDragStart={(event) => {
         event.dataTransfer.setData('text/plain', card.id)
       }}
