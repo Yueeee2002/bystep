@@ -615,6 +615,13 @@ html[data-viewport='pc'] .home-header-add {
   display: inline-flex;
 }
 
-html.no-motion.viewport-flip .app-shell {
-  animation: none;
+html.tag-sorting,
+html.tag-sorting * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+html.tag-sorting {
+  overflow: hidden;
+  overscroll-behavior: none;
 }

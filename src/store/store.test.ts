@@ -80,6 +80,14 @@ describe('tag and card binding', () => {
     ).toThrow('标签与所属大类不一致')
   })
 
+  it('reorders tags with the same moveTag used by drag sort', () => {
+    const a = useTagStore.getState().addTag('咖啡', 'mocha', 'catering')
+    const b = useTagStore.getState().addTag('拉面', 'mint', 'catering')
+    const c = useTagStore.getState().addTag('书店', 'haze', 'other')
+    useTagStore.getState().moveTag(0, 2)
+    expect(useTagStore.getState().tags.map((tag) => tag.id)).toEqual([b!.id, c!.id, a!.id])
+  })
+
   it('stores original images with matching cover thumbs', () => {
     const created = useCardStore.getState().addCardsFromImages(['orig-a'], {
       thumbs: ['thumb-a'],

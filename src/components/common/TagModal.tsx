@@ -4,11 +4,13 @@ import Modal from '@/components/common/Modal'
 import BackArrow from '@/components/common/BackArrow'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
+import { useLongPressReorder } from '@/hooks/useLongPressReorder'
 import { useUiStore } from '@/store/uiStore'
 import { TAG_COLOR_ORDER } from '@/types'
 import type { CategoryGroup } from '@/types'
 import { useConfigStore } from '@/store/configStore'
 import { resolveTagColor } from '@/utils/palette'
+import { resolveViewport } from '@/utils/viewport'
 import styles from './TagModal.module.css'
 
 interface TagForm {
@@ -120,9 +122,40 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
 
   const labels = useConfigStore((state) => state.categoryLabels)
   const extras = useConfigStore((state) => state.customTagColors)
+  const viewportPreference = useConfigStore((state) => state.viewportPreference)
+  const isMobile = resolveViewport(viewportPreference) === 'mobile'
   const palette = [...TAG_COLOR_ORDER, ...extras.map((item) => item.id)]
   const swatch = (color: string) => resolveTagColor(color, extras)
   const groups: CategoryGroup[] = ['catering', 'other']
+
+  const applyReorder = (from: number, to: number) => {
+    const source = tags[from]
+    const target = tags[to]
+    if (source && target && source.group !== target.group) {
+      updateTag(source.id, { group: target.group })
+      setFlashId(source.id)
+      window.setTimeout(() => setFlashId(null), 600)
+      showToast('已归入新的大类', 'success')
+    }
+    moveTag(from, to)
+  }
+
+  const applyDropGroup = (from: number, group: string) => {
+    if (group !== 'catering' && group !== 'other') return
+    const tag = tags[from]
+    if (tag && tag.group !== group) {
+      updateTag(tag.id, { group })
+      setFlashId(tag.id)
+      window.setTimeout(() => setFlashId(null), 600)
+      showToast('已归入新的大类', 'success')
+    }
+  }
+
+  const sort = useLongPressReorder({
+    enabled: isMobile,
+    onReorder: applyReorder,
+    onDropGroup: applyDropGroup,
+  })
 
   const body = (
     <div className={styles.body}>
@@ -179,7 +212,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section className={`${styles.section} ${styles.listSection}`}>
           <div className={styles.listHead}>
             <p className={styles.sectionLabel}>已创建标签列表</p>
             <button
@@ -190,6 +223,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
               全部收拢
             </button>
           </div>
+          {isMobile ? <p className={styles.sortHint}>长按卡片拖动，可调整先后顺序</p> : null}
           {tags.length === 0 ? <p className={styles.emptyCopy}>还没有标签。想怎么分类，就轻轻写下。</p> : null}
           {groups.map((group) => {
             const items = tags.filter((tag) => tag.group === group)
@@ -197,13 +231,18 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
             return (
               <div
                 key={group}
-                className={`${styles.fold} ${expanded ? '' : styles.foldShut} ${dropGroup === group ? styles.dropOn : ''}`}
+                data-sort-group={group}
+                className={`${styles.fold} ${expanded ? styles.foldOpen : ''} ${
+                  dropGroup === group || sort.overGroup === group ? styles.dropOn : ''
+                }`}
                 onDragOver={(event) => {
+                  if (isMobile) return
                   event.preventDefault()
                   setDropGroup(group)
                 }}
                 onDragLeave={() => setDropGroup((prev) => (prev === group ? null : prev))}
                 onDrop={(event) => {
+                  if (isMobile) return
                   event.preventDefault()
                   dropToGroup(group)
                 }}
@@ -221,6 +260,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                   <em>{items.length}</em>
                 </button>
                 <div className={styles.foldBody}>
+                  <div className={styles.foldBodyInner}>
                   <ul className={styles.list}>
                     {items.length === 0 ? <li className={styles.empty}>这一类还空着</li> : null}
                     {items.map((tag) => {
@@ -228,24 +268,41 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                       return (
                         <li
                           key={tag.id}
-                          draggable
-                          onDragStart={() => setDragFrom(index)}
-                          onDragOver={(event: DragEvent<HTMLLIElement>) => event.preventDefault()}
+                          data-sort-index={index}
+                          draggable={!isMobile}
+                          onDragStart={() => {
+                            if (isMobile) return
+                            setDragFrom(index)
+                          }}
+                          onDragOver={(event: DragEvent<HTMLLIElement>) => {
+                            if (isMobile) return
+                            event.preventDefault()
+                          }}
                           onDrop={(event) => {
+                            if (isMobile) return
                             event.stopPropagation()
                             onDrop(index)
                           }}
                           onDragEnd={() => setDragFrom(null)}
-                          className={`${dragFrom === index ? styles.dragging : ''} ${
+                          onPointerDown={sort.onItemPointerDown(index)}
+                          onPointerMove={sort.onItemPointerMove}
+                          onPointerUp={sort.onItemPointerUp}
+                          className={`${styles.card} ${
+                            dragFrom === index || sort.activeIndex === index ? styles.dragging : ''
+                          } ${sort.overIndex === index && sort.activeIndex !== index ? styles.dropSlot : ''} ${
                             flashId === tag.id ? styles.flash : ''
                           } ${previewColor === tag.color ? styles.preview : ''}`}
                         >
-                          <span className={styles.item}>
+                          <div className={styles.itemMain}>
                             <i style={{ background: swatch(tag.color).bg }} />
-                            {tag.name}
-                            <em>{labels[tag.group]}</em>
-                            <b>{swatch(tag.color).label}</b>
-                          </span>
+                            <div className={styles.itemCopy}>
+                              <strong>{tag.name}</strong>
+                              <span className={styles.meta}>
+                                <em>{labels[tag.group]}</em>
+                                <b>{swatch(tag.color).label}</b>
+                              </span>
+                            </div>
+                          </div>
                           <div className={styles.actions}>
                             <Button variant="text" className={styles.editBtn} onClick={() => openEdit(tag)}>
                               编辑
@@ -273,6 +330,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                       )
                     })}
                   </ul>
+                  </div>
                 </div>
               </div>
             )
