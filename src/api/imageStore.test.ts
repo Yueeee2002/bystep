@@ -16,6 +16,16 @@ describe('imageStore dual mode', () => {
 
   it('posts FormData to the local upload API when backend is ready', async () => {
     ENV_CONFIG.BACKEND_READY = true
+    class FakeImage {
+      onload: (() => void) | null = null
+      onerror: (() => void) | null = null
+      width = 1
+      height = 1
+      set src(_value: string) {
+        queueMicrotask(() => this.onerror?.())
+      }
+    }
+    vi.stubGlobal('Image', FakeImage)
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ code: 200, data: { url: 'http://127.0.0.1:3000/upload/a.jpg' } }),

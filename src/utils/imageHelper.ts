@@ -32,8 +32,16 @@ function readAsDataUrl(file: File): Promise<string> {
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error('图片解析失败'))
+    const fail = () => {
+      window.clearTimeout(timer)
+      reject(new Error('图片解析失败'))
+    }
+    const timer = window.setTimeout(fail, 20000)
+    img.onload = () => {
+      window.clearTimeout(timer)
+      resolve(img)
+    }
+    img.onerror = fail
     img.src = src
   })
 }
