@@ -21,6 +21,18 @@
 - 二级页左上角统一返回首页；仅首页展示品牌 Logo 与自定义副标题
 - 设置页可改主题、日历默认视图、首页卡片布局、动效、标签配色与首页标语
 
+## 公开访问
+
+仓库本身是公开的，但默认还没有上线成网站。Cursor 里的 Open in Browser 只是 Cloud Agent 的临时预览，外人打不开。
+
+把本 PR 合并进 `main` 后，GitHub Actions 会把前端发布到：
+
+https://yueeee2002.github.io/bystep/
+
+第一次发布如果没出来，到仓库 **Settings → Pages**，Source 选 **GitHub Actions**。本地开发不受影响，数据仍存在每位访客自己的浏览器里，没有登录和云同步。
+
+也可以用 [Vercel](https://vercel.com/new) 导入这个 GitHub 仓库，框架选 Vite，几分钟就能拿到独立域名。
+
 ## 本地开发
 
 ```bash
