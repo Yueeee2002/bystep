@@ -107,7 +107,13 @@ export default function HomePage() {
 
   return (
     <div className="app-shell page-enter">
-      <AppHeader home badge={weekly > 0} />
+      <AppHeader
+        home
+        badge={weekly > 0}
+        actions={
+          <Button onClick={() => openUpload()}>新增</Button>
+        }
+      />
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 

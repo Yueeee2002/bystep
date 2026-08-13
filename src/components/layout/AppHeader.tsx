@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import BackArrow from '@/components/common/BackArrow'
 import Logo from '@/components/layout/Logo'
 import { useUiStore } from '@/store/uiStore'
 import { useConfigStore } from '@/store/configStore'
@@ -65,11 +66,7 @@ export default function AppHeader({ home = false, title = '', badge, actions }: 
   return (
     <header className={`${styles.header} ${styles.sub} ${scrolled ? styles.compact : ''}`}>
       <div className={styles.subLead}>
-        <button type="button" className={styles.back} aria-label="返回首页" onClick={() => navigate('/')}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M15 5 8 12l7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        <BackArrow label="返回首页" onClick={() => navigate('/')} />
         <h1>{title}</h1>
       </div>
       <div className={styles.headerActions}>

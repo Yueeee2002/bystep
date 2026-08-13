@@ -257,7 +257,7 @@ export default function SettingsPage() {
         </button>
         <button type="button" className={styles.item} onClick={() => { setDraftSlogan(config.homeSlogan); setSheet('slogan') }}>
           <span>首页顶部个性标语</span>
-          <em>›</em>
+          <em>{config.homeSlogan}</em>
         </button>
       </section>
 

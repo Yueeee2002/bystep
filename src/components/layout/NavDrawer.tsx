@@ -6,13 +6,13 @@ import { countWeeklyPlans } from '@/utils/models'
 import styles from './NavDrawer.module.css'
 
 const LINKS = [
-  { to: '/', label: '首页', icon: '⌂' },
-  { to: '/profile', label: '个人主页', icon: '人' },
-  { to: '/calendar', label: '打卡日历', icon: '日' },
-  { to: '/tags', label: '标签管理', icon: '签' },
-  { to: '/archive', label: '归档合集', icon: '册' },
-  { to: '/stats', label: '数据统计', icon: '计' },
-  { to: '/settings', label: '设置', icon: '○' },
+  { to: '/', label: '首页', icon: '🏠' },
+  { to: '/profile', label: '个人主页', icon: '👤' },
+  { to: '/calendar', label: '打卡日历', icon: '📅' },
+  { to: '/tags', label: '标签管理', icon: '🏷️' },
+  { to: '/archive', label: '归档合集', icon: '📁' },
+  { to: '/stats', label: '数据统计', icon: '📊' },
+  { to: '/settings', label: '设置', icon: '⚙️' },
 ]
 
 export default function NavDrawer() {
@@ -54,6 +54,7 @@ export default function NavDrawer() {
             <NavLink
               key={link.to}
               to={link.to}
+              end
               className={({ isActive }) => `${styles.link} ${isActive ? styles.on : ''}`}
               onClick={closeDrawer}
             >

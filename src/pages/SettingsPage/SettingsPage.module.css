@@ -34,6 +34,11 @@
   font-style: normal;
   color: var(--ash);
   font-size: 13px;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .item:hover {

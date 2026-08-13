@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AppHeader from '@/components/layout/AppHeader'
+import BackArrow from '@/components/common/BackArrow'
 import EmptyNote from '@/components/common/EmptyNote'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
@@ -250,9 +251,7 @@ export default function CalendarPage() {
       {selected ? (
         <aside className={styles.drawer}>
           <div className={styles.drawerHead}>
-            <button type="button" className={styles.back} aria-label="返回" onClick={() => setSelected(null)}>
-              ←
-            </button>
+            <BackArrow small onClick={() => setSelected(null)} />
             <h3>{selected}</h3>
           </div>
           {dayCards.length === 0 ? (

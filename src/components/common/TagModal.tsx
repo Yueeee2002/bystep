@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
+import BackArrow from '@/components/common/BackArrow'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
 import { useUiStore } from '@/store/uiStore'
@@ -281,7 +282,10 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
         {form ? (
           <div className={styles.sheetMask}>
             <div className={styles.sheet} role="dialog" aria-labelledby="tag-form-title">
-              <h3 id="tag-form-title">{form.id ? '编辑标签' : '新增标签'}</h3>
+              <div className={styles.sheetHead}>
+                <BackArrow small onClick={closeForm} />
+                <h3 id="tag-form-title">{form.id ? '编辑标签' : '新增标签'}</h3>
+              </div>
               <label className="field">
                 <span>标签名称</span>
                 <input
