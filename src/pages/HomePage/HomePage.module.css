@@ -244,3 +244,88 @@
     border-radius: 16px;
   }
 }
+
+.fab {
+  display: none;
+}
+
+:global(html[data-viewport='mobile']) .greet {
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+:global(html[data-viewport='mobile']) .ticker,
+:global(html[data-viewport='mobile']) .dash,
+:global(html[data-viewport='mobile']) .foot {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+:global(html[data-viewport='mobile']) .rating {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+:global(html[data-viewport='mobile']) .rating :global(.chip) {
+  justify-content: center;
+  width: 100%;
+}
+
+:global(html[data-viewport='mobile']) .toolbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+:global(html[data-viewport='mobile']) .actions {
+  width: 100%;
+  flex-direction: column;
+}
+
+:global(html[data-viewport='mobile']) .actions :global(.btn) {
+  width: 100%;
+}
+
+:global(html[data-viewport='mobile']) .views {
+  width: 100%;
+}
+
+:global(html[data-viewport='mobile']) .views button {
+  flex: 1;
+  min-height: 44px;
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .fab {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  z-index: 35;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 10px 22px rgba(204, 162, 81, 0.32);
+}
+
+:global(html[data-viewport='mobile']) .pocket {
+  top: auto;
+  right: 16px;
+  left: 16px;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  width: auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 15px;
+}

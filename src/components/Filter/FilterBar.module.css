@@ -447,3 +447,36 @@
 .sortOn {
   color: var(--ink);
 }
+
+:global(html[data-viewport='mobile']) .search {
+  height: 52px;
+}
+
+:global(html[data-viewport='mobile']) .search input,
+:global(html[data-viewport='mobile']) .tab,
+:global(html[data-viewport='mobile']) .statusBtn {
+  font-size: 16px;
+}
+
+:global(html[data-viewport='mobile']) .controlRow {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+:global(html[data-viewport='mobile']) .sortBtn,
+:global(html[data-viewport='mobile']) .filterBtn {
+  width: 100%;
+  height: 46px;
+  justify-content: center;
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .filterChip {
+  min-height: 40px;
+  font-size: 15px;
+  padding: 8px 14px;
+}
+
+:global(html[data-viewport='mobile']) .statusBtn {
+  min-height: 44px;
+}

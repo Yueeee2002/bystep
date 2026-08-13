@@ -111,7 +111,9 @@ export default function HomePage() {
         home
         badge={weekly > 0}
         actions={
-          <Button onClick={() => openUpload()}>新增</Button>
+          <Button className="home-header-add" onClick={() => openUpload()}>
+            新增
+          </Button>
         }
       />
       <p className={styles.greet}>{greeting}</p>
@@ -250,6 +252,9 @@ export default function HomePage() {
         {stats.totalLine}｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
       </p>
       <footer className={styles.foot}>留步・收藏每一场不期而遇的探店</footer>
+      <button type="button" className={styles.fab} aria-label="新增探店" onClick={() => openUpload()}>
+        ＋
+      </button>
     </div>
   )
 }

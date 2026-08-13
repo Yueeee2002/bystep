@@ -12,6 +12,7 @@ export const DEFAULT_CONFIG: IAppConfig = {
   defaultFilter: 'all',
   viewMode: 'grid',
   theme: 'cream',
+  viewportPreference: 'auto',
   calendarView: 'month',
   motion: true,
   categoryLabels: {
@@ -37,6 +38,7 @@ export function normalizeConfig(raw: Partial<IAppConfig> = {}): IAppConfig {
     defaultFilter: raw.defaultFilter === 'pending' ? 'pending' : 'all',
     viewMode: raw.viewMode === 'list' ? 'list' : 'grid',
     theme: raw.theme === 'night' ? 'night' : 'cream',
+    viewportPreference: raw.viewportPreference === 'pc' || raw.viewportPreference === 'mobile' ? raw.viewportPreference : 'auto',
     calendarView: raw.calendarView === 'week' ? 'week' : 'month',
     motion: raw.motion !== false,
     categoryLabels: { catering, other },

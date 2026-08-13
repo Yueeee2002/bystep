@@ -154,3 +154,17 @@
     min-height: 48px;
   }
 }
+
+:global(html[data-viewport='mobile']) .item {
+  min-height: 52px;
+  font-size: 16px;
+}
+
+:global(html[data-viewport='mobile']) .card h2 {
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .select {
+  min-height: 44px;
+  font-size: 15px;
+}

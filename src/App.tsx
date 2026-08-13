@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import HomePage from '@/pages/HomePage/HomePage'
 import SettingsPage from '@/pages/SettingsPage/SettingsPage'
@@ -20,10 +20,12 @@ import NavDrawer from '@/components/layout/NavDrawer'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 import { useUiStore } from '@/store/uiStore'
+import { resolveViewport } from '@/utils/viewport'
 
 export default function App() {
   const theme = useConfigStore((state) => state.theme)
   const motion = useConfigStore((state) => state.motion)
+  const viewportPreference = useConfigStore((state) => state.viewportPreference)
   const drawerOpen = useUiStore((state) => state.drawerOpen)
   const location = useLocation()
   const pageClass = location.pathname === '/' ? 'page-slide-home' : 'page-slide-sub'
@@ -41,6 +43,19 @@ export default function App() {
     const timer = window.setTimeout(() => document.documentElement.classList.remove('theme-flip'), 320)
     return () => window.clearTimeout(timer)
   }, [theme, motion])
+
+  const viewportReady = useRef(false)
+  useEffect(() => {
+    const mode = resolveViewport(viewportPreference)
+    document.documentElement.dataset.viewport = mode
+    if (!viewportReady.current) {
+      viewportReady.current = true
+      return
+    }
+    document.documentElement.classList.add('viewport-flip')
+    const timer = window.setTimeout(() => document.documentElement.classList.remove('viewport-flip'), 280)
+    return () => window.clearTimeout(timer)
+  }, [viewportPreference])
 
   useEffect(() => {
     document.documentElement.classList.toggle('drawer-open', drawerOpen)

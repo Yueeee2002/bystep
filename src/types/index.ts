@@ -2,6 +2,8 @@ export type CardStatus = 'pending' | 'done'
 export type StatusFilter = 'all' | 'pending' | 'done'
 export type ViewMode = 'grid' | 'list'
 export type ThemeMode = 'cream' | 'night'
+export type ViewportMode = 'pc' | 'mobile'
+export type ViewportPreference = 'auto' | ViewportMode
 export type CalendarViewMode = 'month' | 'week'
 export type TagColor = 'mocha' | 'mint' | 'apricot' | 'haze'
 export type CategoryGroup = 'catering' | 'other'
@@ -61,6 +63,7 @@ export interface IAppConfig {
   defaultFilter: 'all' | 'pending'
   viewMode: ViewMode
   theme: ThemeMode
+  viewportPreference: ViewportPreference
   calendarView: CalendarViewMode
   motion: boolean
   categoryLabels: Record<CategoryGroup, string>

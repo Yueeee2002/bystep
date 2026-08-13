@@ -37,6 +37,16 @@ describe('backup', () => {
     expect(parsed.cards[0].coverIndex).toBe(0)
     expect(parsed.config.nickname).toBe('小雨')
     expect(parsed.config.homeSlogan).toBe('把种草的店，轻轻收好')
+    expect(parsed.config.viewportPreference).toBe('auto')
+  })
+
+  it('keeps a saved viewport preference', () => {
+    const parsed = parseBackupPayload(JSON.stringify({
+      cards: [],
+      tags: [],
+      config: { viewportPreference: 'mobile' },
+    }))
+    expect(parsed.config.viewportPreference).toBe('mobile')
   })
 
   it('keeps default slogan and clips custom copy to 20 chars', () => {
