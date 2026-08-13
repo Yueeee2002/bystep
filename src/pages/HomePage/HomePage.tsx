@@ -168,6 +168,7 @@ export default function HomePage() {
       <TagFilter
         tags={tags}
         selectedIds={selectedTagIds}
+        categoryTab={categoryTab}
         sortMode={sortMode}
         onToggle={toggleTagFilter}
         onReset={clearTagFilters}

@@ -26,6 +26,7 @@
 }
 
 .panel {
+  position: relative;
   width: min(560px, 100%);
   max-height: min(92vh, 860px);
   overflow: auto;

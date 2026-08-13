@@ -13,7 +13,13 @@ npm install
 npm run dev
 ```
 
-默认地址：`http://127.0.0.1:3000`。上传接口：`POST /api/upload`，字段名 `file`。
+默认地址：`http://127.0.0.1:3000`。
+
+- 上传：`POST /api/upload`，字段名 `file`
+- 标签列表：`GET /api/tags`，可选 `?category_group=catering|other`
+- 新建标签：`POST /api/tags`（`tag_name`、`category_group` 必填）
+- 修改标签归属：`PATCH /api/tags/:id`
+- 保存点位：`POST /api/records`（校验所有 `tag_ids` 必须与点位 `category_group` 一致，否则 400）
 
 ## 数据库（可选）
 

@@ -58,4 +58,22 @@ describe('tag and card binding', () => {
     expect(useCardStore.getState().selectedTagIds).toEqual([])
     expect(useTagStore.getState().tags).toEqual([])
   })
+
+  it('clears tag filters when switching category tabs', () => {
+    const coffee = useTagStore.getState().addTag('咖啡', 'mocha', 'catering')
+    useCardStore.setState({ selectedTagIds: [coffee!.id], categoryTab: 'all' })
+    useCardStore.getState().setCategoryTab('other')
+    expect(useCardStore.getState().categoryTab).toBe('other')
+    expect(useCardStore.getState().selectedTagIds).toEqual([])
+  })
+
+  it('rejects saving a card with tags from another category', () => {
+    const book = useTagStore.getState().addTag('书店', 'mint', 'other')
+    expect(() =>
+      useCardStore.getState().addCardsFromImages(['img'], {
+        categoryGroup: 'catering',
+        tags: [book!.id],
+      }),
+    ).toThrow('标签与所属大类不一致')
+  })
 })

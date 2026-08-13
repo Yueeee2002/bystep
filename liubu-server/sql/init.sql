@@ -27,3 +27,19 @@ CREATE TABLE IF NOT EXISTS record_image_rel (
   image_id INT COMMENT '图片ID',
   PRIMARY KEY (record_id, image_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. 标签主表
+CREATE TABLE IF NOT EXISTS tags (
+  id INT AUTO_INCREMENT PRIMARY KEY COMMENT '标签唯一ID',
+  tag_name VARCHAR(50) NOT NULL COMMENT '标签名称',
+  category_group ENUM('catering','other') NOT NULL COMMENT '绑定顶级大类：catering=食肆小店 other=野趣小仓',
+  color_code VARCHAR(30) COMMENT '标签配色色值',
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. 点位 - 标签关联中间表
+CREATE TABLE IF NOT EXISTS record_tag_rel (
+  record_id VARCHAR(36) COMMENT '探店记录ID',
+  tag_id INT COMMENT '标签ID',
+  PRIMARY KEY (record_id, tag_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

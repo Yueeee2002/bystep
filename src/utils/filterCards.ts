@@ -1,4 +1,6 @@
-import type { CategoryGroup, CategoryTab, IExploreCard, ITag, SortMode, StatusFilter } from '@/types'
+import type { CategoryTab, IExploreCard, ITag, SortMode, StatusFilter } from '@/types'
+
+export { tagsForGroup } from '@/utils/tagRules'
 
 export function normalizeQuery(query: string): string {
   return query.trim().toLowerCase()
@@ -77,11 +79,6 @@ export function filterCards(
     })
     .slice()
     .sort((a, b) => compareCards(a, b, sortMode))
-}
-
-export function tagsForGroup(tags: ITag[], group?: CategoryGroup | 'all'): ITag[] {
-  if (!group || group === 'all') return tags
-  return tags.filter((tag) => tag.group === group)
 }
 
 export function createId(): string {

@@ -5,6 +5,7 @@ import { createId } from '@/utils/filterCards'
 import { normalizeCard } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 import { useTagStore } from '@/store/tagStore'
+import { assertTagsMatchGroup } from '@/utils/tagRules'
 
 interface CardState {
   cards: IExploreCard[]
@@ -29,6 +30,7 @@ interface CardState {
   batchUpdate: (ids: string[], patch: Partial<Pick<IExploreCard, 'status' | 'tags'>>) => void
   batchAddTag: (ids: string[], tagId: string) => void
   removeTagFromAll: (tagId: string) => void
+  rebindTagGroup: (tagId: string, group: CategoryGroup) => void
   setSearchQuery: (query: string) => void
   setStatusFilter: (status: StatusFilter) => void
   setMinRating: (rating: number) => void
@@ -85,8 +87,13 @@ export const useCardStore = create<CardState>((set, get) => ({
   persist: () => persistCards(get().cards),
 
   addCardsFromImages: (images, options) => {
+    const categoryGroup = options?.categoryGroup ?? 'catering'
+    const tags = useTagStore.getState().tags
+    assertTagsMatchGroup(options?.tags ?? [], tags, categoryGroup)
     const now = Date.now()
-    const created = images.map((image, index) => emptyCard(image, now + index, options))
+    const created = images.map((image, index) =>
+      emptyCard(image, now + index, { categoryGroup, tags: options?.tags ?? [] }),
+    )
     set((state) => {
       const cards = [...created, ...state.cards]
       persistCards(cards)
@@ -96,9 +103,14 @@ export const useCardStore = create<CardState>((set, get) => ({
   },
 
   updateCard: (id, patch) => {
+    const current = get().cards.find((card) => card.id === id)
+    if (!current) return
+    const nextGroup = patch.categoryGroup ?? current.categoryGroup
+    const nextTags = patch.tags ?? current.tags
+    assertTagsMatchGroup(nextTags, useTagStore.getState().tags, nextGroup)
     set((state) => {
       const cards = state.cards.map((card) =>
-        card.id === id ? normalizeCard({ ...card, ...patch, updatedAt: Date.now() }) : card,
+        card.id === id ? normalizeCard({ ...card, ...patch, tags: nextTags, updatedAt: Date.now() }) : card,
       )
       persistCards(cards)
       return { cards }
@@ -141,10 +153,13 @@ export const useCardStore = create<CardState>((set, get) => ({
   },
 
   batchAddTag: (ids, tagId) => {
+    const tag = useTagStore.getState().tags.find((item) => item.id === tagId)
+    if (!tag) return
     const idSet = new Set(ids)
     set((state) => {
       const cards = state.cards.map((card) => {
         if (!idSet.has(card.id) || card.tags.includes(tagId)) return card
+        if (card.categoryGroup !== tag.group) return card
         return normalizeCard({ ...card, tags: [...card.tags, tagId], updatedAt: Date.now() })
       })
       persistCards(cards)
@@ -170,17 +185,24 @@ export const useCardStore = create<CardState>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setStatusFilter: (statusFilter) => set({ statusFilter }),
   setMinRating: (minRating) => set({ minRating }),
-  setCategoryTab: (categoryTab) =>
+  setCategoryTab: (categoryTab) => set({ categoryTab, selectedTagIds: [] }),
+  rebindTagGroup: (tagId, group) => {
     set((state) => {
-      const visible = useTagStore
-        .getState()
-        .tags.filter((tag) => categoryTab === 'all' || tag.group === categoryTab)
-        .map((tag) => tag.id)
+      const cards = state.cards.map((card) => {
+        if (!card.tags.includes(tagId) || card.categoryGroup === group) return card
+        return normalizeCard({
+          ...card,
+          tags: card.tags.filter((id) => id !== tagId),
+          updatedAt: Date.now(),
+        })
+      })
+      persistCards(cards)
       return {
-        categoryTab,
-        selectedTagIds: state.selectedTagIds.filter((id) => visible.includes(id)),
+        cards,
+        selectedTagIds: state.selectedTagIds,
       }
-    }),
+    })
+  },
   setSortMode: (sortMode) => set({ sortMode }),
   toggleTagFilter: (tagId) =>
     set((state) => ({

@@ -2,13 +2,17 @@ import { useCallback, useEffect, useState } from 'react'
 import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
+import CategoryRadios from '@/components/common/CategoryRadios'
+import TagPicker from '@/components/common/TagPicker'
+import SaveSticker from '@/components/common/SaveSticker'
 import { getUploadHint, uploadImages } from '@/api/imageStore'
 import { StorageQuotaError } from '@/utils/storage'
 import { tagsForGroup } from '@/utils/filterCards'
+import { TagCategoryMismatchError } from '@/utils/tagRules'
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
-import { CATEGORY_META, TAG_COLORS } from '@/types'
+import { CATEGORY_META } from '@/types'
 import type { CategoryGroup } from '@/types'
 import styles from './UploadModal.module.css'
 
@@ -16,6 +20,7 @@ export default function UploadModal() {
   const open = useUiStore((state) => state.uploadOpen)
   const closeUpload = useUiStore((state) => state.closeUpload)
   const showToast = useUiStore((state) => state.showToast)
+  const openTags = useUiStore((state) => state.openTags)
   const addCardsFromImages = useCardStore((state) => state.addCardsFromImages)
   const categoryTab = useCardStore((state) => state.categoryTab)
   const setBusy = useUiStore((state) => state.setBusy)
@@ -23,6 +28,7 @@ export default function UploadModal() {
   const [previews, setPreviews] = useState<string[]>([])
   const [dragging, setDragging] = useState(false)
   const [busy, setLocalBusy] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [group, setGroup] = useState<CategoryGroup>('catering')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const tags = tagsForGroup(allTags, group)
@@ -31,6 +37,7 @@ export default function UploadModal() {
     if (!open) return
     setGroup(categoryTab === 'other' ? 'other' : 'catering')
     setSelectedTags([])
+    setSaved(false)
   }, [open, categoryTab])
 
   const reset = () => {
@@ -39,6 +46,7 @@ export default function UploadModal() {
     setLocalBusy(false)
     setBusy(false)
     setSelectedTags([])
+    setSaved(false)
   }
 
   const handleClose = () => {
@@ -75,9 +83,14 @@ export default function UploadModal() {
     if (previews.length === 0) return
     try {
       addCardsFromImages(previews, { categoryGroup: group, tags: selectedTags })
+      setSaved(true)
       showToast(`已收纳 ${previews.length} 个点位`, 'success')
-      handleClose()
+      window.setTimeout(() => handleClose(), 420)
     } catch (error) {
+      if (error instanceof TagCategoryMismatchError) {
+        showToast(error.message, 'error')
+        return
+      }
       const message = error instanceof StorageQuotaError ? error.message : '保存失败，请稍后重试'
       showToast(message, 'error')
     }
@@ -85,23 +98,16 @@ export default function UploadModal() {
 
   return (
     <Modal open={open} title="把想去的地方收进来" onClose={handleClose}>
+      <SaveSticker show={saved} />
       <div className={styles.group}>
         <span>所属大类</span>
-        <div className={styles.radios}>
-          {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
-            <button
-              key={key}
-              type="button"
-              className={`${styles.radio} ${group === key ? styles.radioOn : ''}`}
-              onClick={() => {
-                setGroup(key)
-                setSelectedTags([])
-              }}
-            >
-              {CATEGORY_META[key].radio}
-            </button>
-          ))}
-        </div>
+        <CategoryRadios
+          value={group}
+          onChange={(next) => {
+            setGroup(next)
+            setSelectedTags([])
+          }}
+        />
         <p className={styles.groupHint}>{CATEGORY_META[group].hint}</p>
       </div>
 
@@ -129,36 +135,16 @@ export default function UploadModal() {
       </label>
       <p className={styles.note}>{getUploadHint()}</p>
 
-      {tags.length > 0 ? (
-        <div className={styles.tagBox}>
-          <span>标签</span>
-          <div className={styles.tagRow}>
-            {tags.map((tag) => {
-              const palette = TAG_COLORS[tag.color]
-              const active = selectedTags.includes(tag.id)
-              return (
-                <button
-                  key={tag.id}
-                  type="button"
-                  className={`chip ${active ? 'active' : ''}`}
-                  style={{
-                    background: palette.bg,
-                    color: palette.fg,
-                    borderColor: active ? 'var(--gold)' : 'transparent',
-                  }}
-                  onClick={() =>
-                    setSelectedTags((prev) =>
-                      prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id],
-                    )
-                  }
-                >
-                  {tag.name}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      ) : null}
+      <div className={styles.tagBox}>
+        <span>标签</span>
+        <TagPicker
+          tags={tags}
+          selectedIds={selectedTags}
+          onChange={setSelectedTags}
+          onManage={openTags}
+          slideKey={group}
+        />
+      </div>
 
       {previews.length > 0 ? (
         <div className={styles.preview}>

@@ -3,11 +3,14 @@ import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
 import GalleryEditor from '@/components/common/GalleryEditor'
 import Stars from '@/components/common/Stars'
+import CategoryRadios from '@/components/common/CategoryRadios'
+import TagPicker from '@/components/common/TagPicker'
+import SaveSticker from '@/components/common/SaveSticker'
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
-import { CATEGORY_META, TAG_COLORS } from '@/types'
 import { tagsForGroup } from '@/utils/filterCards'
+import { TagCategoryMismatchError } from '@/utils/tagRules'
 import type { CardStatus, CategoryGroup } from '@/types'
 import styles from './EditModal.module.css'
 
@@ -54,6 +57,7 @@ export default function EditModal() {
   const card = cards.find((item) => item.id === editingCardId)
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [imageIndex, setImageIndex] = useState(0)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (!card) return
@@ -71,6 +75,7 @@ export default function EditModal() {
       categoryGroup: card.categoryGroup,
     })
     setImageIndex(card.coverIndex)
+    setSaved(false)
   }, [card])
 
   if (!card) {
@@ -83,10 +88,16 @@ export default function EditModal() {
 
   const save = () => {
     const becameDone = card.status !== 'done' && draft.status === 'done'
-    updateCard(card.id, draft)
+    try {
+      updateCard(card.id, draft)
+    } catch (error) {
+      showToast(error instanceof TagCategoryMismatchError ? error.message : '保存失败', 'error')
+      return
+    }
+    setSaved(true)
     showToast('已保存', 'success')
-    closeEdit()
     if (becameDone) triggerCelebrate()
+    window.setTimeout(() => closeEdit(), 420)
   }
 
   const requestDelete = () => {
@@ -114,6 +125,7 @@ export default function EditModal() {
       }}
       wide
     >
+      <SaveSticker show={saved} />
       <div className={styles.layout}>
         <GalleryEditor
           images={draft.images}
@@ -129,24 +141,16 @@ export default function EditModal() {
         <div className={styles.form}>
           <div className="field">
             <span>所属大类</span>
-            <div className={styles.status}>
-              {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={`chip ${draft.categoryGroup === key ? 'active' : ''}`}
-                  onClick={() =>
-                    setDraft((prev) => ({
-                      ...prev,
-                      categoryGroup: key,
-                      tags: prev.tags.filter((id) => tags.some((tag) => tag.id === id && tag.group === key)),
-                    }))
-                  }
-                >
-                  {CATEGORY_META[key].radio}
-                </button>
-              ))}
-            </div>
+            <CategoryRadios
+              value={draft.categoryGroup}
+              onChange={(key: CategoryGroup) =>
+                setDraft((prev) => ({
+                  ...prev,
+                  categoryGroup: key,
+                  tags: [],
+                }))
+              }
+            />
           </div>
           <label className="field">
             <span>店名</span>
@@ -187,34 +191,13 @@ export default function EditModal() {
 
           <div className="field">
             <span>标签</span>
-            <div className={styles.tagRow}>
-              {tagsForGroup(tags, draft.categoryGroup).length === 0 ? <p className={styles.hint}>还没有这个品类的标签</p> : null}
-              {tagsForGroup(tags, draft.categoryGroup).map((tag) => {
-                const palette = TAG_COLORS[tag.color]
-                const active = draft.tags.includes(tag.id)
-                return (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    className={`chip ${active ? 'active' : ''}`}
-                    style={{ background: palette.bg, color: palette.fg, borderColor: active ? 'var(--gold)' : 'transparent' }}
-                    onClick={() =>
-                      setDraft((prev) => ({
-                        ...prev,
-                        tags: prev.tags.includes(tag.id)
-                          ? prev.tags.filter((id) => id !== tag.id)
-                          : [...prev.tags, tag.id],
-                      }))
-                    }
-                  >
-                    {tag.name}
-                  </button>
-                )
-              })}
-              <button type="button" className="chip" onClick={openTags}>
-                管理标签
-              </button>
-            </div>
+            <TagPicker
+              tags={tagsForGroup(tags, draft.categoryGroup)}
+              selectedIds={draft.tags}
+              onChange={(ids) => setDraft((prev) => ({ ...prev, tags: ids }))}
+              onManage={openTags}
+              slideKey={draft.categoryGroup}
+            />
           </div>
 
           <div className="field">
