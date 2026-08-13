@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SearchBar from '@/components/Filter/SearchBar'
@@ -17,7 +17,7 @@ import { useUiStore } from '@/store/uiStore'
 import { filterCards, tagsForGroup } from '@/utils/filterCards'
 import { collectDashboard, countWeeklyPlans } from '@/utils/models'
 import { composeGreeting, GREETINGS, pickRandom } from '@/utils/copy'
-import type { ViewMode } from '@/types'
+import type { CategoryTab, ViewMode } from '@/types'
 import { SORT_OPTIONS } from '@/types'
 import styles from './HomePage.module.css'
 
@@ -57,6 +57,8 @@ export default function HomePage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [holdResultsH, setHoldResultsH] = useState<number>()
+  const resultsRef = useRef<HTMLDivElement>(null)
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
   const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
@@ -85,6 +87,19 @@ export default function HomePage() {
     setViewMode(mode)
     persistViewMode(mode)
   }
+
+  const changeCategory = (tab: CategoryTab) => {
+    if (tab === categoryTab) return
+    const height = resultsRef.current?.offsetHeight
+    if (height) setHoldResultsH(height)
+    setCategoryTab(tab)
+  }
+
+  useEffect(() => {
+    if (holdResultsH == null) return
+    const timer = window.setTimeout(() => setHoldResultsH(undefined), 320)
+    return () => window.clearTimeout(timer)
+  }, [categoryTab, holdResultsH])
 
   const handleDelete = (id: string) => {
     openConfirm({
@@ -122,7 +137,7 @@ export default function HomePage() {
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 
-      <CategoryTabs value={categoryTab} onChange={setCategoryTab} />
+      <CategoryTabs value={categoryTab} onChange={changeCategory} />
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <StatusFilterBar value={statusFilter} onChange={setStatusFilter} />
 
@@ -302,6 +317,11 @@ export default function HomePage() {
         </div>
       </div>
 
+      <div
+        ref={resultsRef}
+        className={styles.results}
+        style={holdResultsH ? { minHeight: holdResultsH } : undefined}
+      >
       {isEmptyAll ? (
         <EmptyNote title="行囊尚空" text="把偶遇的小店，一一收纳进来吧" action={{ label: '开始收纳', onClick: () => openUpload() }} />
       ) : tabEmpty ? (
@@ -329,6 +349,7 @@ export default function HomePage() {
           }
         />
       )}
+      </div>
 
       {selectMode ? (
         <>
