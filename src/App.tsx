@@ -20,6 +20,7 @@ import { useUiStore } from '@/store/uiStore'
 
 export default function App() {
   const theme = useConfigStore((state) => state.theme)
+  const drawerOpen = useUiStore((state) => state.drawerOpen)
 
   useEffect(() => {
     const config = useConfigStore.getState()
@@ -33,6 +34,19 @@ export default function App() {
     const timer = window.setTimeout(() => document.documentElement.classList.remove('theme-flip'), 320)
     return () => window.clearTimeout(timer)
   }, [theme])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('drawer-open', drawerOpen)
+  }, [drawerOpen])
+
+  useEffect(() => {
+    const onScroll = () => {
+      document.documentElement.style.setProperty('--par', `${window.scrollY * 0.04}px`)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     let idle = 0
@@ -62,6 +76,9 @@ export default function App() {
         else if (ui.uploadOpen) ui.closeUpload()
         else if (ui.editOpen) ui.closeEdit()
         ui.showKeyHint('Esc 关闭')
+      }
+      if (event.key === 'Enter' && ui.tagsOpen) {
+        ui.showKeyHint('Enter 新增标签')
       }
     }
     window.addEventListener('keydown', onKey)

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '@/components/layout/Logo'
 import { useUiStore } from '@/store/uiStore'
@@ -14,9 +15,17 @@ export default function AppHeader({ compact, badge, subtitle = '把种草的店�
   const openDrawer = useUiStore((state) => state.openDrawer)
   const theme = useConfigStore((state) => state.theme)
   const toggleTheme = useConfigStore((state) => state.toggleTheme)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className={`${styles.header} ${compact ? styles.compact : ''}`}>
+    <header className={`${styles.header} ${compact || scrolled ? styles.compact : ''}`}>
       <div className={styles.brand}>
         <button type="button" className={`icon-btn ${styles.menuBtn}`} aria-label="打开菜单" onClick={openDrawer}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

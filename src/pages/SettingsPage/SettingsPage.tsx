@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import AppHeader from '@/components/layout/AppHeader'
 import Button from '@/components/common/Button'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
@@ -23,6 +23,7 @@ export default function SettingsPage() {
   const setNickname = useConfigStore((state) => state.setNickname)
   const setMotto = useConfigStore((state) => state.setMotto)
   const setDefaultFilter = useConfigStore((state) => state.setDefaultFilter)
+  const setTheme = useConfigStore((state) => state.setTheme)
   const replaceConfig = useConfigStore((state) => state.replaceAll)
   const viewMode = useConfigStore((state) => state.viewMode)
   const setStatusFilter = useCardStore((state) => state.setStatusFilter)
@@ -92,15 +93,7 @@ export default function SettingsPage() {
 
   return (
     <div className={`app-shell page-enter ${styles.page}`}>
-      <header className={styles.header}>
-        <Link to="/" className="icon-btn" aria-label="返回首页">
-          ←
-        </Link>
-        <div>
-          <h1>个人中心</h1>
-          <p>把留步，安成自己喜欢的样子</p>
-        </div>
-      </header>
+      <AppHeader subtitle="把留步，安成自己喜欢的样子" />
 
       <section className={styles.card}>
         <h2>个性化</h2>
@@ -150,6 +143,25 @@ export default function SettingsPage() {
               }}
             >
               进入时看未打卡
+            </button>
+          </div>
+        </div>
+        <div className="field">
+          <span>纸页明暗</span>
+          <div className={styles.row}>
+            <button
+              type="button"
+              className={`chip ${theme === 'cream' ? 'active' : ''}`}
+              onClick={() => setTheme('cream')}
+            >
+              浅色内页
+            </button>
+            <button
+              type="button"
+              className={`chip ${theme === 'night' ? 'active' : ''}`}
+              onClick={() => setTheme('night')}
+            >
+              夜间内页
             </button>
           </div>
         </div>

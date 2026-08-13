@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useUiStore } from '@/store/uiStore'
 import { useCardStore } from '@/store/cardStore'
@@ -18,13 +19,28 @@ export default function NavDrawer() {
   const cards = useCardStore((state) => state.cards)
   const weekly = countWeeklyPlans(cards)
   const archived = cards.filter((card) => card.archived).length
+  const [shown, setShown] = useState(open)
 
-  if (!open) return null
+  useEffect(() => {
+    if (open) {
+      setShown(true)
+      return
+    }
+    const timer = window.setTimeout(() => setShown(false), 220)
+    return () => window.clearTimeout(timer)
+  }, [open])
+
+  if (!shown) return null
 
   return (
     <div className={styles.root}>
-      <button type="button" className={styles.backdrop} aria-label="关闭菜单" onClick={closeDrawer} />
-      <aside className={styles.panel}>
+      <button
+        type="button"
+        className={`${styles.backdrop} ${open ? '' : styles.backdropOut}`}
+        aria-label="关闭菜单"
+        onClick={closeDrawer}
+      />
+      <aside className={`${styles.panel} ${open ? '' : styles.panelOut}`}>
         <p>手账目录</p>
         <nav>
           {LINKS.map((link) => (

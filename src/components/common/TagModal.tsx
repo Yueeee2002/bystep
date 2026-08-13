@@ -138,7 +138,10 @@ export default function TagModal() {
             placeholder="新标签，例如：咖啡 / 展览 / 夜色"
             onChange={(event) => setName(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === 'Enter') openCreate()
+              if (event.key === 'Enter') {
+                useUiStore.getState().showKeyHint('Enter 新增标签')
+                openCreate()
+              }
             }}
           />
           <Button className={styles.addBtn} onClick={openCreate} aria-label="新增标签">

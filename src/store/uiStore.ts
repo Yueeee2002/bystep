@@ -19,6 +19,7 @@ interface UiState {
   drawerOpen: boolean
   editingCardId: string | null
   highlightCardId: string | null
+  popDate: string | null
   uploadPrefill: { visitDate?: string; status?: IExploreCard['status'] }
   lightboxImages: string[]
   lightboxIndex: number
@@ -36,6 +37,7 @@ interface UiState {
   openDrawer: () => void
   closeDrawer: () => void
   flashCard: (cardId: string) => void
+  popDay: (date: string) => void
   openLightbox: (images: string[], index?: number) => void
   closeLightbox: () => void
   stepLightbox: (delta: number) => void
@@ -60,6 +62,7 @@ export const useUiStore = create<UiState>((set, get) => ({
   drawerOpen: false,
   editingCardId: null,
   highlightCardId: null,
+  popDate: null,
   uploadPrefill: {},
   lightboxImages: [],
   lightboxIndex: 0,
@@ -82,6 +85,13 @@ export const useUiStore = create<UiState>((set, get) => ({
     window.setTimeout(() => {
       if (get().highlightCardId === cardId) set({ highlightCardId: null })
     }, 1000)
+  },
+  popDay: (date) => {
+    if (!date) return
+    set({ popDate: date })
+    window.setTimeout(() => {
+      if (get().popDate === date) set({ popDate: null })
+    }, 800)
   },
   openLightbox: (images, index = 0) =>
     set({

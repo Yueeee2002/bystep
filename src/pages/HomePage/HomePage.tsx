@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { DragEvent } from 'react'
 import SearchBar from '@/components/Filter/SearchBar'
 import StatusFilterBar from '@/components/Filter/StatusFilter'
@@ -53,7 +53,6 @@ export default function HomePage() {
   const showToast = useUiStore((state) => state.showToast)
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [compact, setCompact] = useState(false)
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
   const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
@@ -77,13 +76,6 @@ export default function HomePage() {
   const tabEmpty = cards.filter((card) => !card.archived && (categoryTab === 'all' || card.categoryGroup === categoryTab)).length === 0
   const isEmptyAll = cards.filter((card) => !card.archived).length === 0
   const isEmptyFilter = !isEmptyAll && !tabEmpty && filtered.length === 0
-
-  useEffect(() => {
-    const onScroll = () => setCompact(window.scrollY > 24)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const changeView = (mode: ViewMode) => {
     setViewMode(mode)
@@ -114,7 +106,7 @@ export default function HomePage() {
 
   return (
     <div className="app-shell page-enter">
-      <AppHeader compact={compact} badge={weekly > 0} />
+      <AppHeader badge={weekly > 0} />
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 

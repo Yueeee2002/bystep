@@ -224,3 +224,17 @@
     transform: none;
   }
 }
+
+@keyframes liftOff {
+  0% {
+    transform: rotate(-2deg) scale(1);
+    opacity: 1;
+  }
+  40% {
+    transform: rotate(3deg) scale(1.02);
+  }
+  100% {
+    transform: translateY(-18px) scale(0.7);
+    opacity: 0;
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMonthCells, countStreak, visitsForMonth } from '@/utils/calendar'
+import { buildMonthCells, countStreak, visitsForMonth, visitsForRange } from '@/utils/calendar'
 import type { IExploreCard } from '@/types'
 
 function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id'>): IExploreCard {
@@ -60,5 +60,19 @@ describe('calendar helpers', () => {
         '2026-08-13',
       ),
     ).toBe(2)
+  })
+
+  it('collects visits across a week that spans months', () => {
+    const visits = visitsForRange(
+      [
+        card({ id: 'a', visitDate: '2026-08-31' }),
+        card({ id: 'b', visitDate: '2026-09-01', categoryGroup: 'other' }),
+        card({ id: 'c', visitDate: '2026-09-08' }),
+      ],
+      '2026-08-31',
+      '2026-09-06',
+    )
+    expect(visits).toHaveLength(2)
+    expect(visits.map((item) => item.date)).toEqual(['2026-08-31', '2026-09-01'])
   })
 })

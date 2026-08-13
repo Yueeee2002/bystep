@@ -52,6 +52,7 @@ export default function EditModal() {
   const openTags = useUiStore((state) => state.openTags)
   const showToast = useUiStore((state) => state.showToast)
   const flashCard = useUiStore((state) => state.flashCard)
+  const popDay = useUiStore((state) => state.popDay)
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const cards = useCardStore((state) => state.cards)
   const updateCard = useCardStore((state) => state.updateCard)
@@ -100,6 +101,7 @@ export default function EditModal() {
     }
     setSaved(true)
     flashCard(card.id)
+    if (draft.visitDate) popDay(draft.visitDate)
     showToast('手账记录已妥善保存✨', 'success')
     if (becameDone) triggerCelebrate()
     window.setTimeout(() => closeEdit(), 420)

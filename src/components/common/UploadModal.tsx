@@ -26,11 +26,13 @@ export default function UploadModal() {
   const setBusy = useUiStore((state) => state.setBusy)
   const uploadPrefill = useUiStore((state) => state.uploadPrefill)
   const flashCard = useUiStore((state) => state.flashCard)
+  const popDay = useUiStore((state) => state.popDay)
   const allTags = useTagStore((state) => state.tags)
   const [previews, setPreviews] = useState<string[]>([])
   const [dragging, setDragging] = useState(false)
   const [busy, setLocalBusy] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [shake, setShake] = useState(false)
   const [group, setGroup] = useState<CategoryGroup>('catering')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const tags = tagsForGroup(allTags, group)
@@ -82,7 +84,11 @@ export default function UploadModal() {
   }
 
   const confirm = () => {
-    if (previews.length === 0) return
+    if (previews.length === 0) {
+      setShake(true)
+      window.setTimeout(() => setShake(false), 360)
+      return
+    }
     try {
       const created = addCardsFromImages(previews, {
         categoryGroup: group,
@@ -92,6 +98,7 @@ export default function UploadModal() {
       })
       setSaved(true)
       if (created[0]) flashCard(created[0].id)
+      if (uploadPrefill.visitDate) popDay(uploadPrefill.visitDate)
       showToast('手账记录已妥善保存✨', 'success')
       window.setTimeout(() => handleClose(), 420)
     } catch (error) {
@@ -175,7 +182,7 @@ export default function UploadModal() {
         <Button variant="ghost" onClick={handleClose}>
           取消
         </Button>
-        <Button onClick={confirm} disabled={busy || previews.length === 0}>
+        <Button className={shake ? 'shake' : ''} onClick={confirm} disabled={busy}>
           {busy ? '处理中…' : `确认导入 ${previews.length || ''}`}
         </Button>
       </div>

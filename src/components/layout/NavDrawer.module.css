@@ -93,6 +93,27 @@
   }
 }
 
+.panelOut {
+  animation: slideOut 0.22s ease forwards;
+}
+
+.backdropOut {
+  animation: fadeOut 0.22s ease forwards;
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateX(-18px);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes breathe {
   0%,
   100% {

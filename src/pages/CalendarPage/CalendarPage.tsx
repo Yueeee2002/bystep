@@ -6,7 +6,16 @@ import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
 import { TAG_COLORS } from '@/types'
 import type { CategoryTab, IExploreCard } from '@/types'
-import { buildMonthCells, buildWeekCells, countStreak, monthVisitStats, visitsForMonth } from '@/utils/calendar'
+import {
+  buildMonthCells,
+  buildWeekCells,
+  countStreak,
+  monthVisitStats,
+  startOfWeekMonday,
+  visitsForMonth,
+  visitsForRange,
+} from '@/utils/calendar'
+import { downloadMonthPoster } from '@/utils/calendarPoster'
 import { monthLabel, shiftMonth, toIsoDate } from '@/utils/dates'
 import styles from './CalendarPage.module.css'
 
@@ -15,7 +24,11 @@ const WEEKDAYS = ['周一', '周二', '周三', '周四', '周五', '周六', '�
 function Marks({ catering, other, stacked }: { catering: number; other: number; stacked?: boolean }) {
   if (catering + other === 0) return null
   if (stacked) {
-    return <span className={styles.stack}>{(catering + other).toString()}</span>
+    return (
+      <span className={styles.stack} title={`${catering + other} 条打卡`}>
+        {(catering + other).toString()}
+      </span>
+    )
   }
   return (
     <span className={styles.marks}>
@@ -32,21 +45,33 @@ export default function CalendarPage() {
   const openEdit = useUiStore((state) => state.openEdit)
   const openUpload = useUiStore((state) => state.openUpload)
   const showToast = useUiStore((state) => state.showToast)
+  const popDate = useUiStore((state) => state.popDate)
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
+  const [anchor, setAnchor] = useState(now)
   const [tab, setTab] = useState<CategoryTab>('all')
   const [mode, setMode] = useState<'month' | 'week'>('month')
   const [selected, setSelected] = useState<string | null>(null)
+  const [bubble, setBubble] = useState<string | null>(null)
   const [flip, setFlip] = useState<'left' | 'right' | ''>('')
 
-  const visits = useMemo(() => visitsForMonth(cards, year, month, tab), [cards, year, month, tab])
-  const stats = useMemo(() => monthVisitStats(visits), [visits])
+  const monthVisits = useMemo(() => visitsForMonth(cards, year, month, tab), [cards, year, month, tab])
+  const weekStart = useMemo(() => startOfWeekMonday(anchor), [anchor])
+  const weekEnd = useMemo(() => {
+    const end = new Date(weekStart)
+    end.setDate(end.getDate() + 6)
+    return end
+  }, [weekStart])
+  const weekVisits = useMemo(
+    () => visitsForRange(cards, toIsoDate(weekStart), toIsoDate(weekEnd), tab),
+    [cards, weekStart, weekEnd, tab],
+  )
+  const visits = mode === 'week' ? weekVisits : monthVisits
+  const stats = useMemo(() => monthVisitStats(monthVisits), [monthVisits])
+  const monthCells = useMemo(() => buildMonthCells(year, month, monthVisits), [year, month, monthVisits])
   const cells = useMemo(
-    () =>
-      mode === 'week'
-        ? buildWeekCells(new Date(year, month - 1, 15), visits)
-        : buildMonthCells(year, month, visits),
-    [mode, year, month, visits],
+    () => (mode === 'week' ? buildWeekCells(anchor, weekVisits) : monthCells),
+    [mode, anchor, weekVisits, monthCells],
   )
   const streak = useMemo(() => countStreak(cards), [cards])
 
@@ -57,26 +82,55 @@ export default function CalendarPage() {
     sessionStorage.setItem(key, '1')
     showToast(streak === 3 ? '连续 3 天，贴上一枚小贴纸' : '连续 7 天，手账勋章已盖上', 'success')
   }, [streak, showToast])
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setSelected(null)
+      setBubble(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   const dayCards: IExploreCard[] = visits.find((item) => item.date === selected)?.cards ?? []
 
   const turn = (delta: number) => {
     setFlip(delta > 0 ? 'left' : 'right')
-    const next = shiftMonth(year, month, delta)
-    setYear(next.year)
-    setMonth(next.month)
     setSelected(null)
+    setBubble(null)
+    if (mode === 'week') {
+      const next = new Date(anchor)
+      next.setDate(next.getDate() + delta * 7)
+      setAnchor(next)
+      setYear(next.getFullYear())
+      setMonth(next.getMonth() + 1)
+    } else {
+      const next = shiftMonth(year, month, delta)
+      setYear(next.year)
+      setMonth(next.month)
+      setAnchor(new Date(next.year, next.month - 1, 1))
+    }
     window.setTimeout(() => setFlip(''), 300)
   }
 
   const goToday = () => {
     setYear(now.getFullYear())
     setMonth(now.getMonth() + 1)
+    setAnchor(now)
     setSelected(toIsoDate(now))
+    setBubble(null)
   }
 
   const pickDay = (cell: (typeof cells)[number]) => {
     if (!cell.inMonth && mode === 'month') return
-    setSelected(cell.date)
+    if (cell.total > 0) {
+      setSelected(cell.date)
+      setBubble(null)
+      return
+    }
+    setSelected(null)
+    setBubble(cell.date)
   }
 
   const createFor = (date: string) => {
@@ -84,15 +138,33 @@ export default function CalendarPage() {
     showToast('将为所选日期记下打卡', 'info')
   }
 
+  const exportPoster = () => {
+    const ok = downloadMonthPoster(year, month, monthCells, stats)
+    showToast(ok ? '本月手账海报已保存' : '当前环境无法生成图片', ok ? 'success' : 'error')
+  }
+
+  const toggleMode = () => {
+    setMode((prev) => {
+      const next = prev === 'month' ? 'week' : 'month'
+      if (next === 'week') {
+        const sameMonth = year === now.getFullYear() && month === now.getMonth() + 1
+        setAnchor(sameMonth ? now : new Date(year, month - 1, 1))
+      }
+      return next
+    })
+    setSelected(null)
+    setBubble(null)
+  }
+
   return (
     <div className="app-shell page-enter">
       <AppHeader subtitle="把出门的日子，轻轻圈上" badge={streak >= 3} />
       <div className={styles.top}>
-        <button type="button" className={styles.nav} onClick={() => turn(-1)} aria-label="上月">
+        <button type="button" className={styles.nav} onClick={() => turn(-1)} aria-label={mode === 'week' ? '上一周' : '上月'}>
           ←
         </button>
         <h2>{monthLabel(year, month)}</h2>
-        <button type="button" className={styles.nav} onClick={() => turn(1)} aria-label="下月">
+        <button type="button" className={styles.nav} onClick={() => turn(1)} aria-label={mode === 'week' ? '下一周' : '下月'}>
           →
         </button>
       </div>
@@ -118,8 +190,11 @@ export default function CalendarPage() {
             </button>
           ))}
         </div>
-        <button type="button" className={styles.mode} onClick={() => setMode((prev) => (prev === 'month' ? 'week' : 'month'))}>
+        <button type="button" className={styles.mode} onClick={toggleMode}>
           {mode === 'month' ? '周视图' : '月视图'}
+        </button>
+        <button type="button" className={styles.poster} onClick={exportPoster}>
+          生成本月手账海报
         </button>
       </div>
       {streak > 0 ? <p className={styles.streak}>已连续打卡 {streak} 天</p> : null}
@@ -136,8 +211,8 @@ export default function CalendarPage() {
               key={cell.date}
               type="button"
               className={`${styles.cell} ${cell.inMonth ? '' : styles.out} ${cell.isToday ? styles.todayCell : ''} ${
-                selected === cell.date ? styles.cellOn : ''
-              }`}
+                selected === cell.date || bubble === cell.date ? styles.cellOn : ''
+              } ${popDate === cell.date ? styles.pop : ''}`}
               disabled={!cell.inMonth && mode === 'month'}
               onClick={() => pickDay(cell)}
             >
@@ -148,12 +223,24 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <p className={styles.foot}>
+      <p key={`${tab}-${stats.total}-${stats.catering}-${stats.other}`} className={styles.foot}>
         当月总计打卡：{stats.total} 次・食肆小店 {stats.catering} 次・野趣小仓 {stats.other} 次
       </p>
 
       {stats.total === 0 ? (
         <EmptyNote title="本月还很安静" text="本月还没有出门探店，快去记录第一笔美好吧✨" action={{ label: '新建打卡', onClick: () => createFor(toIsoDate()) }} />
+      ) : null}
+
+      {bubble ? (
+        <div className={styles.bubble}>
+          <p>今日暂无打卡记录</p>
+          <button type="button" className="btn btn-primary" onClick={() => createFor(bubble)}>
+            新建打卡
+          </button>
+          <button type="button" className="btn btn-text" onClick={() => setBubble(null)}>
+            收起
+          </button>
+        </div>
       ) : null}
 
       {selected ? (

@@ -25,18 +25,16 @@ export function startOfWeekMonday(date: Date): Date {
   return copy
 }
 
-export function visitsForMonth(
+function groupVisits(
   cards: IExploreCard[],
-  year: number,
-  month: number,
-  tab: CategoryTab = 'all',
+  tab: CategoryTab,
+  include: (date: string) => boolean,
 ): DayVisit[] {
-  const prefix = `${year}-${String(month).padStart(2, '0')}`
   const map = new Map<string, IExploreCard[]>()
   for (const card of cards) {
     if (card.archived) continue
     const date = cardVisitDate(card)
-    if (!date.startsWith(prefix)) continue
+    if (!date || !include(date)) continue
     if (tab !== 'all' && card.categoryGroup !== tab) continue
     const list = map.get(date) ?? []
     list.push(card)
@@ -50,6 +48,25 @@ export function visitsForMonth(
       catering: list.filter((item) => item.categoryGroup === 'catering').length,
       other: list.filter((item) => item.categoryGroup === 'other').length,
     }))
+}
+
+export function visitsForMonth(
+  cards: IExploreCard[],
+  year: number,
+  month: number,
+  tab: CategoryTab = 'all',
+): DayVisit[] {
+  const prefix = `${year}-${String(month).padStart(2, '0')}`
+  return groupVisits(cards, tab, (date) => date.startsWith(prefix))
+}
+
+export function visitsForRange(
+  cards: IExploreCard[],
+  startIso: string,
+  endIso: string,
+  tab: CategoryTab = 'all',
+): DayVisit[] {
+  return groupVisits(cards, tab, (date) => date >= startIso && date <= endIso)
 }
 
 export function buildMonthCells(

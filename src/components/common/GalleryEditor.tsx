@@ -28,6 +28,7 @@ export default function GalleryEditor({
   const [dragging, setDragging] = useState(false)
   const [dragFrom, setDragFrom] = useState<number | null>(null)
   const [pasted, setPasted] = useState(false)
+  const [leaving, setLeaving] = useState<number | null>(null)
 
   const current = images[activeIndex] ?? images[0]
 
@@ -67,14 +68,21 @@ export default function GalleryEditor({
       confirmText: '移除',
       danger: true,
       onConfirm: () => {
-        const result = removeImageAt(images, coverIndex, index)
-        if (result.blocked) return
-        const nextActive = Math.min(activeIndex > index ? activeIndex - 1 : activeIndex, result.images.length - 1)
-        onChange({
-          images: result.images,
-          coverIndex: result.coverIndex,
-          activeIndex: Math.max(0, nextActive),
-        })
+        setLeaving(index)
+        window.setTimeout(() => {
+          const result = removeImageAt(images, coverIndex, index)
+          if (result.blocked) {
+            setLeaving(null)
+            return
+          }
+          const nextActive = Math.min(activeIndex > index ? activeIndex - 1 : activeIndex, result.images.length - 1)
+          onChange({
+            images: result.images,
+            coverIndex: result.coverIndex,
+            activeIndex: Math.max(0, nextActive),
+          })
+          setLeaving(null)
+        }, 240)
       },
     })
   }
@@ -142,7 +150,7 @@ export default function GalleryEditor({
           {images.map((src, index) => (
             <div
               key={`${src.slice(-24)}-${index}`}
-              className={`${styles.thumb} ${index === activeIndex ? styles.current : ''} ${index === coverIndex ? styles.cover : ''} ${dragFrom === index ? styles.dragging : ''}`}
+              className={`${styles.thumb} ${index === activeIndex ? styles.current : ''} ${index === coverIndex ? styles.cover : ''} ${dragFrom === index ? styles.dragging : ''} ${leaving === index ? styles.leaving : ''}`}
               draggable
               onDragStart={() => setDragFrom(index)}
               onDragOver={(event) => event.preventDefault()}
