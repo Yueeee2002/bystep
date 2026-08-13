@@ -6,6 +6,7 @@ import { load, save, STORAGE_KEYS } from '@/utils/storage'
 interface ConfigState extends IAppConfig {
   hydrate: (config: IAppConfig) => void
   setNickname: (nickname: string) => void
+  setMotto: (motto: string) => void
   setDefaultFilter: (defaultFilter: IAppConfig['defaultFilter']) => void
   setViewMode: (viewMode: IAppConfig['viewMode']) => void
   setTheme: (theme: ThemeMode) => void
@@ -14,9 +15,10 @@ interface ConfigState extends IAppConfig {
   applyDefaultFilter: () => StatusFilter
 }
 
-function snapshot(state: Pick<ConfigState, 'nickname' | 'defaultFilter' | 'viewMode' | 'theme'>): IAppConfig {
+function snapshot(state: IAppConfig): IAppConfig {
   return {
     nickname: state.nickname,
+    motto: state.motto,
     defaultFilter: state.defaultFilter,
     viewMode: state.viewMode,
     theme: state.theme,
@@ -36,6 +38,11 @@ export const useConfigStore = create<ConfigState>((set, get) => {
       const next = snapshot({ ...get(), nickname })
       persistConfig(next)
       set({ nickname })
+    },
+    setMotto: (motto) => {
+      const next = snapshot({ ...get(), motto })
+      persistConfig(next)
+      set({ motto })
     },
     setDefaultFilter: (defaultFilter) => {
       const next = snapshot({ ...get(), defaultFilter })

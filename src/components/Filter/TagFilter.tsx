@@ -1,17 +1,27 @@
 import { useMemo } from 'react'
-import type { ITag } from '@/types'
+import type { ITag, SortMode } from '@/types'
 import { TAG_COLORS } from '@/types'
 import { pickRandom, TAG_EMPTY_HINTS } from '@/utils/copy'
+import SortMenu from '@/components/Filter/SortMenu'
 import styles from './FilterBar.module.css'
 
 interface TagFilterProps {
   tags: ITag[]
   selectedIds: string[]
+  sortMode: SortMode
   onToggle: (id: string) => void
   onManage: () => void
+  onSortChange: (mode: SortMode) => void
 }
 
-export default function TagFilter({ tags, selectedIds, onToggle, onManage }: TagFilterProps) {
+export default function TagFilter({
+  tags,
+  selectedIds,
+  sortMode,
+  onToggle,
+  onManage,
+  onSortChange,
+}: TagFilterProps) {
   const emptyHint = useMemo(() => pickRandom(TAG_EMPTY_HINTS), [])
 
   return (
@@ -43,6 +53,7 @@ export default function TagFilter({ tags, selectedIds, onToggle, onManage }: Tag
             })
           )}
         </div>
+        <SortMenu value={sortMode} onChange={onSortChange} />
         <button type="button" className={styles.manage} onClick={onManage}>
           管理
         </button>

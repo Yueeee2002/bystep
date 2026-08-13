@@ -19,7 +19,9 @@ export default function SettingsPage() {
   const nickname = useConfigStore((state) => state.nickname)
   const defaultFilter = useConfigStore((state) => state.defaultFilter)
   const theme = useConfigStore((state) => state.theme)
+  const motto = useConfigStore((state) => state.motto)
   const setNickname = useConfigStore((state) => state.setNickname)
+  const setMotto = useConfigStore((state) => state.setMotto)
   const setDefaultFilter = useConfigStore((state) => state.setDefaultFilter)
   const replaceConfig = useConfigStore((state) => state.replaceAll)
   const viewMode = useConfigStore((state) => state.viewMode)
@@ -28,6 +30,7 @@ export default function SettingsPage() {
   const showToast = useUiStore((state) => state.showToast)
   const fileRef = useRef<HTMLInputElement>(null)
   const [draftName, setDraftName] = useState(nickname)
+  const [draftMotto, setDraftMotto] = useState(motto)
 
   const pendingCount = cards.filter((card) => card.status === 'pending').length
   const doneCount = cards.filter((card) => card.status === 'done').length
@@ -35,6 +38,7 @@ export default function SettingsPage() {
   const exportBackup = () => {
     const payload = buildBackupPayload(cards, tags, {
       nickname,
+      motto,
       defaultFilter,
       viewMode,
       theme,
@@ -52,6 +56,7 @@ export default function SettingsPage() {
       replaceConfig(payload.config)
       setStatusFilter(payload.config.defaultFilter)
       setDraftName(payload.config.nickname)
+      setDraftMotto(payload.config.motto ?? '')
       showToast('数据已恢复', 'success')
     } catch (error) {
       const message =
@@ -75,10 +80,11 @@ export default function SettingsPage() {
         clearAllExploreData()
         replaceCards([])
         replaceTags([])
-        const next: IAppConfig = { nickname: '', defaultFilter: 'all', viewMode: 'grid', theme: 'cream' }
+        const next: IAppConfig = { nickname: '', motto: '', defaultFilter: 'all', viewMode: 'grid', theme: 'cream' }
         replaceConfig(next)
         setStatusFilter('all')
         setDraftName('')
+        setDraftMotto('')
         showToast('已清空全部数据', 'info')
       },
     })
@@ -91,7 +97,7 @@ export default function SettingsPage() {
           ←
         </Link>
         <div>
-          <h1>设置</h1>
+          <h1>个人中心</h1>
           <p>把留步，安成自己喜欢的样子</p>
         </div>
       </header>
@@ -111,6 +117,15 @@ export default function SettingsPage() {
                 event.currentTarget.blur()
               }
             }}
+          />
+        </label>
+        <label className="field">
+          <span>手账寄语</span>
+          <input
+            value={draftMotto}
+            placeholder="例如：慢慢走，都会遇见。"
+            onChange={(event) => setDraftMotto(event.target.value)}
+            onBlur={() => setMotto(draftMotto.trim())}
           />
         </label>
         <div className="field">
@@ -161,7 +176,7 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className={styles.row}>
-          <Button onClick={exportBackup}>导出备份</Button>
+          <Button onClick={exportBackup}>导出全部记录与配图</Button>
           <Button variant="ghost" onClick={() => fileRef.current?.click()}>
             导入恢复
           </Button>
@@ -185,7 +200,7 @@ export default function SettingsPage() {
       <section className={styles.card}>
         <h2>关于留步</h2>
         <p className={styles.about}>
-          版本 {APP_VERSION} · 纯本地收纳，不做云同步，也不打扰你。
+          版本 {APP_VERSION} · 照片以独立副本收纳，清理相册原图也不影响这里。
         </p>
         <p className={styles.soon}>
           下一次迭代预告：地图视图、路线规划和云端轻同步。地址已经按结构化文本保存，随时可以走向远方。

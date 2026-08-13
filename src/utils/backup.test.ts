@@ -18,11 +18,13 @@ describe('backup', () => {
           rating: 0,
           pinned: false,
           plannedAt: '',
+          categoryGroup: 'catering',
+          likeCount: 0,
           createdAt: 1,
           updatedAt: 1,
         },
       ],
-      [{ id: 't1', name: '咖啡', color: 'mocha' }],
+      [{ id: 't1', name: '咖啡', color: 'mocha', group: 'catering' }],
       { ...DEFAULT_CONFIG, nickname: '小雨' },
     )
 

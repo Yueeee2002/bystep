@@ -13,6 +13,8 @@ describe('tag and card binding', () => {
       selectedTagIds: [],
       minRating: 0,
       viewMode: 'grid',
+      categoryTab: 'all',
+      sortMode: 'newest',
     })
   })
 
@@ -40,6 +42,8 @@ describe('tag and card binding', () => {
           rating: 0,
           pinned: false,
           plannedAt: '',
+          categoryGroup: 'other',
+          likeCount: 0,
           createdAt: 1,
           updatedAt: 1,
         },

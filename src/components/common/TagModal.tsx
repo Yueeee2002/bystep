@@ -4,8 +4,8 @@ import Modal from '@/components/common/Modal'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
 import { useUiStore } from '@/store/uiStore'
-import { TAG_COLOR_ORDER, TAG_COLORS } from '@/types'
-import type { TagColor } from '@/types'
+import { TAG_COLOR_ORDER, TAG_COLORS, CATEGORY_META } from '@/types'
+import type { CategoryGroup, CategoryTab, TagColor } from '@/types'
 import styles from './TagModal.module.css'
 
 export default function TagModal() {
@@ -16,12 +16,14 @@ export default function TagModal() {
   const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
   const [color, setColor] = useState<TagColor>('mocha')
+  const [group, setGroup] = useState<CategoryGroup>('catering')
+  const [filter, setFilter] = useState<CategoryTab>('all')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [dragFrom, setDragFrom] = useState<number | null>(null)
 
   const handleAdd = () => {
-    const created = addTag(name, color)
+    const created = addTag(name, color, group)
     if (!created) {
       showToast(name.trim() ? '标签已存在或无效' : '请输入标签名', 'error')
       return
@@ -59,6 +61,8 @@ export default function TagModal() {
     setDragFrom(null)
   }
 
+  const visible = filter === 'all' ? tags : tags.filter((tag) => tag.group === filter)
+
   return (
     <Modal
       open={open}
@@ -81,6 +85,18 @@ export default function TagModal() {
         <Button onClick={handleAdd}>新增</Button>
       </div>
       <div className={styles.colors}>
+        {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+          <button
+            key={key}
+            type="button"
+            className={`${styles.swatch} ${group === key ? styles.swatchOn : ''}`}
+            onClick={() => setGroup(key)}
+          >
+            {CATEGORY_META[key].tab}
+          </button>
+        ))}
+      </div>
+      <div className={styles.colors}>
         {TAG_COLOR_ORDER.map((item) => (
           <button
             key={item}
@@ -94,9 +110,24 @@ export default function TagModal() {
         ))}
       </div>
 
+      <div className={styles.colors}>
+        {(['all', 'catering', 'other'] as CategoryTab[]).map((key) => (
+          <button
+            key={key}
+            type="button"
+            className={`${styles.swatch} ${filter === key ? styles.swatchOn : ''}`}
+            onClick={() => setFilter(key)}
+          >
+            {key === 'all' ? '全部标签' : CATEGORY_META[key].tab}
+          </button>
+        ))}
+      </div>
+
       <ul className={styles.list}>
-        {tags.length === 0 ? <li className={styles.empty}>还没有标签。想怎么分类，就轻轻写下。</li> : null}
-        {tags.map((tag, index) => (
+        {visible.length === 0 ? <li className={styles.empty}>还没有标签。想怎么分类，就轻轻写下。</li> : null}
+        {visible.map((tag) => {
+          const index = tags.findIndex((item) => item.id === tag.id)
+          return (
           <li
             key={tag.id}
             draggable
@@ -125,6 +156,7 @@ export default function TagModal() {
                 <span className={styles.item}>
                   <i style={{ background: TAG_COLORS[tag.color].bg }} />
                   {tag.name}
+                  <em>{CATEGORY_META[tag.group].tab}</em>
                 </span>
                 <div className={styles.actions}>
                   {TAG_COLOR_ORDER.map((item) => (
@@ -153,7 +185,8 @@ export default function TagModal() {
               </>
             )}
           </li>
-        ))}
+          )
+        })}
       </ul>
     </Modal>
   )

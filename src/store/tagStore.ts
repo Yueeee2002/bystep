@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { ITag, TagColor } from '@/types'
+import type { CategoryGroup, ITag, TagColor } from '@/types'
 import { createId } from '@/utils/filterCards'
 import { moveItem, normalizeTag } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
@@ -7,8 +7,8 @@ import { load, save, STORAGE_KEYS } from '@/utils/storage'
 interface TagState {
   tags: ITag[]
   hydrate: (tags: ITag[]) => void
-  addTag: (name: string, color?: TagColor) => ITag | null
-  updateTag: (id: string, patch: Partial<Pick<ITag, 'name' | 'color'>>) => boolean
+  addTag: (name: string, color?: TagColor, group?: CategoryGroup) => ITag | null
+  updateTag: (id: string, patch: Partial<Pick<ITag, 'name' | 'color' | 'group'>>) => boolean
   deleteTag: (id: string) => void
   moveTag: (from: number, to: number) => void
   replaceAll: (tags: ITag[]) => void
@@ -24,17 +24,17 @@ function normalizeName(name: string) {
 
 export const useTagStore = create<TagState>((set, get) => ({
   tags: load<ITag[]>(STORAGE_KEYS.tags, []).map((tag) =>
-    normalizeTag({ id: tag.id, name: tag.name, color: tag.color }),
+    normalizeTag({ id: tag.id, name: tag.name, color: tag.color, group: tag.group }),
   ),
 
   hydrate: (tags) => set({ tags: tags.map((tag) => normalizeTag(tag)) }),
 
-  addTag: (rawName, color = 'mocha') => {
+  addTag: (rawName, color = 'mocha', group = 'catering') => {
     const name = normalizeName(rawName)
     if (!name) return null
     const exists = get().tags.some((tag) => tag.name === name)
     if (exists) return null
-    const tag: ITag = { id: createId(), name, color }
+    const tag: ITag = { id: createId(), name, color, group }
     set((state) => {
       const tags = [...state.tags, tag]
       persistTags(tags)

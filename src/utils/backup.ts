@@ -4,6 +4,7 @@ import { normalizeCard, normalizeTag } from '@/utils/models'
 
 export const DEFAULT_CONFIG: IAppConfig = {
   nickname: '',
+  motto: '',
   defaultFilter: 'all',
   viewMode: 'grid',
   theme: 'cream',

@@ -14,6 +14,8 @@ function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id' | 'title'>)
     rating: 0,
     pinned: false,
     plannedAt: '',
+    categoryGroup: 'catering',
+    likeCount: 0,
     createdAt: 1,
     updatedAt: 1,
     ...patch,
@@ -21,8 +23,8 @@ function card(patch: Partial<IExploreCard> & Pick<IExploreCard, 'id' | 'title'>)
 }
 
 const tags: ITag[] = [
-  { id: 't1', name: '咖啡', color: 'mocha' },
-  { id: 't2', name: '展览', color: 'mint' },
+  { id: 't1', name: '咖啡', color: 'mocha', group: 'catering' },
+  { id: 't2', name: '展览', color: 'mint', group: 'other' },
 ]
 
 describe('filterCards', () => {
@@ -116,5 +118,35 @@ describe('filterCards', () => {
     expect(
       filterCards(rated, { query: '', status: 'all', selectedTagIds: [], tags, minRating: 3 }).map((item) => item.id),
     ).toEqual(['b'])
+  })
+
+  it('filters by category tab', () => {
+    const mixed = [
+      card({ id: 'a', title: 'a', categoryGroup: 'catering' }),
+      card({ id: 'b', title: 'b', categoryGroup: 'other' }),
+    ]
+    expect(
+      filterCards(mixed, { query: '', status: 'all', selectedTagIds: [], tags, categoryTab: 'other' }).map(
+        (item) => item.id,
+      ),
+    ).toEqual(['b'])
+  })
+
+  it('sorts by rating and checked-in first', () => {
+    const mixed = [
+      card({ id: 'a', title: 'a', rating: 2, createdAt: 30 }),
+      card({ id: 'b', title: 'b', rating: 5, createdAt: 10 }),
+      card({ id: 'c', title: 'c', status: 'done', createdAt: 20 }),
+    ]
+    expect(
+      filterCards(mixed, { query: '', status: 'all', selectedTagIds: [], tags, sortMode: 'starDesc' }).map(
+        (item) => item.id,
+      ),
+    ).toEqual(['b', 'a', 'c'])
+    expect(
+      filterCards(mixed, { query: '', status: 'all', selectedTagIds: [], tags, sortMode: 'checkedFirst' }).map(
+        (item) => item.id,
+      ),
+    ).toEqual(['c', 'a', 'b'])
   })
 })

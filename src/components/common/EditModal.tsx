@@ -6,8 +6,9 @@ import Stars from '@/components/common/Stars'
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
-import { TAG_COLORS } from '@/types'
-import type { CardStatus } from '@/types'
+import { CATEGORY_META, TAG_COLORS } from '@/types'
+import { tagsForGroup } from '@/utils/filterCards'
+import type { CardStatus, CategoryGroup } from '@/types'
 import styles from './EditModal.module.css'
 
 interface Draft {
@@ -21,6 +22,7 @@ interface Draft {
   coverIndex: number
   rating: number
   plannedAt: string
+  categoryGroup: CategoryGroup
 }
 
 const emptyDraft: Draft = {
@@ -34,6 +36,7 @@ const emptyDraft: Draft = {
   coverIndex: 0,
   rating: 0,
   plannedAt: '',
+  categoryGroup: 'catering',
 }
 
 export default function EditModal() {
@@ -65,6 +68,7 @@ export default function EditModal() {
       coverIndex: card.coverIndex,
       rating: card.rating,
       plannedAt: card.plannedAt,
+      categoryGroup: card.categoryGroup,
     })
     setImageIndex(card.coverIndex)
   }, [card])
@@ -123,6 +127,27 @@ export default function EditModal() {
         />
 
         <div className={styles.form}>
+          <div className="field">
+            <span>所属大类</span>
+            <div className={styles.status}>
+              {(Object.keys(CATEGORY_META) as CategoryGroup[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`chip ${draft.categoryGroup === key ? 'active' : ''}`}
+                  onClick={() =>
+                    setDraft((prev) => ({
+                      ...prev,
+                      categoryGroup: key,
+                      tags: prev.tags.filter((id) => tags.some((tag) => tag.id === id && tag.group === key)),
+                    }))
+                  }
+                >
+                  {CATEGORY_META[key].radio}
+                </button>
+              ))}
+            </div>
+          </div>
           <label className="field">
             <span>店名</span>
             <input
@@ -163,8 +188,8 @@ export default function EditModal() {
           <div className="field">
             <span>标签</span>
             <div className={styles.tagRow}>
-              {tags.length === 0 ? <p className={styles.hint}>还没有标签</p> : null}
-              {tags.map((tag) => {
+              {tagsForGroup(tags, draft.categoryGroup).length === 0 ? <p className={styles.hint}>还没有这个品类的标签</p> : null}
+              {tagsForGroup(tags, draft.categoryGroup).map((tag) => {
                 const palette = TAG_COLORS[tag.color]
                 const active = draft.tags.includes(tag.id)
                 return (

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import type { DragEvent } from 'react'
-import { compressImages } from '@/utils/imageHelper'
+import { uploadImages } from '@/api/imageStore'
 import { moveItem, remapIndexAfterMove, removeImageAt } from '@/utils/models'
 import { useUiStore } from '@/store/uiStore'
 import styles from './GalleryEditor.module.css'
@@ -33,7 +33,7 @@ export default function GalleryEditor({
   const ingest = async (fileList: FileList | File[]) => {
     setBusy(true)
     try {
-      const added = await compressImages(Array.from(fileList))
+      const added = await uploadImages(Array.from(fileList))
       const nextImages = [...images, ...added]
       onChange({
         images: nextImages,

@@ -1,6 +1,6 @@
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
-import type { TagColor } from '@/types'
+import type { CategoryGroup, TagColor } from '@/types'
 
 export function useTagData() {
   const tags = useTagStore((state) => state.tags)
@@ -9,7 +9,7 @@ export function useTagData() {
   const moveTag = useTagStore((state) => state.moveTag)
   const replaceAll = useTagStore((state) => state.replaceAll)
 
-  const addTag = (name: string, color?: TagColor) => addTagRaw(name, color)
+  const addTag = (name: string, color?: TagColor, group?: CategoryGroup) => addTagRaw(name, color, group)
 
   const deleteTag = (id: string) => {
     useTagStore.getState().deleteTag(id)

@@ -3,6 +3,9 @@ export type StatusFilter = 'all' | 'pending' | 'done'
 export type ViewMode = 'grid' | 'list'
 export type ThemeMode = 'cream' | 'night'
 export type TagColor = 'mocha' | 'mint' | 'apricot' | 'haze'
+export type CategoryGroup = 'catering' | 'other'
+export type CategoryTab = 'all' | CategoryGroup
+export type SortMode = 'newest' | 'oldest' | 'starDesc' | 'starAsc' | 'checkedFirst'
 
 export interface IExploreCard {
   id: string
@@ -19,6 +22,8 @@ export interface IExploreCard {
   rating: number
   pinned: boolean
   plannedAt: string
+  categoryGroup: CategoryGroup
+  likeCount: number
   createdAt: number
   updatedAt: number
 }
@@ -27,10 +32,12 @@ export interface ITag {
   id: string
   name: string
   color: TagColor
+  group: CategoryGroup
 }
 
 export interface IAppConfig {
   nickname: string
+  motto: string
   defaultFilter: 'all' | 'pending'
   viewMode: ViewMode
   theme: ThemeMode
@@ -44,7 +51,7 @@ export interface IBackupPayload {
   config: IAppConfig
 }
 
-export const APP_VERSION = 'V1.0'
+export const APP_VERSION = 'V1.1'
 export const APP_NAME = '留步'
 
 export const TAG_COLORS: Record<TagColor, { bg: string; fg: string; label: string }> = {
@@ -55,3 +62,29 @@ export const TAG_COLORS: Record<TagColor, { bg: string; fg: string; label: strin
 }
 
 export const TAG_COLOR_ORDER: TagColor[] = ['mocha', 'mint', 'apricot', 'haze']
+
+export const CATEGORY_META: Record<
+  CategoryGroup,
+  { tab: string; radio: string; hint: string; mapColor: string }
+> = {
+  catering: {
+    tab: '食肆小店',
+    radio: '食肆小店',
+    hint: '咖啡、茶饮、小吃与餐桌边的温柔',
+    mapColor: '#e8c4a8',
+  },
+  other: {
+    tab: '野趣小仓',
+    radio: '城市风物',
+    hint: '书店、市集、展览与路上的风景',
+    mapColor: '#c5cdd6',
+  },
+}
+
+export const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'newest', label: '默认排序' },
+  { value: 'oldest', label: '添加时间由早到晚' },
+  { value: 'starDesc', label: '星级由高至低' },
+  { value: 'starAsc', label: '星级由低至高' },
+  { value: 'checkedFirst', label: '已打卡内容优先展示' },
+]

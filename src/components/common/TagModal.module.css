@@ -52,11 +52,11 @@
   color: var(--ink);
 }
 
-.item i {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
+.item em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--ash);
+  opacity: 0.8;
 }
 
 .actions {

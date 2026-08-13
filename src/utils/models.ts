@@ -1,4 +1,4 @@
-import type { IExploreCard, ITag, TagColor } from '@/types'
+import type { CategoryGroup, IExploreCard, ITag, TagColor } from '@/types'
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
@@ -56,6 +56,8 @@ export function normalizeCard(raw: Partial<IExploreCard> & Pick<IExploreCard, 'i
     rating: clamp(raw.rating ?? 0, 0, 5),
     pinned: Boolean(raw.pinned),
     plannedAt: typeof raw.plannedAt === 'string' ? raw.plannedAt : '',
+    categoryGroup: raw.categoryGroup === 'other' ? 'other' : 'catering',
+    likeCount: Math.max(0, raw.likeCount ?? 0),
     createdAt: raw.createdAt ?? Date.now(),
     updatedAt: raw.updatedAt ?? Date.now(),
   }
@@ -63,9 +65,12 @@ export function normalizeCard(raw: Partial<IExploreCard> & Pick<IExploreCard, 'i
 
 const TAG_COLOR_SET = new Set<TagColor>(['mocha', 'mint', 'apricot', 'haze'])
 
+const TAG_GROUP_SET = new Set<CategoryGroup>(['catering', 'other'])
+
 export function normalizeTag(raw: Partial<ITag> & Pick<ITag, 'id' | 'name'>): ITag {
   const color = raw.color && TAG_COLOR_SET.has(raw.color) ? raw.color : 'mocha'
-  return { id: raw.id, name: raw.name, color }
+  const group = raw.group && TAG_GROUP_SET.has(raw.group) ? raw.group : 'catering'
+  return { id: raw.id, name: raw.name, color, group }
 }
 
 export function isThisWeek(isoDate: string, now = new Date()): boolean {
@@ -87,14 +92,21 @@ export function countWeeklyPlans(cards: IExploreCard[], now = new Date()): numbe
   return cards.filter((card) => card.status === 'pending' && isThisWeek(card.plannedAt, now)).length
 }
 
-export function collectDashboard(cards: IExploreCard[]) {
+export function collectDashboard(cards: IExploreCard[], tab: 'all' | CategoryGroup = 'all') {
   const pending = cards.filter((card) => card.status === 'pending').length
   const done = cards.filter((card) => card.status === 'done').length
   const words = cards.reduce((sum, card) => sum + card.notes.trim().length + card.review.trim().length, 0)
+  const totalLine =
+    tab === 'catering'
+      ? `总共收录：${cards.length} 家美味小店`
+      : tab === 'other'
+        ? `总共收录：${cards.length} 处城市美好风物`
+        : `总共收录：${cards.length} 条记录`
   return {
     total: cards.length,
     pending,
     done,
     words,
+    totalLine,
   }
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import SearchBar from '@/components/Filter/SearchBar'
 import StatusFilterBar from '@/components/Filter/StatusFilter'
 import TagFilter from '@/components/Filter/TagFilter'
+import CategoryTabs from '@/components/Filter/CategoryTabs'
 import CardGrid from '@/components/Card/CardGrid'
 import Button from '@/components/common/Button'
 import BatchBar from '@/components/common/BatchBar'
@@ -10,7 +11,7 @@ import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
-import { filterCards } from '@/utils/filterCards'
+import { filterCards, tagsForGroup } from '@/utils/filterCards'
 import { collectDashboard, countWeeklyPlans } from '@/utils/models'
 import { composeGreeting, GREETINGS, pickRandom } from '@/utils/copy'
 import type { ViewMode } from '@/types'
@@ -45,9 +46,13 @@ export default function HomePage() {
   const selectedTagIds = useCardStore((state) => state.selectedTagIds)
   const minRating = useCardStore((state) => state.minRating)
   const viewMode = useCardStore((state) => state.viewMode)
+  const categoryTab = useCardStore((state) => state.categoryTab)
+  const sortMode = useCardStore((state) => state.sortMode)
   const setSearchQuery = useCardStore((state) => state.setSearchQuery)
   const setStatusFilter = useCardStore((state) => state.setStatusFilter)
   const setMinRating = useCardStore((state) => state.setMinRating)
+  const setCategoryTab = useCardStore((state) => state.setCategoryTab)
+  const setSortMode = useCardStore((state) => state.setSortMode)
   const toggleTagFilter = useCardStore((state) => state.toggleTagFilter)
   const setViewMode = useCardStore((state) => state.setViewMode)
   const deleteCard = useCardStore((state) => state.deleteCard)
@@ -69,8 +74,8 @@ export default function HomePage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
-  const stats = useMemo(() => collectDashboard(cards), [cards])
   const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
+  const visibleTags = useMemo(() => tagsForGroup(tags, categoryTab), [tags, categoryTab])
 
   const filtered = useMemo(
     () =>
@@ -79,13 +84,17 @@ export default function HomePage() {
         status: statusFilter,
         selectedTagIds,
         minRating,
+        categoryTab,
+        sortMode,
         tags,
       }),
-    [cards, searchQuery, statusFilter, selectedTagIds, minRating, tags],
+    [cards, searchQuery, statusFilter, selectedTagIds, minRating, categoryTab, sortMode, tags],
   )
 
+  const stats = useMemo(() => collectDashboard(filtered, categoryTab), [filtered, categoryTab])
+  const tabEmpty = cards.filter((card) => categoryTab === 'all' || card.categoryGroup === categoryTab).length === 0
   const isEmptyAll = cards.length === 0
-  const isEmptyFilter = !isEmptyAll && filtered.length === 0
+  const isEmptyFilter = !isEmptyAll && !tabEmpty && filtered.length === 0
 
   const changeView = (mode: ViewMode) => {
     setViewMode(mode)
@@ -116,26 +125,27 @@ export default function HomePage() {
           </div>
         </div>
         <div className={styles.headerActions}>
-          <button type="button" className="icon-btn" aria-label="切换主题" onClick={toggleTheme}>
-            {theme === 'night' ? '☾' : '☀'}
-          </button>
-          <Link to="/settings" className="icon-btn" aria-label="设置">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
+          <Link to="/settings" className="icon-btn" aria-label="个人中心">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8.2" r="3.05" stroke="currentColor" strokeWidth="1.35" />
               <path
-                d="M12 3.5v2.2M12 18.3v2.2M4.9 6.5l1.6 1.6M17.5 16.9l1.6 1.6M3.5 12h2.2M18.3 12h2.2M4.9 17.5l1.6-1.6M17.5 7.1l1.6-1.6"
+                d="M5.4 18.6c.7-3.1 3.3-4.9 6.6-4.9s5.9 1.8 6.6 4.9"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.35"
                 strokeLinecap="round"
               />
             </svg>
           </Link>
+          <button type="button" className="icon-btn" aria-label="切换主题" onClick={toggleTheme}>
+            {theme === 'night' ? '☾' : '☀'}
+          </button>
         </div>
       </header>
 
       <p className={styles.greet}>{greeting}</p>
       {weekly > 0 ? <p className={styles.ticker}>{weekly} 家店铺计划本周打卡</p> : null}
 
+      <CategoryTabs value={categoryTab} onChange={setCategoryTab} />
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <StatusFilterBar value={statusFilter} onChange={setStatusFilter} />
       <div className={styles.rating}>
@@ -154,7 +164,14 @@ export default function HomePage() {
           </button>
         ))}
       </div>
-      <TagFilter tags={tags} selectedIds={selectedTagIds} onToggle={toggleTagFilter} onManage={openTags} />
+      <TagFilter
+        tags={visibleTags}
+        selectedIds={selectedTagIds}
+        sortMode={sortMode}
+        onToggle={toggleTagFilter}
+        onManage={openTags}
+        onSortChange={setSortMode}
+      />
 
       <div className={styles.toolbar}>
         <div className={styles.actions}>
@@ -204,6 +221,12 @@ export default function HomePage() {
           <p>把偶遇的小店，一一收纳进来吧</p>
           <Button onClick={openUpload}>开始收纳</Button>
         </section>
+      ) : tabEmpty ? (
+        <section className={styles.empty}>
+          <h2>这一格还空着</h2>
+          <p>换个品类看看，或把新的遇见轻轻收进来。</p>
+          <Button onClick={openUpload}>开始收纳</Button>
+        </section>
       ) : isEmptyFilter ? (
         <section className={styles.empty}>
           <h2>没有符合条件的点位</h2>
@@ -233,7 +256,7 @@ export default function HomePage() {
       {selectMode ? (
         <BatchBar
           count={selectedIds.length}
-          tags={tags}
+          tags={visibleTags}
           onAddTag={(tagId) => {
             batchAddTag(selectedIds, tagId)
             showToast('已批量添加标签', 'success')
@@ -249,7 +272,7 @@ export default function HomePage() {
       ) : null}
 
       <p className={styles.dash}>
-        总共收藏：{stats.total}家｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
+        {stats.totalLine}｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
       </p>
       <footer className={styles.foot}>留步・收藏每一场不期而遇的探店</footer>
     </div>

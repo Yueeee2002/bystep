@@ -1,4 +1,4 @@
-/** 地图适配器：V1.0 仅定义统一接口，V2.0 再接入高德/百度 SDK */
+/** 地图适配器：V1.1 预留品类配色，V2.0 再接入高德/百度 SDK */
 
 export interface LatLng {
   lng: number
@@ -10,9 +10,14 @@ export interface MapInitOptions {
   zoom?: number
 }
 
+export const MAP_MARKER_COLORS = {
+  catering: '#e8c4a8',
+  other: '#c5cdd6',
+} as const
+
 export interface MapAdapter {
   initMap(container: HTMLElement, options?: MapInitOptions): void
-  addMarker(lng: number, lat: number, title?: string): void
+  addMarker(lng: number, lat: number, title?: string, category?: keyof typeof MAP_MARKER_COLORS): void
   searchRoute(from: LatLng, to: LatLng): void
 }
 

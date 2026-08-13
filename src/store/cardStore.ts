@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { IExploreCard, StatusFilter, ViewMode } from '@/types'
+import type { CategoryGroup, CategoryTab, IExploreCard, SortMode, StatusFilter, ViewMode } from '@/types'
 import { filterCards } from '@/utils/filterCards'
 import { createId } from '@/utils/filterCards'
 import { normalizeCard } from '@/utils/models'
@@ -13,9 +13,14 @@ interface CardState {
   selectedTagIds: string[]
   minRating: number
   viewMode: ViewMode
+  categoryTab: CategoryTab
+  sortMode: SortMode
   hydrate: (cards: IExploreCard[]) => void
   persist: () => void
-  addCardsFromImages: (images: string[]) => IExploreCard[]
+  addCardsFromImages: (
+    images: string[],
+    options?: { categoryGroup?: CategoryGroup; tags?: string[] },
+  ) => IExploreCard[]
   updateCard: (id: string, patch: Partial<Omit<IExploreCard, 'id' | 'createdAt'>>) => void
   deleteCard: (id: string) => void
   toggleStatus: (id: string) => void
@@ -27,6 +32,8 @@ interface CardState {
   setSearchQuery: (query: string) => void
   setStatusFilter: (status: StatusFilter) => void
   setMinRating: (rating: number) => void
+  setCategoryTab: (tab: CategoryTab) => void
+  setSortMode: (mode: SortMode) => void
   toggleTagFilter: (tagId: string) => void
   clearTagFilters: () => void
   setViewMode: (mode: ViewMode) => void
@@ -38,20 +45,26 @@ function persistCards(cards: IExploreCard[]) {
   save(STORAGE_KEYS.cards, cards)
 }
 
-function emptyCard(image: string, createdAt: number): IExploreCard {
+function emptyCard(
+  image: string,
+  createdAt: number,
+  options?: { categoryGroup?: CategoryGroup; tags?: string[] },
+): IExploreCard {
   return {
     id: createId(),
     title: '',
     images: [image],
     coverIndex: 0,
     address: '',
-    tags: [],
+    tags: options?.tags ?? [],
     status: 'pending',
     notes: '',
     review: '',
     rating: 0,
     pinned: false,
     plannedAt: '',
+    categoryGroup: options?.categoryGroup ?? 'catering',
+    likeCount: 0,
     createdAt,
     updatedAt: createdAt,
   }
@@ -64,14 +77,16 @@ export const useCardStore = create<CardState>((set, get) => ({
   selectedTagIds: [],
   minRating: 0,
   viewMode: 'grid',
+  categoryTab: 'all',
+  sortMode: 'newest',
 
   hydrate: (cards) => set({ cards: cards.map((card) => normalizeCard(card)) }),
 
   persist: () => persistCards(get().cards),
 
-  addCardsFromImages: (images) => {
+  addCardsFromImages: (images, options) => {
     const now = Date.now()
-    const created = images.map((image, index) => emptyCard(image, now + index))
+    const created = images.map((image, index) => emptyCard(image, now + index, options))
     set((state) => {
       const cards = [...created, ...state.cards]
       persistCards(cards)
@@ -155,6 +170,18 @@ export const useCardStore = create<CardState>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setStatusFilter: (statusFilter) => set({ statusFilter }),
   setMinRating: (minRating) => set({ minRating }),
+  setCategoryTab: (categoryTab) =>
+    set((state) => {
+      const visible = useTagStore
+        .getState()
+        .tags.filter((tag) => categoryTab === 'all' || tag.group === categoryTab)
+        .map((tag) => tag.id)
+      return {
+        categoryTab,
+        selectedTagIds: state.selectedTagIds.filter((id) => visible.includes(id)),
+      }
+    }),
+  setSortMode: (sortMode) => set({ sortMode }),
   toggleTagFilter: (tagId) =>
     set((state) => ({
       selectedTagIds: state.selectedTagIds.includes(tagId)
@@ -170,12 +197,14 @@ export const useCardStore = create<CardState>((set, get) => ({
   },
 
   getFilteredCards: () => {
-    const { cards, searchQuery, statusFilter, selectedTagIds, minRating } = get()
+    const { cards, searchQuery, statusFilter, selectedTagIds, minRating, categoryTab, sortMode } = get()
     return filterCards(cards, {
       query: searchQuery,
       status: statusFilter,
       selectedTagIds,
       minRating,
+      categoryTab,
+      sortMode,
       tags: useTagStore.getState().tags,
     })
   },
