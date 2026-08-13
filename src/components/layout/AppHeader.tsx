@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BackArrow from '@/components/common/BackArrow'
 import Logo from '@/components/layout/Logo'
+import ThemeToggle from '@/components/layout/ThemeToggle'
 import { useUiStore } from '@/store/uiStore'
 import { useConfigStore } from '@/store/configStore'
 import { DEFAULT_HOME_SLOGAN } from '@/types'
@@ -12,9 +13,10 @@ interface AppHeaderProps {
   title?: string
   badge?: boolean
   actions?: ReactNode
+  showTheme?: boolean
 }
 
-export default function AppHeader({ home = false, title = '', badge, actions }: AppHeaderProps) {
+export default function AppHeader({ home = false, title = '', badge, actions, showTheme = true }: AppHeaderProps) {
   const navigate = useNavigate()
   const openDrawer = useUiStore((state) => state.openDrawer)
   const slogan = useConfigStore((state) => state.homeSlogan) || DEFAULT_HOME_SLOGAN
@@ -52,13 +54,18 @@ export default function AppHeader({ home = false, title = '', badge, actions }: 
       <header className={`${styles.header} ${scrolled ? styles.compact : ''}`}>
         <div className={styles.brand}>
           {menu}
-          <Logo className={styles.logoMark} />
+          <button type="button" className={styles.logoBtn} aria-label="返回首页" onClick={() => navigate('/')}>
+            <Logo className={styles.logoMark} />
+          </button>
           <div>
             <h1 className="brand-title">留步</h1>
             <p className={`${styles.slogan} ${sloganIn ? styles.sloganIn : ''}`}>{slogan}</p>
           </div>
         </div>
-        {actions ? <div className={styles.headerActions}>{actions}</div> : null}
+        <div className={styles.headerActions}>
+          {showTheme ? <ThemeToggle /> : null}
+          {actions}
+        </div>
       </header>
     )
   }
@@ -70,6 +77,7 @@ export default function AppHeader({ home = false, title = '', badge, actions }: 
         <h1>{title}</h1>
       </div>
       <div className={styles.headerActions}>
+        {showTheme ? <ThemeToggle /> : null}
         {actions}
         {menu}
       </div>

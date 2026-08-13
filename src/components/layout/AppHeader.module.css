@@ -25,10 +25,18 @@
   min-width: 0;
 }
 
+.logoBtn {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
 .logoMark {
   width: 40px;
   height: 40px;
-  flex-shrink: 0;
+  display: block;
 }
 
 .brand h1,

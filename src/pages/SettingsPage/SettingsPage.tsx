@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppHeader from '@/components/layout/AppHeader'
 import Button from '@/components/common/Button'
 import Modal from '@/components/common/Modal'
@@ -33,6 +33,7 @@ type Sheet =
 
 export default function SettingsPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const cards = useCardStore((state) => state.cards)
   const replaceCards = useCardStore((state) => state.replaceAll)
   const tags = useTagStore((state) => state.tags)
@@ -59,7 +60,24 @@ export default function SettingsPage() {
   const [folderName, setFolderName] = useState('')
   const [colorDraft, setColorDraft] = useState({ label: '', bg: '#e8d5b7', fg: '#5c4630' })
 
-  const closeSheet = () => setSheet(null)
+  const closeSheet = () => {
+    setSheet(null)
+    if (searchParams.get('open')) {
+      const next = new URLSearchParams(searchParams)
+      next.delete('open')
+      setSearchParams(next, { replace: true })
+    }
+  }
+
+  useEffect(() => {
+    if (searchParams.get('open') !== 'account') return
+    setDraftName(useConfigStore.getState().nickname)
+    setDraftMotto(useConfigStore.getState().motto)
+    setSheet('account')
+    window.requestAnimationFrame(() => {
+      document.getElementById('settings-account')?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    })
+  }, [searchParams])
 
   const exportJson = () => {
     downloadJson(
@@ -181,7 +199,7 @@ export default function SettingsPage() {
     <div className={`app-shell ${styles.page}`}>
       <AppHeader title="设置" />
 
-      <section className={styles.card}>
+      <section className={styles.card} id="settings-account">
         <h2>账号设置</h2>
         <button type="button" className={styles.item} onClick={() => setSheet('account')}>
           <span>修改头像与昵称</span>
