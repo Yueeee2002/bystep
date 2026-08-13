@@ -254,3 +254,36 @@ html.no-motion .avatar,
 html.no-motion .shortcut {
   transition: none;
 }
+
+:global(html[data-viewport='mobile']) .stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+:global(html[data-viewport='mobile']) .stats strong {
+  font-size: 22px;
+}
+
+:global(html[data-viewport='mobile']) .stats b,
+:global(html[data-viewport='mobile']) .stats span,
+:global(html[data-viewport='mobile']) .row span,
+:global(html[data-viewport='mobile']) .row em {
+  font-size: 13px;
+}
+
+:global(html[data-viewport='mobile']) .hero h2 {
+  font-size: 20px;
+}
+
+:global(html[data-viewport='mobile']) .hero p {
+  font-size: 14px;
+}
+
+:global(html[data-viewport='mobile']) .actions {
+  grid-template-columns: 1fr;
+}
+
+:global(html[data-viewport='mobile']) .shortcut {
+  min-height: 52px;
+  font-size: 15px;
+}

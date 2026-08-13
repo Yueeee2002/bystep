@@ -18,6 +18,7 @@ import { filterCards, tagsForGroup } from '@/utils/filterCards'
 import { collectDashboard, countWeeklyPlans } from '@/utils/models'
 import { composeGreeting, GREETINGS, pickRandom } from '@/utils/copy'
 import type { ViewMode } from '@/types'
+import { SORT_OPTIONS } from '@/types'
 import styles from './HomePage.module.css'
 
 export default function HomePage() {
@@ -54,6 +55,8 @@ export default function HomePage() {
   const triggerCelebrate = useUiStore((state) => state.triggerCelebrate)
   const navigate = useNavigate()
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const selectMode = selectedIds.length > 0
   const greeting = useMemo(() => composeGreeting(nickname, pickRandom(GREETINGS)), [nickname])
   const weekly = useMemo(() => countWeeklyPlans(cards), [cards])
@@ -111,7 +114,9 @@ export default function HomePage() {
         home
         badge={weekly > 0}
         actions={
-          <Button onClick={() => openUpload()}>新增</Button>
+          <Button className="home-header-add" onClick={() => openUpload()}>
+            新增
+          </Button>
         }
       />
       <p className={styles.greet}>{greeting}</p>
@@ -120,67 +125,180 @@ export default function HomePage() {
       <CategoryTabs value={categoryTab} onChange={setCategoryTab} />
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <StatusFilterBar value={statusFilter} onChange={setStatusFilter} />
-      <div className={styles.rating}>
-        {[
-          { value: 0, label: '不限星级' },
-          { value: 3, label: '3星以上' },
-          { value: 5, label: '只要5星' },
-        ].map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            className={`chip ${minRating === item.value ? 'active' : ''}`}
-            onClick={() => setMinRating(item.value)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <TagFilter
-        tags={tags}
-        selectedIds={selectedTagIds}
-        categoryTab={categoryTab}
-        sortMode={sortMode}
-        onToggle={toggleTagFilter}
-        onReset={clearTagFilters}
-        onManage={() => navigate('/tags')}
-        onSortChange={setSortMode}
-      />
 
-      <div className={styles.toolbar}>
-        <div className={styles.actions}>
-          <Button onClick={() => openUpload()}>上传图片</Button>
-          <Button variant="ghost" onClick={() => navigate('/tags')}>
-            标签管理
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              if (selectMode) setSelectedIds([])
-              else if (filtered[0]) setSelectedIds([filtered[0].id])
-            }}
-          >
-            {selectMode ? '退出多选' : '多选'}
-          </Button>
+      <div className={styles.pcFilters}>
+        <div className={styles.rating}>
+          {[
+            { value: 0, label: '不限星级' },
+            { value: 3, label: '3星以上' },
+            { value: 5, label: '只要5星' },
+          ].map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              className={`chip ${minRating === item.value ? 'active' : ''}`}
+              onClick={() => setMinRating(item.value)}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        <div className={styles.views} role="group" aria-label="视图切换">
-          <button
-            type="button"
-            className={viewMode === 'grid' ? styles.viewActive : ''}
-            onClick={() => changeView('grid')}
-          >
-            网格
-          </button>
-          <button
-            type="button"
-            className={viewMode === 'list' ? styles.viewActive : ''}
-            onClick={() => changeView('list')}
-          >
-            列表
-          </button>
-          <button type="button" className={styles.viewSoon} disabled title="V2.0 地图视图">
-            地图
-          </button>
+        <TagFilter
+          tags={tags}
+          selectedIds={selectedTagIds}
+          categoryTab={categoryTab}
+          sortMode={sortMode}
+          onToggle={toggleTagFilter}
+          onReset={clearTagFilters}
+          onManage={() => navigate('/tags')}
+          onSortChange={setSortMode}
+        />
+        <div className={styles.toolbar}>
+          <div className={styles.actions}>
+            <Button onClick={() => openUpload()}>上传图片</Button>
+            <Button variant="ghost" onClick={() => navigate('/tags')}>
+              标签管理
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                if (selectMode) setSelectedIds([])
+                else if (filtered[0]) setSelectedIds([filtered[0].id])
+              }}
+            >
+              {selectMode ? '退出多选' : '多选'}
+            </Button>
+          </div>
+          <div className={styles.views} role="group" aria-label="视图切换">
+            <button
+              type="button"
+              className={viewMode === 'grid' ? styles.viewActive : ''}
+              onClick={() => changeView('grid')}
+            >
+              网格
+            </button>
+            <button
+              type="button"
+              className={viewMode === 'list' ? styles.viewActive : ''}
+              onClick={() => changeView('list')}
+            >
+              列表
+            </button>
+            <button type="button" className={styles.viewSoon} disabled title="V2.0 地图视图">
+              地图
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.mobileFilters}>
+        <button
+          type="button"
+          className={`${styles.filterToggle} ${filtersOpen ? styles.filterToggleOpen : ''}`}
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen((open) => !open)}
+        >
+          筛选条件
+          <span className={`${styles.chevron} ${filtersOpen ? styles.chevronOpen : ''}`} aria-hidden="true">
+            ▼
+          </span>
+        </button>
+        <div className={`${styles.fold} ${filtersOpen ? styles.foldOpen : ''}`}>
+          <div className={styles.foldInner}>
+            <p className={styles.foldLabel}>星级筛选</p>
+            <div className={styles.rating}>
+              {[
+                { value: 0, label: '不限星级' },
+                { value: 3, label: '3星以上' },
+                { value: 5, label: '只要5星' },
+              ].map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  className={`chip ${minRating === item.value ? 'active' : ''}`}
+                  onClick={() => setMinRating(item.value)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <p className={styles.foldLabel}>排序</p>
+            <div className={styles.sortChips}>
+              {SORT_OPTIONS.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  className={`chip ${sortMode === item.value ? 'active' : ''}`}
+                  onClick={() => setSortMode(item.value)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <p className={styles.foldLabel}>标签筛选</p>
+            <TagFilter
+              variant="chips"
+              tags={tags}
+              selectedIds={selectedTagIds}
+              categoryTab={categoryTab}
+              sortMode={sortMode}
+              onToggle={toggleTagFilter}
+              onReset={clearTagFilters}
+              onManage={() => navigate('/tags')}
+              onSortChange={setSortMode}
+            />
+            <button
+              type="button"
+              className={`${styles.moreToggle} ${moreOpen ? styles.moreToggleOpen : ''}`}
+              aria-expanded={moreOpen}
+              onClick={() => setMoreOpen((open) => !open)}
+            >
+              更多操作
+              <span className={`${styles.chevron} ${moreOpen ? styles.chevronOpen : ''}`} aria-hidden="true">
+                ▼
+              </span>
+            </button>
+            <div className={`${styles.fold} ${moreOpen ? styles.foldOpen : ''}`}>
+              <div className={styles.foldInner}>
+                <div className={styles.moreActions}>
+                  <Button variant="ghost" onClick={() => navigate('/tags')}>
+                    标签管理
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      if (selectMode) setSelectedIds([])
+                      else if (filtered[0]) setSelectedIds([filtered[0].id])
+                    }}
+                  >
+                    {selectMode ? '退出多选' : '多选'}
+                  </Button>
+                </div>
+                <div className={styles.views} role="group" aria-label="视图切换">
+                  <button
+                    type="button"
+                    className={viewMode === 'grid' ? styles.viewActive : ''}
+                    onClick={() => changeView('grid')}
+                  >
+                    网格
+                  </button>
+                  <button
+                    type="button"
+                    className={viewMode === 'list' ? styles.viewActive : ''}
+                    onClick={() => changeView('list')}
+                  >
+                    列表
+                  </button>
+                  <button type="button" className={styles.viewSoon} disabled title="V2.0 地图视图">
+                    地图
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.mobileUpload}>
+          <Button onClick={() => openUpload()}>上传图片</Button>
         </div>
       </div>
 
@@ -250,6 +368,9 @@ export default function HomePage() {
         {stats.totalLine}｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
       </p>
       <footer className={styles.foot}>留步・收藏每一场不期而遇的探店</footer>
+      <button type="button" className={styles.fab} aria-label="新增探店" onClick={() => openUpload()}>
+        ＋
+      </button>
     </div>
   )
 }

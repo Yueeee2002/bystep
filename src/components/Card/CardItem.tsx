@@ -3,6 +3,7 @@ import type { IExploreCard, ITag, ViewMode } from '@/types'
 import { resolveTagColor } from '@/utils/palette'
 import { getCoverSrc } from '@/utils/models'
 import { useConfigStore } from '@/store/configStore'
+import { useUiStore } from '@/store/uiStore'
 import Stars from '@/components/common/Stars'
 import styles from './CardItem.module.css'
 
@@ -40,6 +41,7 @@ export default function CardItem({
   onMove,
 }: CardItemProps) {
   const cover = getCoverSrc(card)
+  const openLightbox = useUiStore((state) => state.openLightbox)
   const timer = useRef<number | 0>(0)
   const extras = useConfigStore((state) => state.customTagColors)
   const boundTags = card.tags
@@ -86,7 +88,18 @@ export default function CardItem({
     >
       <div className={styles.photo}>
         {cover ? (
-          <img src={cover} alt={card.title || '点位图片'} loading="lazy" />
+          <button
+            type="button"
+            className={styles.photoHit}
+            aria-label="预览原图"
+            onClick={(event) => {
+              if (selectMode) return
+              event.stopPropagation()
+              if (card.images.length > 0) openLightbox(card.images, card.coverIndex)
+            }}
+          >
+            <img src={cover} alt={card.title || '点位图片'} loading="lazy" decoding="async" />
+          </button>
         ) : (
           <div className={styles.placeholder}>暂无图片</div>
         )}

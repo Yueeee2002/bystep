@@ -23,3 +23,12 @@
     gap: 10px;
   }
 }
+
+:global(html[data-viewport='mobile']) .grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+:global(html[data-viewport='mobile']) .list {
+  gap: 14px;
+}

@@ -97,3 +97,18 @@
     transform: none;
   }
 }
+
+:global(html[data-viewport='mobile']) .blob,
+:global(html[data-viewport='mobile']) .month button,
+:global(html[data-viewport='mobile']) .pocket li {
+  min-height: 52px;
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .stickers {
+  flex-wrap: wrap;
+}
+
+:global(html[data-viewport='mobile']) .blob {
+  flex: 1 1 100%;
+}

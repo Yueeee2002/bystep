@@ -31,6 +31,8 @@ describe('gallery helpers', () => {
   it('returns the selected cover image', () => {
     expect(getCoverSrc({ images: ['a', 'b', 'c'], coverIndex: 2 })).toBe('c')
     expect(getCoverSrc({ images: ['a'], coverIndex: 9 })).toBe('a')
+    expect(getCoverSrc({ images: ['orig-a', 'orig-b'], thumbs: ['thumb-a', 'thumb-b'], coverIndex: 1 })).toBe('thumb-b')
+    expect(getCoverSrc({ images: ['orig-a'], coverIndex: 0 })).toBe('orig-a')
   })
 
   it('blocks deleting the last image and promotes a new cover', () => {

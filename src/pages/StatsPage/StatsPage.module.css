@@ -76,3 +76,22 @@
   font-family: var(--font-serif);
   color: var(--ink);
 }
+
+:global(html[data-viewport='mobile']) .nums {
+  grid-template-columns: 1fr;
+}
+
+:global(html[data-viewport='mobile']) .nums strong,
+:global(html[data-viewport='mobile']) .blob em,
+:global(html[data-viewport='mobile']) .blob span {
+  font-size: 18px;
+}
+
+:global(html[data-viewport='mobile']) .stickers {
+  flex-direction: column;
+}
+
+:global(html[data-viewport='mobile']) .months li {
+  min-height: 48px;
+  font-size: 15px;
+}

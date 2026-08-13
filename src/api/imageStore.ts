@@ -1,4 +1,4 @@
-import { compressImageToBase64 } from '@/utils/imageHelper'
+import { makeCoverThumb, processImageFile, processImageFiles, type ProcessedImage } from '@/utils/imageHelper'
 
 type EnvConfig = {
   /** 后端上线后改为 true */
@@ -22,31 +22,34 @@ export function getUploadHint(): string {
   return ENV_CONFIG.BACKEND_READY ? UPLOAD_HINT_BACKEND : UPLOAD_HINT_LOCAL
 }
 
-/**
- * 过渡期：前端本地独立副本（压缩 JPEG Base64）。
- * 不用 Blob URL：刷新或清缓存后无法从 localStorage 还原。
- */
-const localTempUpload = async (file: File): Promise<string> => {
-  return compressImageToBase64(file)
+const uploadToServer = async (file: File): Promise<string> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch(`${ENV_CONFIG.BASE_API_URL}/api/upload`, {
+    method: 'POST',
+    body: formData,
+  })
+  const result = (await res.json()) as { code?: number; data?: { url?: string }; msg?: string }
+  if (!res.ok || !result.data?.url) {
+    throw new Error(result.msg || '图片上传失败')
+  }
+  return result.data.url
+}
+
+export const processImage = async (file: File): Promise<ProcessedImage> => {
+  if (!ENV_CONFIG.BACKEND_READY) return processImageFile(file)
+  const original = await uploadToServer(file)
+  try {
+    const thumb = await makeCoverThumb(file)
+    return { original, thumb }
+  } catch {
+    return { original, thumb: original }
+  }
 }
 
 export const uploadImage = async (file: File): Promise<string> => {
-  if (ENV_CONFIG.BACKEND_READY) {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const res = await fetch(`${ENV_CONFIG.BASE_API_URL}/api/upload`, {
-      method: 'POST',
-      body: formData,
-    })
-    const result = (await res.json()) as { code?: number; data?: { url?: string }; msg?: string }
-    if (!res.ok || !result.data?.url) {
-      throw new Error(result.msg || '图片上传失败')
-    }
-    return result.data.url
-  }
-
-  return localTempUpload(file)
+  const processed = await processImage(file)
+  return processed.original
 }
 
 export interface ImageStore {
@@ -64,11 +67,19 @@ export const imageStore: ImageStore = {
 }
 
 export async function uploadImages(files: File[], recordId?: string): Promise<string[]> {
-  const results: string[] = []
-  for (const file of files) {
-    results.push(await imageStore.upload(file, recordId))
+  const processed = await processImages(files, recordId)
+  return processed.map((item) => item.original)
+}
+
+export async function processImages(files: File[], _recordId?: string): Promise<ProcessedImage[]> {
+  if (ENV_CONFIG.BACKEND_READY) {
+    const results: ProcessedImage[] = []
+    for (const file of files) {
+      results.push(await processImage(file))
+    }
+    return results
   }
-  return results
+  return processImageFiles(files)
 }
 
 export default imageStore

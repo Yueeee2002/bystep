@@ -21,7 +21,13 @@ interface CardState {
   persist: () => void
   addCardsFromImages: (
     images: string[],
-    options?: { categoryGroup?: CategoryGroup; tags?: string[]; visitDate?: string; status?: IExploreCard['status'] },
+    options?: {
+      categoryGroup?: CategoryGroup
+      tags?: string[]
+      visitDate?: string
+      status?: IExploreCard['status']
+      thumbs?: string[]
+    },
   ) => IExploreCard[]
   updateCard: (id: string, patch: Partial<Omit<IExploreCard, 'id' | 'createdAt'>>) => void
   deleteCard: (id: string) => void
@@ -53,12 +59,19 @@ function persistCards(cards: IExploreCard[]) {
 function emptyCard(
   image: string,
   createdAt: number,
-  options?: { categoryGroup?: CategoryGroup; tags?: string[]; visitDate?: string; status?: IExploreCard['status'] },
+  options?: {
+    categoryGroup?: CategoryGroup
+    tags?: string[]
+    visitDate?: string
+    status?: IExploreCard['status']
+    thumb?: string
+  },
 ): IExploreCard {
   return {
     id: createId(),
     title: '',
     images: [image],
+    thumbs: [options?.thumb || image],
     coverIndex: 0,
     address: '',
     tags: options?.tags ?? [],
@@ -103,6 +116,7 @@ export const useCardStore = create<CardState>((set, get) => ({
         tags: options?.tags ?? [],
         visitDate: options?.visitDate,
         status: options?.status,
+        thumb: options?.thumbs?.[index],
       }),
     )
     set((state) => {

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { IAppConfig, StatusFilter } from '@/types'
+import type { IAppConfig, StatusFilter, ViewportMode } from '@/types'
 import { normalizeConfig } from '@/utils/backup'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 
@@ -16,6 +16,8 @@ interface ConfigState extends IAppConfig {
   setViewMode: (viewMode: IAppConfig['viewMode']) => void
   setTheme: (theme: IAppConfig['theme']) => void
   toggleTheme: () => void
+  setViewportPreference: (viewportPreference: IAppConfig['viewportPreference']) => void
+  toggleViewport: (current: ViewportMode) => void
   setCalendarView: (calendarView: IAppConfig['calendarView']) => void
   setMotion: (motion: boolean) => void
   setCategoryLabels: (categoryLabels: IAppConfig['categoryLabels']) => void
@@ -51,6 +53,8 @@ export const useConfigStore = create<ConfigState>((set, get) => {
     setViewMode: (viewMode) => patchConfig({ viewMode }),
     setTheme: (theme) => patchConfig({ theme }),
     toggleTheme: () => patchConfig({ theme: get().theme === 'night' ? 'cream' : 'night' }),
+    setViewportPreference: (viewportPreference) => patchConfig({ viewportPreference }),
+    toggleViewport: (current) => patchConfig({ viewportPreference: current === 'pc' ? 'mobile' : 'pc' }),
     setCalendarView: (calendarView) => patchConfig({ calendarView }),
     setMotion: (motion) => patchConfig({ motion }),
     setCategoryLabels: (categoryLabels) => patchConfig({ categoryLabels }),

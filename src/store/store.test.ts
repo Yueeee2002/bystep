@@ -79,4 +79,12 @@ describe('tag and card binding', () => {
       }),
     ).toThrow('标签与所属大类不一致')
   })
+
+  it('stores original images with matching cover thumbs', () => {
+    const created = useCardStore.getState().addCardsFromImages(['orig-a'], {
+      thumbs: ['thumb-a'],
+    })
+    expect(created[0].images).toEqual(['orig-a'])
+    expect(created[0].thumbs).toEqual(['thumb-a'])
+  })
 })

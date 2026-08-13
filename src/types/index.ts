@@ -2,6 +2,8 @@ export type CardStatus = 'pending' | 'done'
 export type StatusFilter = 'all' | 'pending' | 'done'
 export type ViewMode = 'grid' | 'list'
 export type ThemeMode = 'cream' | 'night'
+export type ViewportMode = 'pc' | 'mobile'
+export type ViewportPreference = 'auto' | ViewportMode
 export type CalendarViewMode = 'month' | 'week'
 export type TagColor = 'mocha' | 'mint' | 'apricot' | 'haze'
 export type CategoryGroup = 'catering' | 'other'
@@ -11,7 +13,10 @@ export type SortMode = 'newest' | 'oldest' | 'starDesc' | 'starAsc' | 'checkedFi
 export interface IExploreCard {
   id: string
   title: string
+  /** 原始高清图（data URL 或远程地址），预览弹窗使用 */
   images: string[]
+  /** 卡片封面缩略图（长边 720、居中裁切），与 images 一一对应；缺省时回退到原图 */
+  thumbs?: string[]
   coverIndex: number
   address: string
   lat?: number
@@ -61,6 +66,7 @@ export interface IAppConfig {
   defaultFilter: 'all' | 'pending'
   viewMode: ViewMode
   theme: ThemeMode
+  viewportPreference: ViewportPreference
   calendarView: CalendarViewMode
   motion: boolean
   categoryLabels: Record<CategoryGroup, string>

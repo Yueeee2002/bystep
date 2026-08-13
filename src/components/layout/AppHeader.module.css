@@ -145,3 +145,24 @@
     height: 44px;
   }
 }
+
+:global(html[data-viewport='mobile']) .brand h1 {
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
+
+:global(html[data-viewport='mobile']) .sub h1 {
+  font-size: 17px;
+}
+
+:global(html[data-viewport='mobile']) .slogan {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  max-width: 42vw;
+  line-height: 1.45;
+}
+
+:global(html[data-viewport='mobile']) .logoMark {
+  width: 32px;
+  height: 32px;
+}

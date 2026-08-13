@@ -5,7 +5,8 @@ import Button from '@/components/common/Button'
 import CategoryRadios from '@/components/common/CategoryRadios'
 import TagPicker from '@/components/common/TagPicker'
 import SaveSticker from '@/components/common/SaveSticker'
-import { getUploadHint, uploadImages } from '@/api/imageStore'
+import { getUploadHint, processImages } from '@/api/imageStore'
+import type { ProcessedImage } from '@/utils/imageHelper'
 import { StorageQuotaError } from '@/utils/storage'
 import { tagsForGroup } from '@/utils/filterCards'
 import { TagCategoryMismatchError } from '@/utils/tagRules'
@@ -28,7 +29,7 @@ export default function UploadModal() {
   const flashCard = useUiStore((state) => state.flashCard)
   const popDay = useUiStore((state) => state.popDay)
   const allTags = useTagStore((state) => state.tags)
-  const [previews, setPreviews] = useState<string[]>([])
+  const [previews, setPreviews] = useState<ProcessedImage[]>([])
   const [dragging, setDragging] = useState(false)
   const [busy, setLocalBusy] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -67,7 +68,7 @@ export default function UploadModal() {
     setLocalBusy(true)
     setBusy(true)
     try {
-      const images = await uploadImages(files)
+      const images = await processImages(files)
       setPreviews((prev) => [...prev, ...images])
     } catch (error) {
       showToast(error instanceof Error ? error.message : '图片处理失败', 'error')
@@ -90,12 +91,16 @@ export default function UploadModal() {
       return
     }
     try {
-      const created = addCardsFromImages(previews, {
-        categoryGroup: group,
-        tags: selectedTags,
-        visitDate: uploadPrefill.visitDate,
-        status: uploadPrefill.status,
-      })
+      const created = addCardsFromImages(
+        previews.map((item) => item.original),
+        {
+          categoryGroup: group,
+          tags: selectedTags,
+          visitDate: uploadPrefill.visitDate,
+          status: uploadPrefill.status,
+          thumbs: previews.map((item) => item.thumb),
+        },
+      )
       setSaved(true)
       if (created[0]) flashCard(created[0].id)
       if (uploadPrefill.visitDate) popDay(uploadPrefill.visitDate)
@@ -163,9 +168,9 @@ export default function UploadModal() {
 
       {previews.length > 0 ? (
         <div className={styles.preview}>
-          {previews.map((src, index) => (
-            <div key={`${src.slice(0, 24)}-${index}`} className={styles.thumb}>
-              <img src={src} alt={`预览 ${index + 1}`} />
+          {previews.map((item, index) => (
+            <div key={`${item.thumb.slice(0, 24)}-${index}`} className={styles.thumb}>
+              <img src={item.thumb || item.original} alt={`预览 ${index + 1}`} />
               <button
                 type="button"
                 aria-label="移除这张图片"

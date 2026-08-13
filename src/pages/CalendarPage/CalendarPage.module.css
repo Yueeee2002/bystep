@@ -466,3 +466,36 @@
     opacity: 1;
   }
 }
+
+:global(html[data-viewport='mobile']) .tools {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+:global(html[data-viewport='mobile']) .mode,
+:global(html[data-viewport='mobile']) .poster,
+:global(html[data-viewport='mobile']) .today {
+  width: 100%;
+  min-height: 44px;
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .top h2 {
+  font-size: 18px;
+}
+
+:global(html[data-viewport='mobile']) .weekdays span,
+:global(html[data-viewport='mobile']) .cell strong {
+  font-size: 12px;
+}
+
+:global(html[data-viewport='mobile']) .foot {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+:global(html[data-viewport='mobile']) .grid,
+:global(html[data-viewport='mobile']) .weekGrid,
+:global(html[data-viewport='mobile']) .weekdays {
+  min-width: 0;
+}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import BackArrow from '@/components/common/BackArrow'
 import Logo from '@/components/layout/Logo'
 import ThemeToggle from '@/components/layout/ThemeToggle'
+import ViewToggle from '@/components/layout/ViewToggle'
 import { useUiStore } from '@/store/uiStore'
 import { useConfigStore } from '@/store/configStore'
 import { DEFAULT_HOME_SLOGAN } from '@/types'
@@ -64,6 +65,7 @@ export default function AppHeader({ home = false, title = '', badge, actions, sh
         </div>
         <div className={styles.headerActions}>
           {showTheme ? <ThemeToggle /> : null}
+          <ViewToggle />
           {actions}
         </div>
       </header>
@@ -78,6 +80,7 @@ export default function AppHeader({ home = false, title = '', badge, actions, sh
       </div>
       <div className={styles.headerActions}>
         {showTheme ? <ThemeToggle /> : null}
+        <ViewToggle />
         {actions}
         {menu}
       </div>

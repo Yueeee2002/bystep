@@ -455,3 +455,14 @@ html[data-theme='night'] .sheetMask {
   gap: 10px;
   margin-top: 18px;
 }
+
+:global(html[data-viewport='mobile']) .sectionLabel,
+:global(html[data-viewport='mobile']) .item,
+:global(html[data-viewport='mobile']) .foldHead {
+  font-size: 15px;
+}
+
+:global(html[data-viewport='mobile']) .foldHead,
+:global(html[data-viewport='mobile']) .addBtn {
+  min-height: 48px;
+}

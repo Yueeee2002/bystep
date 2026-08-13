@@ -1,20 +1,22 @@
 import { useRef, useState } from 'react'
 import type { DragEvent } from 'react'
-import { uploadImages } from '@/api/imageStore'
-import { moveItem, remapIndexAfterMove, removeImageAt } from '@/utils/models'
+import { processImages } from '@/api/imageStore'
+import { alignedThumbs, moveItem, remapIndexAfterMove, removeImageAt } from '@/utils/models'
 import { useUiStore } from '@/store/uiStore'
 import styles from './GalleryEditor.module.css'
 
 interface GalleryEditorProps {
   images: string[]
+  thumbs?: string[]
   coverIndex: number
   activeIndex: number
   title: string
-  onChange: (next: { images: string[]; coverIndex: number; activeIndex: number }) => void
+  onChange: (next: { images: string[]; thumbs: string[]; coverIndex: number; activeIndex: number }) => void
 }
 
 export default function GalleryEditor({
   images,
+  thumbs,
   coverIndex,
   activeIndex,
   title,
@@ -31,16 +33,19 @@ export default function GalleryEditor({
   const [leaving, setLeaving] = useState<number | null>(null)
 
   const current = images[activeIndex] ?? images[0]
+  const coverThumbs = alignedThumbs(images, thumbs)
 
   const ingest = async (fileList: FileList | File[]) => {
     setBusy(true)
     try {
-      const added = await uploadImages(Array.from(fileList))
-      const nextImages = [...images, ...added]
+      const added = await processImages(Array.from(fileList))
+      const nextImages = [...images, ...added.map((item) => item.original)]
+      const nextThumbs = [...coverThumbs, ...added.map((item) => item.thumb)]
       setPasted(true)
       window.setTimeout(() => setPasted(false), 1200)
       onChange({
         images: nextImages,
+        thumbs: nextThumbs,
         coverIndex: images.length === 0 ? 0 : coverIndex,
         activeIndex: images.length,
       })
@@ -54,7 +59,7 @@ export default function GalleryEditor({
   const step = (delta: number) => {
     if (images.length === 0) return
     const next = (activeIndex + delta + images.length) % images.length
-    onChange({ images, coverIndex, activeIndex: next })
+    onChange({ images, thumbs: coverThumbs, coverIndex, activeIndex: next })
   }
 
   const requestRemove = (index: number) => {
@@ -78,6 +83,7 @@ export default function GalleryEditor({
           const nextActive = Math.min(activeIndex > index ? activeIndex - 1 : activeIndex, result.images.length - 1)
           onChange({
             images: result.images,
+            thumbs: coverThumbs.filter((_, i) => i !== index),
             coverIndex: result.coverIndex,
             activeIndex: Math.max(0, nextActive),
           })
@@ -92,6 +98,7 @@ export default function GalleryEditor({
     const nextImages = moveItem(images, dragFrom, to)
     onChange({
       images: nextImages,
+      thumbs: moveItem(coverThumbs, dragFrom, to),
       coverIndex: remapIndexAfterMove(dragFrom, to, coverIndex),
       activeIndex: remapIndexAfterMove(dragFrom, to, activeIndex),
     })
@@ -157,15 +164,15 @@ export default function GalleryEditor({
               onDrop={() => onThumbDrop(index)}
               onDragEnd={() => setDragFrom(null)}
             >
-              <button type="button" className={styles.thumbHit} onClick={() => onChange({ images, coverIndex, activeIndex: index })}>
-                <img src={src} alt="" />
+              <button type="button" className={styles.thumbHit} onClick={() => onChange({ images, thumbs: coverThumbs, coverIndex, activeIndex: index })}>
+                <img src={coverThumbs[index] || src} alt="" />
               </button>
               <button
                 type="button"
                 className={`${styles.crown} ${index === coverIndex ? styles.crownOn : ''}`}
                 aria-label="设为封面"
                 title="设为封面"
-                onClick={() => onChange({ images, coverIndex: index, activeIndex: index })}
+                onClick={() => onChange({ images, thumbs: coverThumbs, coverIndex: index, activeIndex: index })}
               >
                 ♛
               </button>
