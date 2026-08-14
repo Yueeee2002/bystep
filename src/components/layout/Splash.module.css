@@ -49,7 +49,7 @@
   align-items: center;
   gap: 10px;
   margin-top: -4vh;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   opacity: 0;
   pointer-events: none;
 }
@@ -71,9 +71,9 @@
 .stage {
   position: relative;
   z-index: 2;
-  width: min(320px, 78vw);
-  height: min(480px, 68vh);
-  margin-top: 8px;
+  width: min(340px, 78vw);
+  height: min(500px, 70vh);
+  margin-top: 4px;
   pointer-events: none;
 }
 
@@ -93,35 +93,72 @@
   transform: scale(0.96);
 }
 
-.frame {
+.deco {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  z-index: 0;
   opacity: 0;
-  transition: opacity 0.6s ease;
   pointer-events: none;
+}
+
+.s1,
+.s2,
+.s3,
+.d1,
+.d2 {
+  position: absolute;
+}
+
+.s1 {
+  top: 6%;
+  left: 4%;
+  width: 12px;
+  height: 12px;
+  opacity: 0.45;
+}
+
+.s2 {
+  top: 16%;
+  right: 8%;
+  width: 10px;
+  height: 10px;
+  opacity: 0.38;
+}
+
+.s3 {
+  top: 38%;
+  left: 10%;
+  width: 9px;
+  height: 9px;
+  opacity: 0.32;
+}
+
+.d1 {
+  top: 44%;
+  left: 18%;
+}
+
+.d2 {
+  bottom: 22%;
+  left: 28%;
+}
+
+.plateWrap {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 6%;
+  width: 58%;
+  max-width: 200px;
+  aspect-ratio: 1.12 / 1;
+  overflow: hidden;
+  background: #f8f5ee;
+  opacity: 0;
+  transition: opacity 0.7s ease;
 }
 
 .plateIn {
   opacity: 1;
-  transition-duration: 0.7s;
-}
-
-.plateOut {
-  opacity: 0;
-}
-
-.houseIn {
-  opacity: 1;
-}
-
-.plateWrap {
-  position: relative;
-  width: min(240px, 78%);
-  aspect-ratio: 1.12 / 1;
-  overflow: hidden;
-  background: #f8f5ee;
 }
 
 .plate,
@@ -144,10 +181,22 @@
 }
 
 .house {
-  width: min(280px, 88%);
-  max-height: 100%;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 64%;
+  max-width: 220px;
   height: auto;
   object-fit: contain;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.houseIn {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hint {
@@ -178,24 +227,25 @@
 }
 
 .still .brand,
+.still .deco,
 .still .hint {
   animation: none;
   opacity: 1;
 }
 
-.still .frame,
-.still .plateIn,
-.still .plateOut,
-.still .houseIn {
+.still .plateWrap,
+.still .house {
   transition: none;
 }
 
-.still .plateOut {
-  opacity: 0;
-}
-
+.still .plateIn,
 .still .houseIn {
   opacity: 1;
+}
+
+.still .house,
+.still .houseIn {
+  transform: none;
 }
 
 .still .floating {
@@ -247,16 +297,18 @@
 
 @media (max-width: 560px) {
   .stage {
-    width: min(280px, 84vw);
-    height: min(420px, 62vh);
+    width: min(290px, 84vw);
+    height: min(440px, 64vh);
   }
 
   .plateWrap {
-    width: min(210px, 82%);
+    width: 62%;
+    max-width: 176px;
   }
 
   .house {
-    width: min(250px, 90%);
+    width: 68%;
+    max-width: 196px;
   }
 
   .wordmark {
