@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import plateSrc from '@/assets/1.png'
 import houseSrc from '@/assets/2.jpg'
+import { DecorDot, DecorStar } from '@/components/decor/JournalMarks'
 import Logo from '@/components/layout/Logo'
 import { useConfigStore } from '@/store/configStore'
 import styles from './Splash.module.css'
@@ -12,7 +13,7 @@ const STAR_PATH =
 const BG_ONLY_MS = 400
 const FADE_IN_MS = 700
 const LIVE_AT_MS = BG_ONLY_MS + FADE_IN_MS
-const CROSS_FADE_AT_MS = 1600
+const HOUSE_IN_AT_MS = 1600
 const STAR_MS = 450
 const CLICK_COOLDOWN_MS = 500
 const FADE_OUT_MS = 360
@@ -48,8 +49,9 @@ function spawnBurstStars(layer: HTMLElement, x: number, y: number) {
 }
 
 /**
- * v1.10 开屏：1.png 淡入后与 2.jpg 交叉渐变，循环浮动并等待点击；
- * 仅点击可进入主页，不再自动跳转。
+ * v1.10 开屏：沿用参考图拼贴（轻食盘 + 小屋同框）。
+ * 轻食盘先淡入并保持；小屋 1600ms 起 600ms 缓缓浮现，不替换轻食盘。
+ * 仅点击可进入主页。
  */
 export default function Splash() {
   const motion = useConfigStore((state) => state.motion)
@@ -64,7 +66,7 @@ export default function Splash() {
   const [ready, setReady] = useState(false)
   const [entered, setEntered] = useState(false)
   const [live, setLive] = useState(false)
-  const [crossed, setCrossed] = useState(false)
+  const [houseShown, setHouseShown] = useState(false)
   const [pressed, setPressed] = useState(false)
 
   const markPlateReady = () => {
@@ -95,16 +97,16 @@ export default function Splash() {
     if (!motion) {
       setEntered(true)
       setLive(true)
-      setCrossed(true)
+      setHouseShown(true)
       return
     }
     const fade = window.setTimeout(() => setEntered(true), BG_ONLY_MS)
     const hint = window.setTimeout(() => setLive(true), LIVE_AT_MS)
-    const cross = window.setTimeout(() => setCrossed(true), CROSS_FADE_AT_MS)
+    const house = window.setTimeout(() => setHouseShown(true), HOUSE_IN_AT_MS)
     return () => {
       window.clearTimeout(fade)
       window.clearTimeout(hint)
-      window.clearTimeout(cross)
+      window.clearTimeout(house)
     }
   }, [motion, ready])
 
@@ -139,16 +141,6 @@ export default function Splash() {
 
   if (phase === 'done') return null
 
-  const plateClass = [
-    styles.frame,
-    entered && !crossed ? styles.plateIn : '',
-    crossed ? styles.plateOut : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-
-  const houseClass = [styles.frame, crossed ? styles.houseIn : ''].filter(Boolean).join(' ')
-
   return (
     <div
       ref={layerRef}
@@ -168,25 +160,33 @@ export default function Splash() {
         <span className={styles.wordmark}>留步</span>
       </div>
       <div className={styles.stage}>
+        <span className={`${styles.deco} ${entered ? styles.fadeIn : ''}`.trim()} aria-hidden="true">
+          <DecorStar tone="mint" delay="0s" className={styles.s1} />
+          <DecorStar tone="mint" delay="0.5s" className={styles.s2} />
+          <DecorStar tone="gold" delay="1s" className={styles.s3} />
+          <DecorDot size={4} delay="0.3s" className={styles.d1} />
+          <DecorDot size={2} tone="cream" delay="0.9s" className={styles.d2} />
+        </span>
         <div className={`${styles.floatWrap} ${entered ? styles.floating : ''}`.trim()}>
           <div className={`${styles.pressWrap} ${pressed ? styles.pressed : ''}`.trim()}>
-            <div className={plateClass}>
-              <div className={styles.plateWrap}>
-                <img
-                  className={styles.plate}
-                  src={plateSrc}
-                  alt=""
-                  draggable={false}
-                  onLoad={markPlateReady}
-                  ref={(node) => {
-                    if (node?.complete && node.naturalWidth > 0) markPlateReady()
-                  }}
-                />
-              </div>
+            <div className={`${styles.plateWrap} ${entered ? styles.plateIn : ''}`.trim()}>
+              <img
+                className={styles.plate}
+                src={plateSrc}
+                alt=""
+                draggable={false}
+                onLoad={markPlateReady}
+                ref={(node) => {
+                  if (node?.complete && node.naturalWidth > 0) markPlateReady()
+                }}
+              />
             </div>
-            <div className={houseClass}>
-              <img className={styles.house} src={houseSrc} alt="" draggable={false} />
-            </div>
+            <img
+              className={`${styles.house} ${houseShown ? styles.houseIn : ''}`.trim()}
+              src={houseSrc}
+              alt=""
+              draggable={false}
+            />
           </div>
         </div>
       </div>
