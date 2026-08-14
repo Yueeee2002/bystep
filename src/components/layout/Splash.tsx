@@ -13,7 +13,6 @@ const BG_ONLY_MS = 400
 const FADE_IN_MS = 700
 const LIVE_AT_MS = BG_ONLY_MS + FADE_IN_MS
 const CROSS_FADE_AT_MS = 1600
-const CROSS_FADE_MS = 600
 const STAR_MS = 450
 const CLICK_COOLDOWN_MS = 500
 const FADE_OUT_MS = 360
