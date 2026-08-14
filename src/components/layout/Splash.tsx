@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
+import plateSrc from '@/assets/1.png'
+import houseSrc from '@/assets/2.jpg'
 import { DecorDot, DecorStar } from '@/components/decor/JournalMarks'
-import { BreakfastPlate, ZakkaHouse } from '@/components/layout/SplashArt'
 import { useConfigStore } from '@/store/configStore'
 import styles from './Splash.module.css'
 
 /**
- * 开屏时间轴（约 1.5s，每次刷新都播放，不写 sessionStorage）：
+ * 开屏用用户原图：1.png 轻食盘，2.jpg 杂货铺。
  * 0.00s 浅米色遮罩 + 轻食盘缓入
  * 0.50s 小屋从右侧滑入，停在盘子右下方
- * 0.78s 两件插画都到位后停留约 0.72s
- * 1.50s 遮罩与插画一起渐隐
- * 1.72s 卸下开屏，进入主页面
+ * 到位后停留约 0.72s，1.50s 起整体渐隐
  */
 const HUT_DELAY_MS = 500
 const HUT_MS = 280
@@ -50,8 +49,8 @@ export default function Splash() {
           <DecorDot size={2} tone="cream" delay="0.9s" className={styles.d2} />
           <DecorDot size={6} delay="1.1s" className={styles.d3} />
         </span>
-        <BreakfastPlate className={styles.plate} />
-        <ZakkaHouse className={styles.house} />
+        <img className={styles.plate} src={plateSrc} alt="" draggable={false} />
+        <img className={styles.house} src={houseSrc} alt="" draggable={false} />
       </div>
     </div>
   )
