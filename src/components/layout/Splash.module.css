@@ -9,7 +9,7 @@
 }
 
 .out {
-  animation: splashOut 0.22s ease forwards;
+  animation: splashOut 0.28s ease forwards;
 }
 
 .stage {
@@ -34,9 +34,13 @@
   width: 48%;
   max-width: 176px;
   z-index: 2;
-  transform: translateX(-50%);
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
   mix-blend-mode: screen;
-  animation: plateIn 0.32s ease both;
+}
+
+.plateIn {
+  animation: plateIn 0.42s ease forwards;
 }
 
 .house {
@@ -45,7 +49,12 @@
   width: 52%;
   max-width: 176px;
   z-index: 2;
-  animation: houseIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.houseIn {
+  animation: houseIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .deco {
@@ -92,11 +101,13 @@
   opacity: 1;
 }
 
-.still .plate {
+.still .plate,
+.still .plateIn {
   transform: translateX(-50%);
 }
 
-.still .house {
+.still .house,
+.still .houseIn {
   transform: none;
 }
 
