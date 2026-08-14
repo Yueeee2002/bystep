@@ -43,6 +43,12 @@
   stroke-width: 0.6;
 }
 
+.star.mint svg {
+  fill: #c5d5c8;
+  stroke: #a8bfb0;
+  stroke-width: 0.6;
+}
+
 .dot {
   border-radius: 50%;
   background: #d8cfc0;

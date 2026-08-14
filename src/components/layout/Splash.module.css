@@ -4,36 +4,121 @@
   z-index: 200;
   display: grid;
   place-items: center;
-  align-content: center;
-  gap: 14px;
   background: #f4efe6;
-  animation: splashIn 0.4s ease;
+  overflow: hidden;
 }
 
 .out {
-  animation: splashOut 0.5s ease forwards;
+  animation: splashOut 0.22s ease forwards;
 }
 
-.copy {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  letter-spacing: 0.28em;
-  color: var(--ink);
+.stage {
+  position: relative;
+  width: min(340px, 78vw);
+  height: min(520px, 76vh);
 }
 
-.sub {
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  color: var(--ash);
-  opacity: 0.72;
+.plate,
+.house {
+  position: absolute;
+  display: block;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
-@keyframes splashIn {
+.plate {
+  top: 4%;
+  left: 50%;
+  width: 48%;
+  max-width: 176px;
+  z-index: 2;
+  transform: translateX(-50%);
+  mix-blend-mode: screen;
+  animation: plateIn 0.32s ease both;
+}
+
+.house {
+  right: 0;
+  bottom: 0;
+  width: 52%;
+  max-width: 176px;
+  z-index: 2;
+  animation: houseIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.deco {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.s1 {
+  top: 8%;
+  left: 6%;
+  width: 12px;
+  height: 12px;
+  opacity: 0.42;
+}
+
+.s2 {
+  top: 18%;
+  right: 10%;
+  width: 10px;
+  height: 10px;
+  opacity: 0.36;
+}
+
+.d1 {
+  top: 46%;
+  left: 10%;
+}
+
+.d2 {
+  bottom: 16%;
+  left: 24%;
+}
+
+.d3 {
+  top: 14%;
+  left: 40%;
+}
+
+.still .plate,
+.still .house {
+  animation: none;
+  opacity: 1;
+}
+
+.still .plate {
+  transform: translateX(-50%);
+}
+
+.still .house {
+  transform: none;
+}
+
+@keyframes plateIn {
   from {
     opacity: 0;
+    transform: translateX(-50%) translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes houseIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -44,6 +129,19 @@
   }
 }
 
-:global(html[data-theme='night']) .layer {
-  background: #32281e;
+@media (max-width: 560px) {
+  .stage {
+    width: min(280px, 82vw);
+    height: min(440px, 72vh);
+  }
+
+  .plate {
+    width: 54%;
+    max-width: 158px;
+  }
+
+  .house {
+    width: 56%;
+    max-width: 154px;
+  }
 }
