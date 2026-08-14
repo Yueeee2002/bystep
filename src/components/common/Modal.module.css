@@ -30,22 +30,35 @@
   width: min(560px, 100%);
   max-height: min(90dvh, 860px);
   overflow: auto;
+  overscroll-behavior: contain;
   background: var(--cream);
   border-radius: 28px 28px 18px 18px;
   padding: 22px 20px 20px;
   box-shadow: var(--shadow);
-  animation: sheet 0.28s ease;
+  animation: sheet 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.wide {
-  width: min(720px, 100%);
+.body {
+  position: relative;
+  z-index: 1;
 }
 
 .titleRow {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
+}
+
+.c1 { top: 14px; left: 16px; }
+.c2 { top: 18px; right: 18px; }
+.c3 { bottom: 16px; left: 18px; }
+.c4 { bottom: 14px; right: 20px; }
+
+.wide {
+  width: min(720px, 100%);
 }
 
 .title {
@@ -69,7 +82,7 @@
 @keyframes sheet {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(28px);
   }
   to {
     opacity: 1;
@@ -113,7 +126,7 @@
 @keyframes sheetCenter {
   from {
     opacity: 0;
-    transform: translate(-50%, calc(-50% + 10px));
+    transform: translate(-50%, calc(-50% + 28px));
   }
   to {
     opacity: 1;

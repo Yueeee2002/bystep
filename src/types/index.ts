@@ -83,7 +83,7 @@ export interface IBackupPayload {
   config: IAppConfig
 }
 
-export const APP_VERSION = 'V1.2'
+export const APP_VERSION = 'V1.6'
 export const APP_NAME = '留步'
 export const DEFAULT_HOME_SLOGAN = '把种草的店，轻轻收好'
 export const SLOGAN_EXAMPLES = [

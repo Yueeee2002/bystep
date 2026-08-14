@@ -323,11 +323,21 @@ export default function HomePage() {
         style={holdResultsH ? { minHeight: holdResultsH } : undefined}
       >
       {isEmptyAll ? (
-        <EmptyNote title="行囊尚空" text="把偶遇的小店，一一收纳进来吧" action={{ label: '开始收纳', onClick: () => openUpload() }} />
+        <EmptyNote
+          kind="home"
+          title="还没有收藏小店"
+          text="快来记录第一家吧"
+          action={{ label: '开始收纳', onClick: () => openUpload() }}
+        />
       ) : tabEmpty ? (
-        <EmptyNote title="这一格还空着" text="换个品类看看，或把新的遇见轻轻收进来。" action={{ label: '开始收纳', onClick: () => openUpload() }} />
+        <EmptyNote
+          kind="home"
+          title="这一格还空着"
+          text="换个品类看看，或把新的遇见轻轻收进来。"
+          action={{ label: '开始收纳', onClick: () => openUpload() }}
+        />
       ) : isEmptyFilter ? (
-        <EmptyNote title="没有符合条件的点位" text="换个关键词，或把筛选放宽一些，也许它还在。" />
+        <EmptyNote kind="search" title="没有找到对应的店铺" text="换个关键词试试吧" />
       ) : (
         <CardGrid
           cards={filtered}

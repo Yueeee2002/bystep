@@ -4,6 +4,7 @@ import { resolveTagColor } from '@/utils/palette'
 import { getCoverSrc } from '@/utils/models'
 import { useConfigStore } from '@/store/configStore'
 import { useUiStore } from '@/store/uiStore'
+import { DecorStar } from '@/components/decor/JournalMarks'
 import Stars from '@/components/common/Stars'
 import styles from './CardItem.module.css'
 
@@ -60,7 +61,7 @@ export default function CardItem({
 
   return (
     <article
-      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''} ${highlight ? styles.flash : ''}`}
+      className={`${styles.card} ${viewMode === 'list' ? styles.listCard : ''} ${selected ? styles.selected : ''} ${card.pinned ? styles.pinned : ''} ${highlight ? styles.flash : ''} ${card.status === 'pending' ? styles.pending : ''} ${card.status === 'done' ? styles.doneCard : ''}`}
       style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
       draggable={
         !selectMode &&
@@ -130,10 +131,11 @@ export default function CardItem({
           ×
         </button>
         <div className={styles.stars}>
-          <Stars small value={card.rating} onChange={(rating) => onRate(card.id, rating)} />
+          <Stars small pale={card.status === 'pending'} value={card.rating} onChange={(rating) => onRate(card.id, rating)} />
         </div>
       </div>
       <div className={styles.body}>
+        <DecorStar tone={card.status === 'done' ? 'warm' : 'gray'} className={styles.cornerStar} />
         <h3>{card.title.trim() || '未命名地点'}</h3>
         {card.address ? <p className={styles.addr}>{card.address}</p> : <p className={styles.addr}>地址未填写</p>}
         {boundTags.length > 0 ? (
@@ -146,6 +148,11 @@ export default function CardItem({
           </div>
         ) : null}
       </div>
+      {card.status === 'done' ? (
+        <span className={styles.check} aria-hidden="true">
+          ✓
+        </span>
+      ) : null}
     </article>
   )
 }

@@ -1,19 +1,25 @@
+import JournalScene from '@/components/decor/JournalScene'
 import styles from './EmptyNote.module.css'
 
 interface EmptyNoteProps {
   title: string
   text: string
+  kind?: 'home' | 'tags' | 'search' | 'default'
   action?: { label: string; onClick: () => void }
 }
 
-export default function EmptyNote({ title, text, action }: EmptyNoteProps) {
+export default function EmptyNote({ title, text, kind = 'default', action }: EmptyNoteProps) {
   return (
     <section className={styles.wrap}>
-      <div className={styles.art} aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
+      {kind === 'default' ? (
+        <div className={styles.art} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      ) : (
+        <JournalScene kind={kind} className={styles.scene} />
+      )}
       <h2>{title}</h2>
       <p>{text}</p>
       {action ? (

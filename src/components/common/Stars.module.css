@@ -9,7 +9,8 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--gold);
+  color: #d4cdc2;
+  transition: transform 0.2s ease;
 }
 
 .star svg {
@@ -18,10 +19,25 @@
   fill: transparent;
   stroke: currentColor;
   stroke-width: 1.4;
+  transition:
+    fill 0.22s ease,
+    stroke 0.22s ease,
+    color 0.22s ease;
+}
+
+.star:nth-child(1).on svg { transition-delay: 0ms; }
+.star:nth-child(2).on svg { transition-delay: 45ms; }
+.star:nth-child(3).on svg { transition-delay: 90ms; }
+.star:nth-child(4).on svg { transition-delay: 135ms; }
+.star:nth-child(5).on svg { transition-delay: 180ms; }
+
+.on {
+  color: #e6c97a;
 }
 
 .on svg {
   fill: currentColor;
+  stroke: #c9b07a;
 }
 
 .lift {
@@ -47,6 +63,14 @@
 .small .star {
   width: 15px;
   height: 15px;
+}
+
+.pale .on {
+  color: #ddd4c4;
+}
+
+.pale .on svg {
+  stroke: #cfc6b8;
 }
 
 @media (max-width: 560px) {

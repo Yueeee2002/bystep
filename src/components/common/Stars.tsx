@@ -5,16 +5,17 @@ interface StarsProps {
   value: number
   onChange?: (value: number) => void
   small?: boolean
+  pale?: boolean
 }
 
-export default function Stars({ value, onChange, small }: StarsProps) {
+export default function Stars({ value, onChange, small, pale }: StarsProps) {
   const [hover, setHover] = useState(0)
   const [pop, setPop] = useState(false)
   const shown = hover || value
 
   return (
     <div
-      className={`${styles.row} ${small ? styles.small : ''}`}
+      className={`${styles.row} ${small ? styles.small : ''} ${pale ? styles.pale : ''}`}
       role="img"
       aria-label={`期待值 ${value} 星`}
       onMouseLeave={() => setHover(0)}

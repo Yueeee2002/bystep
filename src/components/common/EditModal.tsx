@@ -5,6 +5,7 @@ import GalleryEditor from '@/components/common/GalleryEditor'
 import Stars from '@/components/common/Stars'
 import CategoryRadios from '@/components/common/CategoryRadios'
 import TagPicker from '@/components/common/TagPicker'
+import { DecorDot, DecorFood, DecorStar } from '@/components/decor/JournalMarks'
 import SaveSticker from '@/components/common/SaveSticker'
 import { useCardStore } from '@/store/cardStore'
 import { useTagStore } from '@/store/tagStore'
@@ -156,7 +157,7 @@ export default function EditModal() {
         />
 
         <div className={styles.form}>
-          <div className="field">
+          <div className={styles.field}>
             <span>所属大类</span>
             <CategoryRadios
               value={draft.categoryGroup}
@@ -169,7 +170,7 @@ export default function EditModal() {
               }
             />
           </div>
-          <label className="field">
+          <label className={styles.field}>
             <span>店名</span>
             <input
               value={draft.title}
@@ -177,7 +178,7 @@ export default function EditModal() {
               onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
             />
           </label>
-          <label className="field">
+          <label className={styles.field}>
             <span>地址</span>
             <input
               value={draft.address}
@@ -185,11 +186,12 @@ export default function EditModal() {
               onChange={(event) => setDraft((prev) => ({ ...prev, address: event.target.value }))}
             />
           </label>
-          <div className="field">
+          <div className={`${styles.field} ${styles.starField}`}>
             <span>心愿星级</span>
+            <DecorStar className={styles.starMark} />
             <Stars value={draft.rating} onChange={(rating) => setDraft((prev) => ({ ...prev, rating }))} />
           </div>
-          <label className="field">
+          <label className={styles.field}>
             <span>计划探店日期</span>
             <input
               type="date"
@@ -197,7 +199,7 @@ export default function EditModal() {
               onChange={(event) => setDraft((prev) => ({ ...prev, plannedAt: event.target.value }))}
             />
           </label>
-          <label className="field">
+          <label className={styles.field}>
             <span>打卡日期</span>
             <input
               type="date"
@@ -205,16 +207,20 @@ export default function EditModal() {
               onChange={(event) => setDraft((prev) => ({ ...prev, visitDate: event.target.value }))}
             />
           </label>
-          <label className="field">
+          <label className={`${styles.field} ${styles.notesField}`}>
             <span>种草备注</span>
             <textarea
+              className={styles.notes}
               value={draft.notes}
               placeholder="未打卡时写下种草理由、店铺亮点、必点…"
               onChange={(event) => setDraft((prev) => ({ ...prev, notes: event.target.value }))}
             />
+            <DecorFood kind="cake" className={styles.cake} />
+            <DecorDot size={2} className={styles.noteDotA} delay="0.4s" />
+            <DecorDot size={4} tone="cream" className={styles.noteDotB} delay="1.1s" />
           </label>
 
-          <div className="field">
+          <div className={styles.field}>
             <span>标签</span>
             <TagPicker
               tags={tagsForGroup(tags, draft.categoryGroup)}
@@ -225,7 +231,7 @@ export default function EditModal() {
             />
           </div>
 
-          <div className="field">
+          <div className={styles.field}>
             <span>状态</span>
             <div className={styles.status}>
               <button
@@ -245,7 +251,7 @@ export default function EditModal() {
             </div>
           </div>
 
-          <label className="field">
+          <label className={styles.field}>
             <span>探店复盘心得</span>
             <textarea
               value={draft.review}

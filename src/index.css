@@ -64,7 +64,8 @@ html {
   background: var(--paper);
   overscroll-behavior-y: auto;
   scroll-behavior: smooth;
-  transition: background-color 0.28s ease, color 0.28s ease;
+  -webkit-overflow-scrolling: touch;
+  transition: background-color 0.36s ease, color 0.36s ease;
 }
 
 html.theme-flip body {
@@ -228,13 +229,19 @@ html.drawer-open .app-shell {
 }
 
 .btn:hover:not(:disabled) {
-  transform: scale(1.03);
-  box-shadow: 0 0 0 6px var(--gold-soft);
+  transform: scale(1.02);
+  box-shadow: 0 8px 18px rgba(22, 22, 22, 0.06);
 }
 
 .btn:active:not(:disabled) {
   transform: scale(0.96);
-  opacity: 0.86;
+  box-shadow: inset 0 2px 8px rgba(22, 22, 22, 0.06);
+  filter: brightness(0.97);
+}
+
+.btn-ghost:active:not(:disabled),
+.btn-text:active:not(:disabled) {
+  background: #efe8dc;
 }
 
 .btn:disabled {
@@ -311,8 +318,20 @@ html.drawer-open .app-shell {
 }
 
 .back-arrow:active {
-  transform: scale(0.92);
-  animation: none;
+  transform: scale(0.9);
+  animation: backPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes backPop {
+  0% {
+    transform: scale(0.9);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes backGlow {
@@ -369,29 +388,36 @@ html.drawer-open .app-shell {
   border-bottom-width: 1px;
   background: var(--snow);
   color: var(--ink);
-  border-radius: 14px;
+  border-radius: 18px;
   padding: 12px 14px;
   font-size: 16px;
   outline: none;
-  transition: border-color 0.22s ease, box-shadow 0.22s ease;
-  background-image: linear-gradient(var(--gold), var(--gold));
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-size: 0 1.5px;
+  caret-color: #c4b49a;
+  transition: border-color 0.22s ease, box-shadow 0.28s ease;
 }
 
 .field textarea {
   min-height: 88px;
   resize: vertical;
-  line-height: 1.7;
+  line-height: 1.8;
 }
 
 .field input:focus,
 .field textarea:focus,
 .input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 4px var(--gold-soft);
-  background-size: 100% 1.5px;
+  border-color: #d8cfc0;
+  box-shadow: 0 0 0 6px rgba(216, 207, 192, 0.42);
+}
+
+.field input[type='date'] {
+  background: #f4eee4;
+  border-radius: 18px;
+  color-scheme: light;
+}
+
+html[data-theme='night'] .field input[type='date'] {
+  color-scheme: dark;
+  background: #3a2f24;
 }
 
 .field input:not(:focus):not(:placeholder-shown),

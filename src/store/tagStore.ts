@@ -3,7 +3,7 @@ import type { CategoryGroup, ITag } from '@/types'
 import { createId } from '@/utils/filterCards'
 import { hasSameNameInGroup } from '@/utils/tagRules'
 import { moveItem, normalizeTag } from '@/utils/models'
-import { load, save, STORAGE_KEYS } from '@/utils/storage'
+import { loadPersisted, save, STORAGE_KEYS } from '@/utils/storage'
 
 interface TagState {
   tags: ITag[]
@@ -24,7 +24,7 @@ function normalizeName(name: string) {
 }
 
 export const useTagStore = create<TagState>((set, get) => ({
-  tags: load<ITag[]>(STORAGE_KEYS.tags, []).map((tag) =>
+  tags: loadPersisted<ITag[]>('tags', []).map((tag) =>
     normalizeTag({ id: tag.id, name: tag.name, color: tag.color, group: tag.group }),
   ),
 

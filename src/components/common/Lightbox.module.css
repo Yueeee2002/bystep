@@ -6,7 +6,8 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(22, 22, 22, 0.82);
+  background: linear-gradient(180deg, rgba(58, 46, 34, 0.42), rgba(22, 18, 14, 0.88));
+  animation: veil 0.28s ease;
 }
 
 .wrap {
@@ -28,11 +29,12 @@
   max-width: 100%;
   width: auto;
   margin: 0 auto;
-  border-radius: 12px;
+  border-radius: 16px;
   object-fit: contain;
   image-rendering: auto;
   image-rendering: high-quality;
   -ms-interpolation-mode: bicubic;
+  animation: zoomIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .arrow {
@@ -69,4 +71,34 @@
   background: transparent;
   color: #fff;
   font-size: 14px;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.close:active {
+  transform: scale(0.9);
+}
+
+@keyframes veil {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:global(html.no-motion) .panel img,
+:global(html.no-motion) .backdrop {
+  animation: none;
 }

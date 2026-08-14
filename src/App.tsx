@@ -16,6 +16,7 @@ import Lightbox from '@/components/common/Lightbox'
 import Celebrate from '@/components/common/Celebrate'
 import Loading from '@/components/common/Loading'
 import KeyHint from '@/components/common/KeyHint'
+import Splash from '@/components/layout/Splash'
 import NavDrawer from '@/components/layout/NavDrawer'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
@@ -121,6 +122,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
+      <Splash />
       <NavDrawer />
       <UploadModal />
       <EditModal />

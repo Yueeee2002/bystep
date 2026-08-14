@@ -142,11 +142,13 @@
   border-radius: 50%;
 }
 
-.article {
-  display: grid;
-  gap: 10px;
-  font-size: 14px;
-  line-height: 1.8;
+.versionHit {
+  border: 0;
+  background: transparent;
+  color: var(--ash);
+  font: inherit;
+  padding: 0;
+  cursor: default;
 }
 
 @media (max-width: 560px) {

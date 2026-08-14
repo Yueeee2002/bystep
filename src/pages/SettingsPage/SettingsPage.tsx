@@ -12,7 +12,7 @@ import { DEFAULT_CONFIG, buildBackupPayload, downloadJson, parseBackupPayload } 
 import { cardsToCsv, downloadText, parseCardsCsv } from '@/utils/csv'
 import { downloadMonthPoster } from '@/utils/calendarPoster'
 import { buildMonthCells, monthVisitStats, visitsForMonth } from '@/utils/calendar'
-import { clearAllExploreData, StorageQuotaError } from '@/utils/storage'
+import { clearAllExploreData, resetTagCache, StorageQuotaError } from '@/utils/storage'
 import { compressImageToBase64 } from '@/utils/imageHelper'
 import { createId } from '@/utils/filterCards'
 import type { ICustomTagColor } from '@/types'
@@ -45,6 +45,7 @@ export default function SettingsPage() {
   const jsonRef = useRef<HTMLInputElement>(null)
   const csvRef = useRef<HTMLInputElement>(null)
   const avatarRef = useRef<HTMLInputElement>(null)
+  const versionTimer = useRef(0)
   const [sheet, setSheet] = useState<Sheet>(null)
   const [draftName, setDraftName] = useState(config.nickname)
   const [draftMotto, setDraftMotto] = useState(config.motto)
@@ -143,6 +144,12 @@ export default function SettingsPage() {
         showToast('已清空全部数据', 'info')
       },
     })
+  }
+
+  const resetLocalTags = () => {
+    resetTagCache()
+    replaceTags([])
+    showToast('本地标签缓存已重置', 'info')
   }
 
   const cancelAccount = () => {
@@ -359,7 +366,20 @@ export default function SettingsPage() {
         <h2>其他</h2>
         <div className={styles.item}>
           <span>当前版本</span>
-          <em>{APP_VERSION}</em>
+          <button
+            type="button"
+            className={styles.versionHit}
+            aria-label="当前版本，长按可重置本地标签缓存"
+            onPointerDown={() => {
+              window.clearTimeout(versionTimer.current)
+              versionTimer.current = window.setTimeout(resetLocalTags, 1600)
+            }}
+            onPointerUp={() => window.clearTimeout(versionTimer.current)}
+            onPointerLeave={() => window.clearTimeout(versionTimer.current)}
+            onPointerCancel={() => window.clearTimeout(versionTimer.current)}
+          >
+            {APP_VERSION}
+          </button>
         </div>
         <button type="button" className={styles.item} onClick={() => showToast('已是最新版本', 'success')}>
           <span>检查更新</span>
