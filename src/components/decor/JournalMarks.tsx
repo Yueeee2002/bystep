@@ -4,7 +4,7 @@ import styles from './JournalMarks.module.css'
 /** 装饰跟随设置「全局交互动效」：html.no-motion 时动画全部关闭，便于测试。 */
 export type DotSize = 6 | 4 | 2
 export type DotTone = 'cream' | 'mocha'
-export type StarTone = 'warm' | 'gray' | 'gold'
+export type StarTone = 'warm' | 'gray' | 'gold' | 'mint'
 export type FoodKind = 'coffee' | 'cake' | 'onigiri'
 
 interface DelayProps {

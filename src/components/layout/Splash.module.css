@@ -4,36 +4,118 @@
   z-index: 200;
   display: grid;
   place-items: center;
-  align-content: center;
-  gap: 14px;
-  background: #f4efe6;
-  animation: splashIn 0.4s ease;
+  background: #f3eee4;
+  overflow: hidden;
 }
 
 .out {
-  animation: splashOut 0.5s ease forwards;
+  animation: splashOut 0.22s ease forwards;
 }
 
-.copy {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  letter-spacing: 0.28em;
-  color: var(--ink);
+.stage {
+  position: relative;
+  width: min(300px, 72vw);
+  height: min(420px, 68vh);
 }
 
-.sub {
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  color: var(--ash);
-  opacity: 0.72;
+.plate,
+.house {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
 }
 
-@keyframes splashIn {
+.plate {
+  top: 6%;
+  left: 50%;
+  width: 54%;
+  max-width: 168px;
+  z-index: 2;
+  transform: translateX(-50%);
+  animation: plateIn 0.32s ease both;
+}
+
+.house {
+  right: 2%;
+  bottom: 2%;
+  width: 46%;
+  max-width: 148px;
+  z-index: 2;
+  animation: houseIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.deco {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.s1 {
+  top: 10%;
+  left: 8%;
+  width: 12px;
+  height: 12px;
+  opacity: 0.45;
+}
+
+.s2 {
+  top: 22%;
+  right: 14%;
+  width: 10px;
+  height: 10px;
+  opacity: 0.38;
+}
+
+.d1 {
+  top: 48%;
+  left: 12%;
+}
+
+.d2 {
+  bottom: 18%;
+  left: 28%;
+}
+
+.d3 {
+  top: 16%;
+  left: 42%;
+}
+
+.still .plate,
+.still .house {
+  animation: none;
+  opacity: 1;
+}
+
+.still .plate {
+  transform: translateX(-50%);
+}
+
+.still .house {
+  transform: none;
+}
+
+@keyframes plateIn {
   from {
     opacity: 0;
+    transform: translateX(-50%) translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes houseIn {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -44,6 +126,19 @@
   }
 }
 
-:global(html[data-theme='night']) .layer {
-  background: #32281e;
+@media (max-width: 560px) {
+  .stage {
+    width: min(260px, 78vw);
+    height: min(380px, 64vh);
+  }
+
+  .plate {
+    width: 58%;
+    max-width: 150px;
+  }
+
+  .house {
+    width: 50%;
+    max-width: 132px;
+  }
 }
