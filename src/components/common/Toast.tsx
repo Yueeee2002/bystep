@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useUiStore } from '@/store/uiStore'
 import styles from './Toast.module.css'
 
@@ -14,9 +15,10 @@ export default function Toast() {
 
   if (!toast) return null
 
-  return (
+  return createPortal(
     <div className={`${styles.toast} ${styles[toast.type]}`} role="status">
       {toast.message}
-    </div>
+    </div>,
+    document.body,
   )
 }

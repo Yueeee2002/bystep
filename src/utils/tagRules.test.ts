@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   assertTagsMatchGroup,
   filterGroupsForTab,
+  hasSameNameInGroup,
   isCrossCategory,
   sanitizeTagIds,
   TagCategoryMismatchError,
@@ -35,5 +36,11 @@ describe('tagRules', () => {
     expect(sanitizeTagIds(['t1', 't2'], tags, 'catering')).toEqual(['t1'])
     expect(() => assertTagsMatchGroup(['t1', 't2'], tags, 'catering')).toThrow(TagCategoryMismatchError)
     expect(() => assertTagsMatchGroup(['t1'], tags, 'catering')).not.toThrow()
+  })
+
+  it('treats the same name as unique per group', () => {
+    expect(hasSameNameInGroup(tags, '咖啡', 'catering')).toBe(true)
+    expect(hasSameNameInGroup(tags, '咖啡', 'other')).toBe(false)
+    expect(hasSameNameInGroup(tags, '咖啡', 'catering', 't1')).toBe(false)
   })
 })

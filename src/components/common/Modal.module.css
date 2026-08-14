@@ -85,3 +85,43 @@
     opacity: 1;
   }
 }
+
+:global(html[data-viewport='mobile']) .wrap {
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
+:global(html[data-viewport='mobile']) .panel,
+:global(html[data-viewport='mobile']) .wide {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: calc(100vw - 40px);
+  max-width: 600px;
+  max-height: 85dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 20px;
+  transform: translate(-50%, -50%);
+  animation: sheetCenter 0.28s ease;
+}
+
+@keyframes sheetCenter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 10px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+:global(html.no-motion[data-viewport='mobile']) .panel,
+:global(html.no-motion[data-viewport='mobile']) .wide {
+  animation: none;
+}

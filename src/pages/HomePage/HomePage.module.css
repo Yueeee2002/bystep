@@ -380,6 +380,8 @@
 .fold {
   display: grid;
   grid-template-rows: 0fr;
+  overflow-anchor: none;
+  contain: layout;
   transition: grid-template-rows 0.3s ease;
 }
 
@@ -440,6 +442,7 @@
 
 :global(html[data-viewport='mobile']) .mobileFilters {
   display: block;
+  overflow-anchor: none;
 }
 
 :global(html.no-motion) .fold,

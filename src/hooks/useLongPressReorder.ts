@@ -1,20 +1,15 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 
-const LONG_MS = 430
-const SLOP = 10
-
 interface Options {
   enabled: boolean
   onReorder: (from: number, to: number) => void
   onDropGroup?: (from: number, group: string) => void
 }
 
-export function useLongPressReorder({ enabled, onReorder, onDropGroup }: Options) {
+export function useHandleReorder({ enabled, onReorder, onDropGroup }: Options) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [overIndex, setOverIndex] = useState<number | null>(null)
   const [overGroup, setOverGroup] = useState<string | null>(null)
-  const timer = useRef(0)
-  const origin = useRef({ x: 0, y: 0 })
   const activeRef = useRef<number | null>(null)
   const overRef = useRef<number | null>(null)
   const groupRef = useRef<string | null>(null)
@@ -27,15 +22,7 @@ export function useLongPressReorder({ enabled, onReorder, onDropGroup }: Options
   overRef.current = overIndex
   groupRef.current = overGroup
 
-  const clearTimer = () => {
-    if (timer.current) {
-      window.clearTimeout(timer.current)
-      timer.current = 0
-    }
-  }
-
   const reset = useCallback(() => {
-    clearTimer()
     setActiveIndex(null)
     setOverIndex(null)
     setOverGroup(null)
@@ -105,49 +92,32 @@ export function useLongPressReorder({ enabled, onReorder, onDropGroup }: Options
     }
   }, [activeIndex, reset])
 
-  const onItemPointerDown = useCallback(
+  const onHandlePointerDown = useCallback(
     (index: number) => (event: ReactPointerEvent) => {
       if (!enabled || event.button !== 0) return
-      if ((event.target as HTMLElement).closest('button')) return
-      origin.current = { x: event.clientX, y: event.clientY }
-      clearTimer()
-      timer.current = window.setTimeout(() => {
-        setActiveIndex(index)
-        setOverIndex(index)
-        try {
-          navigator.vibrate?.(12)
-        } catch {
-          /* ignore */
-        }
-      }, LONG_MS)
+      event.preventDefault()
+      event.stopPropagation()
+      event.currentTarget.setPointerCapture?.(event.pointerId)
+      setActiveIndex(index)
+      setOverIndex(index)
+      try {
+        navigator.vibrate?.(10)
+      } catch {
+        /* ignore */
+      }
     },
     [enabled],
   )
-
-  const onItemPointerMove = useCallback(
-    (event: ReactPointerEvent) => {
-      if (!enabled || activeRef.current !== null || !timer.current) return
-      const dx = event.clientX - origin.current.x
-      const dy = event.clientY - origin.current.y
-      if (dx * dx + dy * dy > SLOP * SLOP) clearTimer()
-    },
-    [enabled],
-  )
-
-  const onItemPointerUp = useCallback(() => {
-    if (activeRef.current === null) clearTimer()
-  }, [])
-
-  useEffect(() => () => clearTimer(), [])
 
   return {
     activeIndex,
     overIndex,
     overGroup,
     sorting: activeIndex !== null,
-    onItemPointerDown,
-    onItemPointerMove,
-    onItemPointerUp,
+    onHandlePointerDown,
     reset,
   }
 }
+
+/** @deprecated use useHandleReorder */
+export const useLongPressReorder = useHandleReorder
