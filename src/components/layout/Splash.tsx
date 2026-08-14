@@ -12,7 +12,7 @@ const STAR_PATH =
 const BG_ONLY_MS = 400
 const FADE_IN_MS = 700
 const LIVE_AT_MS = BG_ONLY_MS + FADE_IN_MS
-const AUTO_LEAVE_MS = 2200
+const CROSS_FADE_AT_MS = 1600
 const STAR_MS = 450
 const CLICK_COOLDOWN_MS = 500
 const FADE_OUT_MS = 360
@@ -48,8 +48,8 @@ function spawnBurstStars(layer: HTMLElement, x: number, y: number) {
 }
 
 /**
- * v1.9 开屏：暖米底色 → logo/插画淡入 → 点击处迸发迷你星光，
- * 星光消散后再淡出进主页；无点击则 2200ms 自动进入。
+ * v1.10 开屏：1.png 淡入后与 2.jpg 交叉渐变，循环浮动并等待点击；
+ * 仅点击可进入主页，不再自动跳转。
  */
 export default function Splash() {
   const motion = useConfigStore((state) => state.motion)
@@ -58,12 +58,13 @@ export default function Splash() {
   const plateMarked = useRef(false)
   const leaveScheduled = useRef(false)
   const clickLockedUntil = useRef(0)
-  const timers = useRef<number[]>([])
+  const leaveTimers = useRef<number[]>([])
 
   const [phase, setPhase] = useState<'show' | 'out' | 'done'>('show')
   const [ready, setReady] = useState(false)
   const [entered, setEntered] = useState(false)
   const [live, setLive] = useState(false)
+  const [crossed, setCrossed] = useState(false)
   const [pressed, setPressed] = useState(false)
 
   const markPlateReady = () => {
@@ -72,17 +73,11 @@ export default function Splash() {
     setReady(true)
   }
 
-  const queue = (fn: () => void, ms: number) => {
-    const id = window.setTimeout(fn, ms)
-    timers.current.push(id)
-    return id
-  }
-
   const beginLeave = (delay: number) => {
     if (leaveScheduled.current) return
     leaveScheduled.current = true
-    queue(() => setPhase('out'), delay)
-    queue(() => setPhase('done'), delay + FADE_OUT_MS)
+    leaveTimers.current.push(window.setTimeout(() => setPhase('out'), delay))
+    leaveTimers.current.push(window.setTimeout(() => setPhase('done'), delay + FADE_OUT_MS))
   }
 
   useEffect(() => {
@@ -100,20 +95,25 @@ export default function Splash() {
     if (!motion) {
       setEntered(true)
       setLive(true)
-      beginLeave(AUTO_LEAVE_MS)
-      return () => {
-        timers.current.forEach((id) => window.clearTimeout(id))
-        timers.current = []
-      }
+      setCrossed(true)
+      return
     }
-    queue(() => setEntered(true), BG_ONLY_MS)
-    queue(() => setLive(true), LIVE_AT_MS)
-    queue(() => beginLeave(0), AUTO_LEAVE_MS)
+    const fade = window.setTimeout(() => setEntered(true), BG_ONLY_MS)
+    const hint = window.setTimeout(() => setLive(true), LIVE_AT_MS)
+    const cross = window.setTimeout(() => setCrossed(true), CROSS_FADE_AT_MS)
     return () => {
-      timers.current.forEach((id) => window.clearTimeout(id))
-      timers.current = []
+      window.clearTimeout(fade)
+      window.clearTimeout(hint)
+      window.clearTimeout(cross)
     }
   }, [motion, ready])
+
+  useEffect(() => {
+    return () => {
+      leaveTimers.current.forEach((id) => window.clearTimeout(id))
+      leaveTimers.current = []
+    }
+  }, [])
 
   const onEnterAt = (clientX: number, clientY: number) => {
     if (phase !== 'show' || leaveScheduled.current) return
@@ -129,7 +129,7 @@ export default function Splash() {
         spawnBurstStars(starLayer, clientX - rect.left, clientY - rect.top)
       }
       setPressed(true)
-      queue(() => setPressed(false), 180)
+      leaveTimers.current.push(window.setTimeout(() => setPressed(false), 180))
       beginLeave(STAR_MS)
       return
     }
@@ -138,6 +138,16 @@ export default function Splash() {
   }
 
   if (phase === 'done') return null
+
+  const plateClass = [
+    styles.frame,
+    entered && !crossed ? styles.plateIn : '',
+    crossed ? styles.plateOut : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const houseClass = [styles.frame, crossed ? styles.houseIn : ''].filter(Boolean).join(' ')
 
   return (
     <div
@@ -158,9 +168,9 @@ export default function Splash() {
         <span className={styles.wordmark}>留步</span>
       </div>
       <div className={styles.stage}>
-        <div className={`${styles.artFade} ${entered ? styles.fadeIn : ''}`.trim()}>
-          <div className={`${styles.floatWrap} ${live ? styles.floating : ''}`.trim()}>
-            <div className={`${styles.pressWrap} ${pressed ? styles.pressed : ''}`.trim()}>
+        <div className={`${styles.floatWrap} ${entered ? styles.floating : ''}`.trim()}>
+          <div className={`${styles.pressWrap} ${pressed ? styles.pressed : ''}`.trim()}>
+            <div className={plateClass}>
               <div className={styles.plateWrap}>
                 <img
                   className={styles.plate}
@@ -173,6 +183,8 @@ export default function Splash() {
                   }}
                 />
               </div>
+            </div>
+            <div className={houseClass}>
               <img className={styles.house} src={houseSrc} alt="" draggable={false} />
             </div>
           </div>
