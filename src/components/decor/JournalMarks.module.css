@@ -1,0 +1,132 @@
+/* 日系手账装饰：星星 / 分级波点 / 迷你食物涂鸦。全部底层、不可点。 */
+.layer,
+.mark {
+  pointer-events: none;
+  user-select: none;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+}
+
+.inline {
+  position: relative;
+  inset: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.star {
+  width: 14px;
+  height: 14px;
+}
+
+.star svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.star.gold svg,
+.star.warm svg {
+  fill: #e6c97a;
+  stroke: #c9b07a;
+  stroke-width: 0.6;
+}
+
+.star.gray svg {
+  fill: #d8d2c8;
+  stroke: #c4bdb2;
+  stroke-width: 0.6;
+}
+
+.dot {
+  border-radius: 50%;
+  background: #d8cfc0;
+  opacity: 0.4;
+}
+
+.s6 {
+  width: 6px;
+  height: 6px;
+}
+
+.s4 {
+  width: 4px;
+  height: 4px;
+}
+
+.s2 {
+  width: 2px;
+  height: 2px;
+}
+
+.cream {
+  background-color: #e9e2d5;
+}
+
+.mocha {
+  background-color: #d8cfc0;
+}
+
+.food {
+  width: 22px;
+  height: 20px;
+  opacity: 0.82;
+}
+
+.food svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes slow-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-5px) rotate(5deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.35;
+  }
+}
+
+.star {
+  opacity: 0.72;
+}
+
+.star.warm,
+.star.gold {
+  animation-name: slow-float-star;
+}
+
+@keyframes slow-float-star {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-5px) rotate(8deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.55;
+  }
+}
+
+:global(html.no-motion) .mark,
+:global(html.no-motion) .star,
+:global(html.no-motion) .dot,
+:global(html.no-motion) .food {
+  animation: none !important;
+  opacity: 0.4;
+}

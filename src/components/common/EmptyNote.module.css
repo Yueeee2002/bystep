@@ -16,6 +16,14 @@
   font-size: 14px;
 }
 
+.wrap :global(.wrap) {
+  margin-bottom: 18px;
+}
+
+.scene {
+  margin-bottom: 10px;
+}
+
 .art {
   width: 120px;
   height: 72px;

@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import BackArrow from '@/components/common/BackArrow'
+import { DecorDot, DecorLayer } from '@/components/decor/JournalMarks'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useConfigStore } from '@/store/configStore'
 import { resolveViewport } from '@/utils/viewport'
@@ -39,14 +40,19 @@ export default function Modal({ open, title, onClose, children, wide, elevated }
       <div className={styles.backdrop} />
       <div className={styles.wrap}>
         <DialogPanel className={`${styles.panel} ${wide ? styles.wide : ''}`}>
+          <DecorLayer>
+            <DecorDot size={2} tone="cream" className={styles.c1} />
+            <DecorDot size={2} className={styles.c2} />
+            <DecorDot size={2} tone="cream" className={styles.c3} />
+            <DecorDot size={2} className={styles.c4} />
+          </DecorLayer>
           <div className={styles.titleRow}>
             <BackArrow small onClick={onClose} />
             {title ? <DialogTitle className={styles.title}>{title}</DialogTitle> : <span className={styles.title} />}
           </div>
-          {children}
+          <div className={styles.body}>{children}</div>
         </DialogPanel>
       </div>
     </Dialog>
   )
 }
-

@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
 import BackArrow from '@/components/common/BackArrow'
 import Button from '@/components/common/Button'
+import EmptyNote from '@/components/common/EmptyNote'
+import { DecorDot, DecorLayer, DecorStar } from '@/components/decor/JournalMarks'
 import { useTagData } from '@/hooks/useTagData'
 import { useHandleReorder } from '@/hooks/useLongPressReorder'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
@@ -12,6 +14,7 @@ import type { CategoryGroup } from '@/types'
 import { useConfigStore } from '@/store/configStore'
 import { resolveTagColor } from '@/utils/palette'
 import { resolveViewport } from '@/utils/viewport'
+import { loadPersisted, save, STORAGE_KEYS } from '@/utils/storage'
 import styles from './TagModal.module.css'
 
 interface TagForm {
@@ -40,9 +43,12 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
   const [groupError, setGroupError] = useState(false)
   const [shakeSave, setShakeSave] = useState(false)
   const [flashId, setFlashId] = useState<string | null>(null)
-  const [openGroups, setOpenGroups] = useState<Record<CategoryGroup, boolean>>({
-    catering: true,
-    other: true,
+  const [openGroups, setOpenGroups] = useState<Record<CategoryGroup, boolean>>(() => {
+    const prefs = loadPersisted<{ tagGroupsOpen?: Record<string, boolean> }>('ui', {})
+    return {
+      catering: prefs.tagGroupsOpen?.catering !== false,
+      other: prefs.tagGroupsOpen?.other !== false,
+    }
   })
   const [dragFrom, setDragFrom] = useState<number | null>(null)
   const [dropGroup, setDropGroup] = useState<CategoryGroup | null>(null)
@@ -53,6 +59,10 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
     setGroupError(false)
     setShakeSave(false)
   }
+
+  useEffect(() => {
+    save(STORAGE_KEYS.ui, { tagGroupsOpen: openGroups })
+  }, [openGroups])
 
   const openCreate = () => {
     setGroupError(false)
@@ -226,8 +236,10 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
             </button>
           </div>
           {isMobile ? <p className={styles.sortHint}>按住左侧 ≡ 拖动，可调整先后顺序</p> : null}
-          {tags.length === 0 ? <p className={styles.emptyCopy}>还没有标签。想怎么分类，就轻轻写下。</p> : null}
-          {groups.map((group) => {
+          {tags.length === 0 ? (
+            <EmptyNote kind="tags" title="还没有分类标签" text="添加店铺分类标签，更好归类收藏" />
+          ) : (
+          groups.map((group) => {
             const items = tags.filter((tag) => tag.group === group)
             const expanded = openGroups[group]
             return (
@@ -259,12 +271,29 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                     ▶
                   </span>
                   {labels[group]}
+                  {group === 'catering' ? (
+                    <DecorStar inline className={styles.titleStar} />
+                  ) : (
+                    <span className={styles.titleDots} aria-hidden="true">
+                      <DecorDot size={4} delay="0.3s" className={styles.titleDotA} />
+                      <DecorDot size={2} tone="cream" delay="0.9s" className={styles.titleDotB} />
+                    </span>
+                  )}
                   <em>{items.length}</em>
                 </button>
                 <div className={styles.foldBody}>
                   <div className={styles.foldBodyInner}>
                   <ul className={styles.list}>
-                    {items.length === 0 ? <li className={styles.empty}>这一类还空着</li> : null}
+                    {items.length === 0 ? (
+                      <li className={styles.empty}>
+                        <DecorLayer>
+                          <DecorDot size={2} tone="cream" className={styles.emptyL} delay="0.2s" />
+                          <DecorStar className={styles.emptyStar} />
+                          <DecorDot size={2} className={styles.emptyR} delay="1s" />
+                        </DecorLayer>
+                        这一类还空着
+                      </li>
+                    ) : null}
                     {items.map((tag) => {
                       const index = tags.findIndex((item) => item.id === tag.id)
                       return (
@@ -295,11 +324,12 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                           {isMobile ? (
                             <button
                               type="button"
-                              className={styles.handle}
+                              className={`${styles.handle} ${sort.activeIndex === index ? styles.handleLift : ''}`}
                               aria-label="拖动排序"
                               onPointerDown={sort.onHandlePointerDown(index)}
                             >
                               ≡
+                              <DecorDot size={2} className={styles.handleDot} />
                             </button>
                           ) : null}
                           <div className={styles.itemMain}>
@@ -343,12 +373,17 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                 </div>
               </div>
             )
-          })}
+          })
+          )}
         </section>
 
         {form ? (
           <div className={styles.sheetMask}>
             <div className={styles.sheet} role="dialog" aria-labelledby="tag-form-title">
+              <DecorLayer>
+                <DecorDot size={2} tone="cream" className={styles.sheetC1} />
+                <DecorDot size={2} className={styles.sheetC2} />
+              </DecorLayer>
               <div className={styles.sheetHead}>
                 <BackArrow small onClick={closeForm} />
                 <h3 id="tag-form-title">{form.id ? '编辑标签' : '新增标签'}</h3>

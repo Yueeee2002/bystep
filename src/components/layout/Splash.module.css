@@ -1,0 +1,49 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  background: #f4efe6;
+  animation: splashIn 0.4s ease;
+}
+
+.out {
+  animation: splashOut 0.5s ease forwards;
+}
+
+.copy {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  letter-spacing: 0.28em;
+  color: var(--ink);
+}
+
+.sub {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--ash);
+  opacity: 0.72;
+}
+
+@keyframes splashIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes splashOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+:global(html[data-theme='night']) .layer {
+  background: #32281e;
+}

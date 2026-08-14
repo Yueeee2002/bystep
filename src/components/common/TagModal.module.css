@@ -135,6 +135,42 @@ html[data-theme='night'] .locked {
   padding: 8px 4px;
   border-radius: 10px;
   text-align: left;
+  position: relative;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.foldHead:hover {
+  box-shadow: 0 6px 14px rgba(22, 22, 22, 0.04);
+}
+
+.foldHead:active {
+  transform: scale(0.98);
+}
+
+.titleStar {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.titleDots {
+  position: relative;
+  width: 14px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.titleDotA {
+  top: 0;
+  left: 0;
+}
+
+.titleDotB {
+  right: 0;
+  bottom: 0;
 }
 
 .foldHeadShut {
@@ -256,6 +292,17 @@ html[data-theme='night'] .locked {
 
 .editBtn:hover {
   color: var(--ink);
+  transform: scale(1.06);
+}
+
+.deleteBtn {
+  color: #8a4a42;
+}
+
+.deleteBtn:hover {
+  background: rgba(138, 74, 66, 0.1);
+  transform: scale(1.06);
+  color: #7a3d38;
 }
 
 .editBtn:hover::after {
@@ -267,10 +314,6 @@ html[data-theme='night'] .locked {
   height: 1px;
   background: var(--gold);
   animation: underline 0.2s ease;
-}
-
-.deleteBtn:hover {
-  background: rgba(166, 61, 61, 0.12);
 }
 
 .error {
@@ -285,14 +328,29 @@ html[data-theme='night'] .locked {
 }
 
 .sheet {
+  position: relative;
   width: 100%;
   background: var(--cream);
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 18px 16px 16px;
   box-shadow: var(--shadow-soft);
   transform-origin: top right;
-  animation: sheetIn 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+  animation: sheetUp 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sheetC1 { top: 12px; left: 14px; }
+.sheetC2 { bottom: 12px; right: 16px; }
+
+.sheet :global(.input),
+.sheet :global(.field input) {
+  border-radius: 18px;
+}
+
+.sheet :global(.input:focus),
+.sheet :global(.field input:focus) {
+  border-color: #d8cfc0;
+  box-shadow: 0 0 0 6px rgba(216, 207, 192, 0.45);
 }
 
 @keyframes glowPulse {
@@ -350,10 +408,10 @@ html[data-theme='night'] .locked {
   }
 }
 
-@keyframes sheetIn {
+@keyframes sheetUp {
   from {
     opacity: 0;
-    transform: scale(0.92);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -394,6 +452,9 @@ html[data-theme='night'] .locked {
   border: 1px solid var(--line);
   cursor: grab;
   touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .card {
@@ -482,9 +543,32 @@ html[data-theme='night'] .locked {
 
 .empty {
   justify-content: center;
-  color: var(--ash);
-  font-size: 13px;
+  color: #b5aea4;
+  font-size: 12px;
+  font-style: italic;
   cursor: default;
+  position: relative;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 18px 12px 12px;
+  text-align: center;
+}
+
+.emptyL {
+  top: 4px;
+  left: 28%;
+}
+
+.emptyStar {
+  top: 2px;
+  left: 50%;
+  margin-left: -7px;
+}
+
+.emptyR {
+  top: 6px;
+  right: 28%;
 }
 
 .sheetMask {
@@ -508,6 +592,8 @@ html[data-theme='night'] .sheetMask {
   align-items: center;
   gap: 6px;
   margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 .sheet h3 {
@@ -564,21 +650,31 @@ html[data-theme='night'] .sheetMask {
   height: 36px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--ash);
-  font-size: 20px;
+  border-radius: 8px;
+  background: #ece8e1;
+  color: #b5aea4;
+  font-size: 18px;
   line-height: 1;
   touch-action: none;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-:global(html[data-viewport='mobile']) .handle:active {
-  background: var(--gold-soft);
+:global(html[data-viewport='mobile']) .handle:active,
+:global(html[data-viewport='mobile']) .handleLift {
+  background: #e4ddd2;
   color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 14px rgba(22, 22, 22, 0.1);
+}
+
+.handleDot {
+  right: 3px;
+  bottom: 3px;
 }
 
 :global(html[data-viewport='mobile']) .itemMain {

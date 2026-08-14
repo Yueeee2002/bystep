@@ -1,0 +1,70 @@
+.wrap {
+  position: relative;
+  width: min(240px, 72vw);
+  margin: 0 auto;
+  animation: bob 3.8s ease-in-out infinite;
+}
+
+.art {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.loading {
+  width: 148px;
+}
+
+.tags,
+.search {
+  width: 168px;
+}
+
+.splash {
+  width: min(280px, 78vw);
+}
+
+.deco {
+  z-index: 0;
+}
+
+.p1 {
+  top: 8%;
+  left: 6%;
+}
+
+.p2 {
+  top: 18%;
+  right: 10%;
+}
+
+.p3 {
+  bottom: 16%;
+  left: 18%;
+}
+
+.p4 {
+  top: 4%;
+  right: 28%;
+}
+
+.p5 {
+  bottom: 10%;
+  right: 8%;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+:global(html.no-motion) .wrap {
+  animation: none;
+}

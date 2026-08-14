@@ -3,7 +3,7 @@ import type { CategoryGroup, CategoryTab, IExploreCard, SortMode, StatusFilter, 
 import { filterCards } from '@/utils/filterCards'
 import { createId } from '@/utils/filterCards'
 import { moveItem, normalizeCard } from '@/utils/models'
-import { load, save, STORAGE_KEYS } from '@/utils/storage'
+import { loadPersisted, save, STORAGE_KEYS } from '@/utils/storage'
 import { useTagStore } from '@/store/tagStore'
 import { assertTagsMatchGroup } from '@/utils/tagRules'
 import { toIsoDate } from '@/utils/dates'
@@ -92,7 +92,7 @@ function emptyCard(
 }
 
 export const useCardStore = create<CardState>((set, get) => ({
-  cards: load<IExploreCard[]>(STORAGE_KEYS.cards, []).map((card) => normalizeCard(card)),
+  cards: loadPersisted<IExploreCard[]>('cards', []).map((card) => normalizeCard(card)),
   searchQuery: '',
   statusFilter: 'all',
   selectedTagIds: [],

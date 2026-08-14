@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { IAppConfig, StatusFilter, ViewportMode } from '@/types'
 import { normalizeConfig } from '@/utils/backup'
-import { load, save, STORAGE_KEYS } from '@/utils/storage'
+import { loadPersisted, save, STORAGE_KEYS } from '@/utils/storage'
 
 interface ConfigState extends IAppConfig {
   hydrate: (config: IAppConfig) => void
@@ -33,7 +33,7 @@ function persistConfig(config: IAppConfig) {
 }
 
 export const useConfigStore = create<ConfigState>((set, get) => {
-  const initial = normalizeConfig(load<Partial<IAppConfig>>(STORAGE_KEYS.config, {}))
+  const initial = normalizeConfig(loadPersisted<Partial<IAppConfig>>('config', {}))
   const patchConfig = (patch: Partial<IAppConfig>) => {
     const next = normalizeConfig({ ...get(), ...patch })
     persistConfig(next)
