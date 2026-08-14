@@ -9,6 +9,17 @@ export class TagCategoryMismatchError extends Error {
   }
 }
 
+export function hasSameNameInGroup(
+  tags: ITag[],
+  name: string,
+  group: CategoryGroup,
+  exceptId?: string,
+): boolean {
+  const normalized = name.trim()
+  if (!normalized) return false
+  return tags.some((tag) => tag.name === normalized && tag.group === group && tag.id !== exceptId)
+}
+
 export function tagsForGroup(tags: ITag[], group?: CategoryGroup | 'all'): ITag[] {
   if (!group || group === 'all') return tags
   return tags.filter((tag) => tag.group === group)

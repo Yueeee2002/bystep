@@ -18,10 +18,11 @@ describe('tag and card binding', () => {
     })
   })
 
-  it('rejects duplicate tag names', () => {
-    expect(useTagStore.getState().addTag('咖啡')?.name).toBe('咖啡')
-    expect(useTagStore.getState().addTag(' 咖啡 ')).toBeNull()
-    expect(useTagStore.getState().tags).toHaveLength(1)
+  it('rejects duplicate tag names in the same group only', () => {
+    expect(useTagStore.getState().addTag('咖啡', 'mocha', 'catering')?.name).toBe('咖啡')
+    expect(useTagStore.getState().addTag(' 咖啡 ', 'mint', 'catering')).toBeNull()
+    expect(useTagStore.getState().addTag('咖啡', 'haze', 'other')?.group).toBe('other')
+    expect(useTagStore.getState().tags).toHaveLength(2)
   })
 
   it('unbinds deleted tags from cards and filters', () => {

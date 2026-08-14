@@ -4,7 +4,8 @@ import Modal from '@/components/common/Modal'
 import BackArrow from '@/components/common/BackArrow'
 import Button from '@/components/common/Button'
 import { useTagData } from '@/hooks/useTagData'
-import { useLongPressReorder } from '@/hooks/useLongPressReorder'
+import { useHandleReorder } from '@/hooks/useLongPressReorder'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useUiStore } from '@/store/uiStore'
 import { TAG_COLOR_ORDER } from '@/types'
 import type { CategoryGroup } from '@/types'
@@ -75,7 +76,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
       const previous = tags.find((tag) => tag.id === form.id)
       const ok = updateTag(form.id, { name: form.name, group: form.group, color: form.color })
       if (!ok) {
-        showToast('标签名重复或为空', 'error')
+        showToast('该标签已存在', 'error')
         return
       }
       if (previous && previous.group !== form.group) {
@@ -86,7 +87,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
     } else {
       const created = addTag(form.name, form.color, form.group)
       if (!created) {
-        showToast(form.name.trim() ? '标签已存在或无效' : '请输入标签名', 'error')
+        showToast(form.name.trim() ? '该标签已存在' : '请输入标签名', 'error')
         return
       }
       setName('')
@@ -124,6 +125,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
   const extras = useConfigStore((state) => state.customTagColors)
   const viewportPreference = useConfigStore((state) => state.viewportPreference)
   const isMobile = resolveViewport(viewportPreference) === 'mobile'
+  useBodyScrollLock(asPage && isMobile && Boolean(form))
   const palette = [...TAG_COLOR_ORDER, ...extras.map((item) => item.id)]
   const swatch = (color: string) => resolveTagColor(color, extras)
   const groups: CategoryGroup[] = ['catering', 'other']
@@ -151,14 +153,14 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
     }
   }
 
-  const sort = useLongPressReorder({
+  const sort = useHandleReorder({
     enabled: isMobile,
     onReorder: applyReorder,
     onDropGroup: applyDropGroup,
   })
 
   const body = (
-    <div className={styles.body}>
+    <div className={`${styles.body} ${asPage ? styles.pageBody : ''}`}>
         <div className={styles.add}>
           <input
             className="input"
@@ -223,7 +225,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
               全部收拢
             </button>
           </div>
-          {isMobile ? <p className={styles.sortHint}>长按卡片拖动，可调整先后顺序</p> : null}
+          {isMobile ? <p className={styles.sortHint}>按住左侧 ≡ 拖动，可调整先后顺序</p> : null}
           {tags.length === 0 ? <p className={styles.emptyCopy}>还没有标签。想怎么分类，就轻轻写下。</p> : null}
           {groups.map((group) => {
             const items = tags.filter((tag) => tag.group === group)
@@ -284,15 +286,22 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                             onDrop(index)
                           }}
                           onDragEnd={() => setDragFrom(null)}
-                          onPointerDown={sort.onItemPointerDown(index)}
-                          onPointerMove={sort.onItemPointerMove}
-                          onPointerUp={sort.onItemPointerUp}
                           className={`${styles.card} ${
                             dragFrom === index || sort.activeIndex === index ? styles.dragging : ''
                           } ${sort.overIndex === index && sort.activeIndex !== index ? styles.dropSlot : ''} ${
                             flashId === tag.id ? styles.flash : ''
                           } ${previewColor === tag.color ? styles.preview : ''}`}
                         >
+                          {isMobile ? (
+                            <button
+                              type="button"
+                              className={styles.handle}
+                              aria-label="拖动排序"
+                              onPointerDown={sort.onHandlePointerDown(index)}
+                            >
+                              ≡
+                            </button>
+                          ) : null}
                           <div className={styles.itemMain}>
                             <i style={{ background: swatch(tag.color).bg }} />
                             <div className={styles.itemCopy}>

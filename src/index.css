@@ -54,7 +54,9 @@ body,
 }
 
 html.drawer-open,
-html.drawer-open body {
+html.drawer-open body,
+html.modal-open,
+html.modal-open body {
   overflow: hidden;
 }
 

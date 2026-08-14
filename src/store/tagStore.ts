@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { CategoryGroup, ITag } from '@/types'
 import { createId } from '@/utils/filterCards'
+import { hasSameNameInGroup } from '@/utils/tagRules'
 import { moveItem, normalizeTag } from '@/utils/models'
 import { load, save, STORAGE_KEYS } from '@/utils/storage'
 
@@ -32,7 +33,7 @@ export const useTagStore = create<TagState>((set, get) => ({
   addTag: (rawName, color = 'mocha', group = 'catering') => {
     const name = normalizeName(rawName)
     if (!name) return null
-    const exists = get().tags.some((tag) => tag.name === name)
+    const exists = hasSameNameInGroup(get().tags, name, group)
     if (exists) return null
     const tag: ITag = { id: createId(), name, color, group }
     set((state) => {
@@ -48,7 +49,8 @@ export const useTagStore = create<TagState>((set, get) => ({
     if (!current) return false
     const name = patch.name !== undefined ? normalizeName(patch.name) : current.name
     if (!name) return false
-    const duplicated = get().tags.some((tag) => tag.name === name && tag.id !== id)
+    const nextGroup = patch.group ?? current.group
+    const duplicated = hasSameNameInGroup(get().tags, name, nextGroup, id)
     if (duplicated) return false
     set((state) => {
       const tags = state.tags.map((tag) =>
