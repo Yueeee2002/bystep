@@ -48,10 +48,59 @@ function spawnBurstStars(layer: HTMLElement, x: number, y: number) {
   }
 }
 
+function GrassMark() {
+  return (
+    <svg className={styles.grass} viewBox="0 0 18 16" aria-hidden="true">
+      <path d="M5.2 14.2c.2-4.6-1.4-8.4-3.6-11.2" fill="none" stroke="#8fa57a" strokeWidth="1.15" strokeLinecap="round" />
+      <path d="M8.6 14.4c.1-5.2.8-9.2 2.8-12.4" fill="none" stroke="#7d9a6c" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M11.8 14.2c1.2-4.2 3.4-7.2 6-8.8" fill="none" stroke="#a3b58a" strokeWidth="1.1" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function TapeKraft({ className }: { className: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 18" aria-hidden="true">
+      <path
+        d="M1.2 4.4c2.2-1.8 6.2.3 10.4-.6 4.6-1 8.2 1.1 13.8.4 5.6-.7 9.6 1.2 15.4.2 2.8-.5 5.6.8 6.4 2.2v8.4c-2.4 1.6-6.2-.3-10.8.5-5 .9-9.2-1.1-14.8-.2-5.2.8-9.4-1.2-14.6-.4-2.8.4-5.6-1-6-2.4V4.4Z"
+        fill="#e2d2ae"
+      />
+    </svg>
+  )
+}
+
+function TapeDotted({ className }: { className: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 18" aria-hidden="true">
+      <path
+        d="M1.4 5c2-1.6 5.8.4 10-.4 4.8-.9 8.4 1 14 .4 5.4-.6 9.8 1.1 15.2.3 2.6-.4 5.4.7 6.2 2v8c-2.2 1.5-6-.2-10.4.6-4.8.8-9-1-14.4-.2-5 .8-9.2-1.1-14.2-.3-2.6.4-5.2-.8-5.6-2.2V5Z"
+        fill="#efe6d4"
+      />
+      <circle cx="10" cy="9.2" r="1.05" fill="#d2c4a8" />
+      <circle cx="18.5" cy="8.6" r="1.05" fill="#d2c4a8" />
+      <circle cx="27" cy="9.4" r="1.05" fill="#d2c4a8" />
+      <circle cx="35.5" cy="8.8" r="1.05" fill="#d2c4a8" />
+    </svg>
+  )
+}
+
+function SwirlMark({ className }: { className: string }) {
+  return (
+    <svg className={className} viewBox="0 0 20 20" aria-hidden="true">
+      <path
+        d="M15.6 9.4c.2-3.6-2.4-6.4-6-6.4S4 6.2 4.2 9.6c.2 3.2 2.8 5 5.8 4.8 2.2-.1 3.6-1.5 3.5-3.2-.1-1.6-1.4-2.5-2.8-2.4"
+        fill="none"
+        stroke="#c9b89a"
+        strokeWidth="1.15"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 /**
- * v1.10 开屏：沿用参考图拼贴（轻食盘 + 小屋同框）。
- * 轻食盘先淡入并保持；小屋 1600ms 起 600ms 缓缓浮现，不替换轻食盘。
- * 仅点击可进入主页。
+ * v1.12 开屏：拼贴构图保持不变；主图四周少量贴纸点缀；
+ * 底部文案改为「点击开启种草日记」+ Step by step...
  */
 export default function Splash() {
   const motion = useConfigStore((state) => state.motion)
@@ -146,7 +195,7 @@ export default function Splash() {
       ref={layerRef}
       className={`${styles.layer} ${phase === 'out' ? styles.out : ''} ${motion ? '' : styles.still}`.trim()}
       role="status"
-      aria-label="留步开屏，点击开启手账"
+      aria-label="留步开屏，点击开启种草日记"
       onPointerDown={(event) => onEnterAt(event.clientX, event.clientY)}
       onClick={(event) => onEnterAt(event.clientX, event.clientY)}
       onTouchStart={(event) => {
@@ -160,15 +209,16 @@ export default function Splash() {
         <span className={styles.wordmark}>留步</span>
       </div>
       <div className={styles.stage}>
-        <span className={`${styles.deco} ${entered ? styles.fadeIn : ''}`.trim()} aria-hidden="true">
-          <DecorStar tone="mint" delay="0s" className={styles.s1} />
-          <DecorStar tone="mint" delay="0.5s" className={styles.s2} />
-          <DecorStar tone="gold" delay="1s" className={styles.s3} />
-          <DecorDot size={4} delay="0.3s" className={styles.d1} />
-          <DecorDot size={2} tone="cream" delay="0.9s" className={styles.d2} />
-        </span>
         <div className={`${styles.floatWrap} ${entered ? styles.floating : ''}`.trim()}>
           <div className={`${styles.pressWrap} ${pressed ? styles.pressed : ''}`.trim()}>
+            <span className={`${styles.deco} ${entered ? styles.fadeIn : ''}`.trim()} aria-hidden="true">
+              <DecorStar tone="mint" className={styles.s1} />
+              <DecorStar tone="mint" className={styles.s2} />
+              <DecorDot size={4} className={styles.d1} />
+              <DecorDot size={2} tone="cream" className={styles.d2} />
+              <DecorDot size={2} className={styles.d3} />
+              <SwirlMark className={styles.swirl} />
+            </span>
             <div className={`${styles.plateWrap} ${entered ? styles.plateIn : ''}`.trim()}>
               <img
                 className={styles.plate}
@@ -180,17 +230,22 @@ export default function Splash() {
                   if (node?.complete && node.naturalWidth > 0) markPlateReady()
                 }}
               />
+              <TapeKraft className={styles.plateTape} />
             </div>
-            <img
-              className={`${styles.house} ${houseShown ? styles.houseIn : ''}`.trim()}
-              src={houseSrc}
-              alt=""
-              draggable={false}
-            />
+            <div className={`${styles.houseWrap} ${houseShown ? styles.houseIn : ''}`.trim()}>
+              <img className={styles.house} src={houseSrc} alt="" draggable={false} />
+              <TapeDotted className={styles.houseTape} />
+            </div>
           </div>
         </div>
       </div>
-      <p className={`${styles.hint} ${live ? styles.hintIn : ''}`.trim()}>点击开启手账</p>
+      <div className={`${styles.hint} ${live ? styles.hintIn : ''}`.trim()}>
+        <p className={styles.hintMain}>
+          <GrassMark />
+          点击开启种草日记
+        </p>
+        <p className={styles.hintSub}>Step by step...</p>
+      </div>
     </div>
   )
 }
