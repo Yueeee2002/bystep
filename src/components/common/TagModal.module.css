@@ -262,11 +262,6 @@ html[data-theme='night'] .locked {
   font-size: 11px;
 }
 
-.preview {
-  box-shadow: 0 0 0 2px var(--gold-soft);
-  animation: glowPulse 0.45s ease;
-}
-
 .flash {
   animation: flashSoft 0.55s ease;
 }
@@ -338,15 +333,6 @@ html[data-theme='night'] .locked {
   box-shadow: 0 0 0 6px rgba(216, 207, 192, 0.45);
 }
 
-@keyframes glowPulse {
-  0% {
-    background: var(--gold-soft);
-  }
-  100% {
-    background: var(--snow);
-  }
-}
-
 @keyframes flashSoft {
   0%,
   100% {
@@ -410,7 +396,6 @@ html[data-theme='night'] .locked {
   .fold,
   .foldOpen,
   .arrow,
-  .preview,
   .flash,
   .sheet,
   .shake,

@@ -39,7 +39,6 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
   const { tags, addTag, updateTag, deleteTag, moveTag } = useTagData()
   const [name, setName] = useState('')
   const [presetColor, setPresetColor] = useState<string>('mocha')
-  const [previewColor, setPreviewColor] = useState<string | null>(null)
   const [form, setForm] = useState<TagForm | null>(null)
   const [groupError, setGroupError] = useState(false)
   const [shakeSave, setShakeSave] = useState(false)
@@ -216,8 +215,6 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                 selected={presetColor === item}
                 aria-label="选择标签配色"
                 onClick={() => setPresetColor(item)}
-                onMouseEnter={() => setPreviewColor(item)}
-                onMouseLeave={() => setPreviewColor(null)}
               />
             ))}
           </div>
@@ -318,7 +315,7 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                             dragFrom === index || sort.activeIndex === index ? styles.dragging : ''
                           } ${sort.overIndex === index && sort.activeIndex !== index ? styles.dropSlot : ''} ${
                             flashId === tag.id ? styles.flash : ''
-                          } ${previewColor === tag.color ? styles.preview : ''}`}
+                          }`}
                         >
                           {isMobile ? (
                             <button
