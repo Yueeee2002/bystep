@@ -723,7 +723,7 @@ html[data-theme='night'] .sheetMask {
 }
 
 :global(html[data-viewport='mobile']) .pageBody .sheet {
-  width: calc(100vw - 40px);
+  width: 100%;
   max-width: 600px;
   max-height: 85dvh;
   overflow-y: auto;

@@ -221,7 +221,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: min(360px, 92vw);
+  width: min(360px, 92%);
   z-index: 45;
   background: var(--cream);
   padding: 22px 18px;

@@ -98,6 +98,7 @@
   overflow-x: auto;
   padding: 6px 2px 8px;
   scrollbar-width: none;
+  touch-action: pan-x pan-y;
 }
 
 .thumbs::-webkit-scrollbar {

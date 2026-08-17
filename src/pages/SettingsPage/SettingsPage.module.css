@@ -61,6 +61,7 @@
   color: var(--ink);
   border-radius: 999px;
   padding: 8px 12px;
+  font-size: 16px;
 }
 
 .sheet {
@@ -168,5 +169,5 @@
 
 :global(html[data-viewport='mobile']) .select {
   min-height: 44px;
-  font-size: 15px;
+  font-size: 16px;
 }
