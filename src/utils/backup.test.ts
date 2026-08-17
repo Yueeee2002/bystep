@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { APP_VERSION } from '@/types'
 import { buildBackupPayload, DEFAULT_CONFIG, parseBackupPayload } from '@/utils/backup'
 
 describe('backup', () => {
@@ -38,6 +39,11 @@ describe('backup', () => {
     expect(parsed.config.nickname).toBe('小雨')
     expect(parsed.config.homeSlogan).toBe('把种草的店，轻轻收好')
     expect(parsed.config.viewportPreference).toBe('auto')
+    expect(payload.version).toBe(APP_VERSION)
+  })
+
+  it('uses a lowercase display version', () => {
+    expect(APP_VERSION).toMatch(/^v\d+\.\d+$/)
   })
 
   it('keeps a saved viewport preference', () => {

@@ -195,8 +195,14 @@
 }
 
 .body {
-  padding: 12px 6px 0;
+  padding: 12px 10px 0;
   position: relative;
+  min-width: 0;
+}
+
+.body h3 {
+  font-size: 17px;
+  line-height: 1.4;
 }
 
 .body h3 {
@@ -224,6 +230,10 @@
   font-size: 11px;
   border-radius: 999px;
   padding: 3px 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .listCard {

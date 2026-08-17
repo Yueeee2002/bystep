@@ -130,7 +130,7 @@ export default function NavDrawer() {
               onClick={closeDrawer}
             >
               <span className={styles.icon}>{link.icon}</span>
-              {link.label}
+              <span className={styles.label}>{link.label}</span>
             </NavLink>
           ))}
         </nav>

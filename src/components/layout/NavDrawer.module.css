@@ -67,6 +67,7 @@ nav {
   align-items: center;
   gap: 14px;
   width: 100%;
+  min-width: 0;
   min-height: 52px;
   border: 0;
   background: transparent;
@@ -86,6 +87,14 @@ nav {
   display: grid;
   place-items: center;
   color: #9a938a;
+  flex-shrink: 0;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .link:hover {
