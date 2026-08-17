@@ -4,6 +4,7 @@ import { resolveTagColor } from '@/utils/palette'
 import type { ITag } from '@/types'
 import { TAG_EMPTY_COPY } from '@/utils/tagRules'
 import { useConfigStore } from '@/store/configStore'
+import ColorDot from '@/components/common/ColorDot'
 import styles from './TagPicker.module.css'
 
 interface TagPickerProps {
@@ -118,7 +119,7 @@ export default function TagPicker({ tags, selectedIds, onChange, onManage, slide
                   className={styles.option}
                   style={{ animationDelay: `${index * 28}ms` }}
                 >
-                  <i style={{ background: palette.bg }} />
+                  <ColorDot color={palette.bg} size={18} decorative />
                   <span>
                     <Highlight text={tag.name} query={query} />
                   </span>

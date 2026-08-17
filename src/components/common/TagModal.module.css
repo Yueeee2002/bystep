@@ -51,6 +51,13 @@
   flex-wrap: wrap;
 }
 
+.dotRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .locked {
   display: inline-flex;
   align-items: center;
@@ -67,24 +74,6 @@
 html[data-theme='night'] .locked {
   background: rgba(244, 236, 224, 0.08);
   color: #b8aa98;
-}
-
-.swatch {
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 4px 10px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.swatch:hover {
-  transform: scale(1.08);
-}
-
-.swatchOn {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-soft);
 }
 
 .choice {
@@ -268,13 +257,6 @@ html[data-theme='night'] .locked {
   background: transparent;
   color: var(--gold-deep);
   font-size: 11px;
-}
-
-.meta b {
-  font-weight: 400;
-  font-size: 11px;
-  color: var(--ash);
-  opacity: 0.7;
 }
 
 .preview {
@@ -485,7 +467,7 @@ html[data-theme='night'] .locked {
 .itemCopy {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 6px 8px;
   min-width: 0;
   color: var(--ink);
@@ -506,15 +488,6 @@ html[data-theme='night'] .locked {
   gap: 6px;
 }
 
-.itemMain i {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-  margin-top: 6px;
-}
-
 .meta em {
   font-style: normal;
   font-size: 11px;
@@ -527,18 +500,6 @@ html[data-theme='night'] .locked {
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border: 1px solid transparent;
-  border-radius: 50%;
-}
-
-.dotOn {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px var(--gold-soft);
 }
 
 .empty {

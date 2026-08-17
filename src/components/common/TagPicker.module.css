@@ -114,12 +114,6 @@
   background: #f4efe8;
 }
 
-.option i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
 .option em {
   margin-left: auto;
   font-style: normal;

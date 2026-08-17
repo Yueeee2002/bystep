@@ -1,0 +1,60 @@
+.dot {
+  display: inline-block;
+  width: var(--dot-size, 20px);
+  height: var(--dot-size, 20px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, #e8d5b7);
+  box-shadow: inset 0 0 0 1px rgba(22, 22, 22, 0.06);
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
+  vertical-align: middle;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+button.dot {
+  cursor: pointer;
+  background-color: var(--dot-color, #e8d5b7);
+}
+
+button.dot:hover {
+  transform: scale(1.08);
+}
+
+.dotOn,
+button.dotOn {
+  transform: scale(1.14);
+  box-shadow:
+    0 0 0 1.5px #cfc8be,
+    0 0 0 4px rgba(207, 200, 190, 0.38);
+}
+
+button.dotOn:hover {
+  transform: scale(1.16);
+}
+
+.dot:focus-visible {
+  outline: 1.5px solid #cfc8be;
+  outline-offset: 3px;
+}
+
+.picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.native {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}

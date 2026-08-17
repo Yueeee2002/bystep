@@ -120,6 +120,38 @@
   gap: 10px;
 }
 
+.presetRow,
+.previewRow,
+.toneField {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ash);
+}
+
+.presetDots {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toneRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+}
+
+.sampleTag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .list {
   list-style: none;
   padding: 0;
@@ -137,9 +169,13 @@
   padding: 8px 10px;
 }
 
+.list li :global(.btn) {
+  margin-left: auto;
+}
+
 .list i {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 }
 

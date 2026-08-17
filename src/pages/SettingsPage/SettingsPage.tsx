@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppHeader from '@/components/layout/AppHeader'
 import Button from '@/components/common/Button'
 import Modal from '@/components/common/Modal'
+import ColorDot, { ColorPickerDot } from '@/components/common/ColorDot'
 import { useCardStore } from '@/store/cardStore'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
@@ -186,14 +187,9 @@ export default function SettingsPage() {
   }
 
   const addCustomColor = () => {
-    const label = colorDraft.label.trim()
-    if (!label) {
-      showToast('请填写色系名称', 'error')
-      return
-    }
     const item: ICustomTagColor = {
       id: `custom_${createId()}`,
-      label,
+      label: colorDraft.label.trim(),
       bg: colorDraft.bg,
       fg: colorDraft.fg,
     }
@@ -509,27 +505,67 @@ export default function SettingsPage() {
 
       <Modal open={sheet === 'color'} title="自定义标签配色" onClose={closeSheet}>
         <div className={styles.sheet}>
-          <p className={styles.hint}>预设：{TAG_COLOR_ORDER.map((item) => TAG_COLORS[item].label).join(' / ')}</p>
+          <div className={styles.presetRow}>
+            <span>预设：</span>
+            <div className={styles.presetDots}>
+              {TAG_COLOR_ORDER.map((item) => (
+                <ColorDot
+                  key={item}
+                  color={TAG_COLORS[item].bg}
+                  selected={
+                    colorDraft.bg.toLowerCase() === TAG_COLORS[item].bg.toLowerCase() &&
+                    colorDraft.fg.toLowerCase() === TAG_COLORS[item].fg.toLowerCase()
+                  }
+                  aria-label="选择预设配色"
+                  onClick={() =>
+                    setColorDraft((prev) => ({
+                      ...prev,
+                      bg: TAG_COLORS[item].bg,
+                      fg: TAG_COLORS[item].fg,
+                    }))
+                  }
+                />
+              ))}
+            </div>
+          </div>
           <label className="field">
             <span>色系名称</span>
-            <input value={colorDraft.label} onChange={(event) => setColorDraft((prev) => ({ ...prev, label: event.target.value }))} />
+            <input
+              value={colorDraft.label}
+              placeholder="仅作为内部记录，页面不会展示此名称"
+              onChange={(event) => setColorDraft((prev) => ({ ...prev, label: event.target.value }))}
+            />
           </label>
-          <div className={styles.row}>
-            <label className="field">
-              <span>底色</span>
-              <input type="color" value={colorDraft.bg} onChange={(event) => setColorDraft((prev) => ({ ...prev, bg: event.target.value }))} />
-            </label>
-            <label className="field">
-              <span>文字</span>
-              <input type="color" value={colorDraft.fg} onChange={(event) => setColorDraft((prev) => ({ ...prev, fg: event.target.value }))} />
-            </label>
+          <div className={styles.previewRow}>
+            <span>预览颜色：</span>
+            <ColorDot color={colorDraft.bg} decorative />
+            <span className={styles.sampleTag} style={{ background: colorDraft.bg, color: colorDraft.fg }}>
+              示例标签
+            </span>
+          </div>
+          <div className={styles.toneRow}>
+            <div className={styles.toneField}>
+              <span>底色：</span>
+              <ColorPickerDot
+                value={colorDraft.bg}
+                ariaLabel="选择标签底色"
+                onChange={(bg) => setColorDraft((prev) => ({ ...prev, bg }))}
+              />
+            </div>
+            <div className={styles.toneField}>
+              <span>文字：</span>
+              <ColorPickerDot
+                value={colorDraft.fg}
+                ariaLabel="选择标签文字颜色"
+                onChange={(fg) => setColorDraft((prev) => ({ ...prev, fg }))}
+              />
+            </div>
           </div>
           <Button onClick={addCustomColor}>新增色系</Button>
           <ul className={styles.list}>
             {config.customTagColors.map((item) => (
               <li key={item.id}>
-                <i style={{ background: item.bg }} />
-                {item.label}
+                <ColorDot color={item.bg} decorative />
                 <button type="button" className="btn btn-text" onClick={() => config.setCustomTagColors(config.customTagColors.filter((color) => color.id !== item.id))}>
                   删除
                 </button>
