@@ -98,8 +98,6 @@
 
 .results {
   overflow-anchor: none;
-  min-height: 42vh;
-  transition: min-height 0.28s ease;
 }
 
 .toolbar {

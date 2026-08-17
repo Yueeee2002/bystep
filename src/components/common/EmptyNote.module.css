@@ -4,6 +4,11 @@
   padding: 28px 16px 40px;
 }
 
+.plain {
+  margin-top: 28px;
+  padding: 16px 12px 28px;
+}
+
 .wrap h2 {
   font-size: 24px;
   margin-bottom: 10px;

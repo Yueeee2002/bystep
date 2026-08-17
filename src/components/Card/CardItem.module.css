@@ -119,6 +119,11 @@
   font-size: 13px;
 }
 
+.photoEmpty {
+  aspect-ratio: 16 / 7;
+  min-height: 52px;
+}
+
 .stamp {
   position: absolute;
   left: 10px;
@@ -194,16 +199,9 @@
   position: relative;
 }
 
-.cornerStar {
-  top: 10px;
-  right: 2px;
-  z-index: 1;
-}
-
 .body h3 {
   font-size: 17px;
   line-height: 1.4;
-  padding-right: 18px;
 }
 
 .addr {
@@ -317,7 +315,12 @@
 }
 
 :global(html[data-viewport='mobile']) .card {
-  padding: 12px 12px 16px;
+  padding: 8px 8px 12px;
+}
+
+:global(html[data-viewport='mobile']) .photoEmpty {
+  aspect-ratio: 2 / 1;
+  min-height: 48px;
 }
 
 :global(html[data-viewport='mobile']) .body h3 {

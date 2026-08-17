@@ -587,6 +587,13 @@ html.no-motion *::after {
   .chip {
     min-height: 36px;
   }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
 }
 
 html.viewport-flip .app-shell {
@@ -606,6 +613,12 @@ html.viewport-flip .app-shell {
 
 html[data-viewport='mobile'] {
   font-size: 16px;
+}
+
+html[data-viewport='mobile'] input,
+html[data-viewport='mobile'] textarea,
+html[data-viewport='mobile'] select {
+  font-size: 16px !important;
 }
 
 html[data-viewport='mobile'] .app-shell {

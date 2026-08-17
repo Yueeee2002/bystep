@@ -4,7 +4,6 @@ import { resolveTagColor } from '@/utils/palette'
 import { getCoverSrc } from '@/utils/models'
 import { useConfigStore } from '@/store/configStore'
 import { useUiStore } from '@/store/uiStore'
-import { DecorStar } from '@/components/decor/JournalMarks'
 import Stars from '@/components/common/Stars'
 import styles from './CardItem.module.css'
 
@@ -87,7 +86,7 @@ export default function CardItem({
       onPointerCancel={cancelPress}
       onPointerMove={cancelPress}
     >
-      <div className={styles.photo}>
+      <div className={`${styles.photo} ${cover ? '' : styles.photoEmpty}`.trim()}>
         {cover ? (
           <button
             type="button"
@@ -135,7 +134,6 @@ export default function CardItem({
         </div>
       </div>
       <div className={styles.body}>
-        <DecorStar tone={card.status === 'done' ? 'warm' : 'gray'} className={styles.cornerStar} />
         <h3>{card.title.trim() || '未命名地点'}</h3>
         {card.address ? <p className={styles.addr}>{card.address}</p> : <p className={styles.addr}>地址未填写</p>}
         {boundTags.length > 0 ? (
