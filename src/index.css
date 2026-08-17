@@ -22,6 +22,12 @@
   --photo-bg: #e8e2d6;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html[data-theme='night'] {
   --gold: #d4b06a;
   --gold-deep: #e2c48a;
@@ -166,6 +172,10 @@ h3 {
   color: var(--ink);
   font-weight: 600;
   margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 p {
@@ -452,12 +462,16 @@ html[data-theme='night'] .field input[type='date'] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 999px;
   padding: 7px 14px;
   font-size: 13px;
   border: 1px solid var(--line);
   background: var(--snow);
   color: var(--ash);
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
   transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;

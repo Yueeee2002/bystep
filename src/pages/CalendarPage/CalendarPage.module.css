@@ -257,21 +257,29 @@
 
 .dayList button {
   width: 100%;
+  min-width: 0;
   text-align: left;
   border: 1px solid var(--line);
   background: var(--snow);
   border-radius: 14px;
-  padding: 12px;
+  padding: 12px 16px;
 }
 
 .dayList b {
   display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--ink);
 }
 
 .dayList span {
   font-size: 12px;
   color: var(--ash);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dayList em {

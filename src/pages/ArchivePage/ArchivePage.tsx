@@ -69,7 +69,7 @@ export default function ArchivePage() {
               {list.map((card) => (
                 <li key={card.id}>
                   <button type="button" onClick={() => openEdit(card.id)}>
-                    {card.title.trim() || '未命名地点'}
+                    <span className={styles.name}>{card.title.trim() || '未命名地点'}</span>
                     <span>{labels[card.categoryGroup]}</span>
                   </button>
                 </li>
@@ -89,7 +89,7 @@ export default function ArchivePage() {
               {archived.map((card) => (
                 <li key={card.id}>
                   <button type="button" onClick={() => openEdit(card.id)}>
-                    {card.title.trim() || '未命名地点'}
+                    <span className={styles.name}>{card.title.trim() || '未命名地点'}</span>
                   </button>
                   <button
                     type="button"

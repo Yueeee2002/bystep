@@ -418,7 +418,7 @@ html[data-theme='night'] .locked {
   gap: 10px;
   background: var(--snow);
   border-radius: 14px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--line);
   cursor: grab;
   touch-action: pan-y;
@@ -469,7 +469,11 @@ html[data-theme='night'] .locked {
 
 .itemCopy strong {
   font-weight: 500;
-  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .meta {
@@ -484,6 +488,10 @@ html[data-theme='night'] .locked {
   font-size: 11px;
   color: var(--ash);
   opacity: 0.8;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .actions {

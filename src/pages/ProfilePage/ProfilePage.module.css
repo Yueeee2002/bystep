@@ -113,7 +113,8 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 0;
+  min-width: 0;
+  padding: 12px 4px;
   border-top: 1px solid var(--line);
 }
 
@@ -121,6 +122,11 @@
   font-size: 13px;
   font-weight: 300;
   color: #6b6560;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .row em {
@@ -128,6 +134,11 @@
   font-size: 13px;
   color: var(--ink);
   text-align: right;
+  flex-shrink: 0;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .medal {
