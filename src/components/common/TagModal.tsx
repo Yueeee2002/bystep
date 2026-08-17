@@ -3,6 +3,7 @@ import type { DragEvent } from 'react'
 import Modal from '@/components/common/Modal'
 import BackArrow from '@/components/common/BackArrow'
 import Button from '@/components/common/Button'
+import ColorDot from '@/components/common/ColorDot'
 import EmptyNote from '@/components/common/EmptyNote'
 import { DecorDot, DecorLayer, DecorStar } from '@/components/decor/JournalMarks'
 import { useTagData } from '@/hooks/useTagData'
@@ -207,19 +208,17 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
 
         <section className={styles.section}>
           <p className={styles.sectionLabel}>标签配色预设</p>
-          <div className={styles.row}>
+          <div className={styles.dotRow}>
             {palette.map((item) => (
-              <button
+              <ColorDot
                 key={item}
-                type="button"
-                className={`${styles.swatch} ${presetColor === item ? styles.swatchOn : ''}`}
-                style={{ background: swatch(item).bg, color: swatch(item).fg }}
+                color={swatch(item).bg}
+                selected={presetColor === item}
+                aria-label="选择标签配色"
                 onClick={() => setPresetColor(item)}
                 onMouseEnter={() => setPreviewColor(item)}
                 onMouseLeave={() => setPreviewColor(null)}
-              >
-                {swatch(item).label}
-              </button>
+              />
             ))}
           </div>
         </section>
@@ -333,12 +332,11 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
                             </button>
                           ) : null}
                           <div className={styles.itemMain}>
-                            <i style={{ background: swatch(tag.color).bg }} />
                             <div className={styles.itemCopy}>
                               <strong>{tag.name}</strong>
                               <span className={styles.meta}>
                                 <em>{labels[tag.group]}</em>
-                                <b>{swatch(tag.color).label}</b>
+                                <ColorDot color={swatch(tag.color).bg} size={18} decorative />
                               </span>
                             </div>
                           </div>
@@ -418,17 +416,15 @@ export default function TagModal({ asPage = false }: { asPage?: boolean }) {
               </div>
               <div className="field">
                 <span>标签配色预设</span>
-                <div className={styles.row}>
+                <div className={styles.dotRow}>
                   {palette.map((item) => (
-                    <button
+                    <ColorDot
                       key={item}
-                      type="button"
-                      className={`${styles.swatch} ${form.color === item ? styles.swatchOn : ''}`}
-                      style={{ background: swatch(item).bg, color: swatch(item).fg }}
+                      color={swatch(item).bg}
+                      selected={form.color === item}
+                      aria-label="选择标签配色"
                       onClick={() => setForm({ ...form, color: item })}
-                    >
-                      {swatch(item).label}
-                    </button>
+                    />
                   ))}
                 </div>
               </div>

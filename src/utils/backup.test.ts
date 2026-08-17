@@ -64,6 +64,19 @@ describe('backup', () => {
     })).config.homeSlogan).toBe(long.slice(0, 20))
   })
 
+  it('keeps custom tag colors even when the internal name is empty', () => {
+    const parsed = parseBackupPayload(JSON.stringify({
+      cards: [],
+      tags: [],
+      config: {
+        customTagColors: [{ id: 'custom_1', label: '', bg: '#d4ead9', fg: '#3d5c45' }],
+      },
+    }))
+    expect(parsed.config.customTagColors).toEqual([
+      { id: 'custom_1', label: '', bg: '#d4ead9', fg: '#3d5c45' },
+    ])
+  })
+
   it('rejects invalid json', () => {
     expect(() => parseBackupPayload('{')).toThrow('备份文件不是有效的 JSON')
   })
