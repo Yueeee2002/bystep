@@ -135,12 +135,14 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  padding: 4px 2px;
 }
 
 .toneRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 28px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .sampleTag {
