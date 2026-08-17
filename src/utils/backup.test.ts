@@ -76,6 +76,8 @@ describe('backup', () => {
       { id: 'custom_1', label: '', bg: '#d4ead9', fg: '#3d5c45' },
     ])
   })
+
+  it('rejects invalid json', () => {
     expect(() => parseBackupPayload('{')).toThrow('备份文件不是有效的 JSON')
   })
 
