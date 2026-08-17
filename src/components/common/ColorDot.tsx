@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import type { ButtonHTMLAttributes, CSSProperties, HTMLAttributes } from 'react'
 import styles from './ColorDot.module.css'
 
@@ -66,24 +65,16 @@ export function ColorPickerDot({
   ariaLabel,
   size = COLOR_DOT_SIZE,
 }: ColorPickerDotProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
   return (
-    <span className={styles.picker}>
-      <ColorDot
-        color={value}
-        size={size}
-        aria-label={ariaLabel}
-        onClick={() => inputRef.current?.click()}
-      />
+    <label className={styles.picker} style={dotVars(value, size)}>
+      <ColorDot color={value} size={size} decorative />
       <input
-        ref={inputRef}
         type="color"
         className={styles.native}
         value={value}
-        tabIndex={-1}
-        aria-hidden="true"
+        aria-label={ariaLabel}
         onChange={(event) => onChange(event.target.value)}
       />
-    </span>
+    </label>
   )
 }
