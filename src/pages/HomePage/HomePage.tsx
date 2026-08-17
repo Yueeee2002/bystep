@@ -324,20 +324,20 @@ export default function HomePage() {
       >
       {isEmptyAll ? (
         <EmptyNote
-          kind="home"
+          plain
           title="还没有收藏小店"
           text="快来记录第一家吧"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
         />
       ) : tabEmpty ? (
         <EmptyNote
-          kind="home"
+          plain
           title="这一格还空着"
           text="换个品类看看，或把新的遇见轻轻收进来。"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
         />
       ) : isEmptyFilter ? (
-        <EmptyNote kind="search" title="没有找到对应的店铺" text="换个关键词试试吧" />
+        <EmptyNote plain title="没有找到对应的店铺" text="换个关键词试试吧" />
       ) : (
         <CardGrid
           cards={filtered}

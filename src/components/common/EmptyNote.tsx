@@ -5,13 +5,15 @@ interface EmptyNoteProps {
   title: string
   text: string
   kind?: 'home' | 'tags' | 'search' | 'default'
+  /** 主页空状态只留文案，不放插画或图片占位 */
+  plain?: boolean
   action?: { label: string; onClick: () => void }
 }
 
-export default function EmptyNote({ title, text, kind = 'default', action }: EmptyNoteProps) {
+export default function EmptyNote({ title, text, kind = 'default', plain = false, action }: EmptyNoteProps) {
   return (
-    <section className={styles.wrap}>
-      {kind === 'default' ? (
+    <section className={`${styles.wrap} ${plain ? styles.plain : ''}`.trim()}>
+      {plain ? null : kind === 'default' ? (
         <div className={styles.art} aria-hidden="true">
           <span />
           <span />

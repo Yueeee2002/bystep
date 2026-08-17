@@ -23,7 +23,7 @@ function spawnBurstStars(layer: HTMLElement, x: number, y: number) {
   const count = 2 + Math.floor(Math.random() * 2)
   const base = Math.random() * Math.PI * 2
   for (let i = 0; i < count; i += 1) {
-    const size = 8 + Math.random() * 6
+    const size = 12 + Math.random() * 6
     const angle = base + (i * Math.PI * 2) / count + (Math.random() - 0.5) * 0.75
     const dist = 20 + Math.random() * 25
     const star = document.createElement('span')
