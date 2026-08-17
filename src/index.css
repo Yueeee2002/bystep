@@ -51,6 +51,9 @@ body,
 #root {
   min-height: 100%;
   min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 html.drawer-open,
@@ -62,9 +65,14 @@ html.modal-open body {
 
 html {
   background: var(--paper);
+  position: relative;
   overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: pan-y;
   transition: background-color 0.36s ease, color 0.36s ease;
 }
 
@@ -93,8 +101,19 @@ body {
     var(--paper);
   letter-spacing: 0.02em;
   -webkit-font-smoothing: antialiased;
+  position: relative;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
   -webkit-tap-highlight-color: var(--gold-soft);
+}
+
+input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='file']):not([type='hidden']):not([type='color']):not([type='range']):not([type='image']),
+textarea,
+select {
+  font-size: 16px !important;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 body::before {
@@ -155,9 +174,12 @@ p {
 
 .app-shell {
   width: min(var(--max), calc(100% - 32px));
+  max-width: 100%;
   margin: 0 auto;
   padding: calc(16px + env(safe-area-inset-top)) 0 calc(80px + env(safe-area-inset-bottom));
   transition: transform 0.26s ease, filter 0.26s ease;
+  box-sizing: border-box;
+  overflow-x: clip;
 }
 
 html.drawer-open .app-shell {

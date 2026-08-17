@@ -58,7 +58,7 @@
   color: var(--ink);
   border-radius: 14px;
   padding: 11px 36px 11px 14px;
-  font-size: 13px;
+  font-size: 16px;
   outline: none;
 }
 
@@ -81,7 +81,8 @@
 
 .menu {
   z-index: 80;
-  width: min(280px, calc(100vw - 48px));
+  width: min(280px, calc(100% - 48px));
+  max-width: 100%;
   margin-top: 6px;
   max-height: 220px;
   overflow: auto;
