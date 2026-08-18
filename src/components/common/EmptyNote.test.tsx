@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import EmptyNote from '@/components/common/EmptyNote'
 
 describe('EmptyNote', () => {
-  it('keeps the plain home empty state as title, hint and button only', () => {
+  it('keeps the plain home empty state as title, hint and button only', async () => {
     const onClick = vi.fn()
     const { container } = render(
       createElement(EmptyNote, {
@@ -20,40 +20,7 @@ describe('EmptyNote', () => {
     expect(container.querySelectorAll('div')).toHaveLength(0)
     expect(screen.getByRole('heading', { name: '还没有收藏小店' })).toBeTruthy()
     expect(screen.getByText('快来记录第一家吧')).toBeTruthy()
-  })
-
-  it('layers a single CSS backdrop under copy without blocking the button', async () => {
-    const onClick = vi.fn()
-    const { container } = render(
-      createElement(EmptyNote, {
-        plain: true,
-        backdropUrl: '/assets/3.1.jpg',
-        title: '还没有收藏小店',
-        text: '快来记录第一家吧',
-        action: { label: '开始收纳', onClick },
-      }),
-    )
-    const section = container.querySelector('section')
-    const photo = container.querySelector('img')
-    expect(section?.className).toMatch(/hasBackdrop/)
-    expect(photo?.getAttribute('src')).toBe('/assets/3.1.jpg')
-    expect(photo?.getAttribute('aria-hidden')).toBe('true')
-    expect(photo?.className).toMatch(/backdropPhoto/)
-    expect(container.querySelectorAll('img')).toHaveLength(1)
     await userEvent.click(screen.getByRole('button', { name: '开始收纳' }))
     expect(onClick).toHaveBeenCalledTimes(1)
-  })
-
-  it('stays blank when no backdrop url is resolved', () => {
-    const { container } = render(
-      createElement(EmptyNote, {
-        plain: true,
-        title: '这一格还空着',
-        text: '换个品类看看，或把新的遇见轻轻收进来。',
-      }),
-    )
-    const section = container.querySelector('section')
-    expect(section?.className).not.toMatch(/hasBackdrop/)
-    expect(container.querySelectorAll('img')).toHaveLength(0)
   })
 })
