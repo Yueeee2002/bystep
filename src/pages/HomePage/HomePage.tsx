@@ -10,7 +10,9 @@ import Button from '@/components/common/Button'
 import BatchBar from '@/components/common/BatchBar'
 import AppHeader from '@/components/layout/AppHeader'
 import EmptyNote from '@/components/common/EmptyNote'
+import HomeCornerDoodle from '@/components/decor/HomeCornerDoodle'
 import { useCardStore } from '@/store/cardStore'
+import { pickEmptyBackdropUrl } from '@/utils/emptyBackdrop'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
@@ -82,6 +84,10 @@ export default function HomePage() {
   const tabEmpty = cards.filter((card) => !card.archived && (categoryTab === 'all' || card.categoryGroup === categoryTab)).length === 0
   const isEmptyAll = cards.filter((card) => !card.archived).length === 0
   const isEmptyFilter = !isEmptyAll && !tabEmpty && filtered.length === 0
+  const emptyBackdropUrl = useMemo(() => {
+    if (!isEmptyAll && !tabEmpty) return undefined
+    return pickEmptyBackdropUrl(categoryTab)
+  }, [isEmptyAll, tabEmpty, categoryTab])
 
   const changeView = (mode: ViewMode) => {
     setViewMode(mode)
@@ -325,6 +331,7 @@ export default function HomePage() {
       {isEmptyAll ? (
         <EmptyNote
           plain
+          backdropUrl={emptyBackdropUrl}
           title="还没有收藏小店"
           text="快来记录第一家吧"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
@@ -332,6 +339,7 @@ export default function HomePage() {
       ) : tabEmpty ? (
         <EmptyNote
           plain
+          backdropUrl={emptyBackdropUrl}
           title="这一格还空着"
           text="换个品类看看，或把新的遇见轻轻收进来。"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
@@ -339,25 +347,28 @@ export default function HomePage() {
       ) : isEmptyFilter ? (
         <EmptyNote plain title="没有找到对应的店铺" text="换个关键词试试吧" />
       ) : (
-        <CardGrid
-          cards={filtered}
-          tags={tags}
-          viewMode={viewMode}
-          selectedIds={selectedIds}
-          selectMode={selectMode}
-          onOpen={openEdit}
-          onDelete={handleDelete}
-          onPin={(id) => {
-            togglePin(id)
-            showToast('置顶已更新', 'success')
-          }}
-          onRate={setRating}
-          onMove={moveCard}
-          onLongPress={(id) => setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]))}
-          onToggleSelect={(id) =>
-            setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
-          }
-        />
+        <>
+          <CardGrid
+            cards={filtered}
+            tags={tags}
+            viewMode={viewMode}
+            selectedIds={selectedIds}
+            selectMode={selectMode}
+            onOpen={openEdit}
+            onDelete={handleDelete}
+            onPin={(id) => {
+              togglePin(id)
+              showToast('置顶已更新', 'success')
+            }}
+            onRate={setRating}
+            onMove={moveCard}
+            onLongPress={(id) => setSelectedIds((prev) => (prev.includes(id) ? prev : [...prev, id]))}
+            onToggleSelect={(id) =>
+              setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+            }
+          />
+          {categoryTab === 'all' ? <HomeCornerDoodle /> : null}
+        </>
       )}
       </div>
 

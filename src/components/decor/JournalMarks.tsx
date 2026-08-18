@@ -41,6 +41,43 @@ export function DecorDot({
   )
 }
 
+export function DecorClover({ delay = '0s', className = '' }: DelayProps) {
+  return (
+    <span
+      className={`${styles.mark} ${styles.clover} ${className}`.trim()}
+      style={{ animationDelay: delay }}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 16 16">
+        <path d="M8 7.4c-1.6-2.4-4.2-2.2-4.6.2-.3 1.8 1.4 2.8 4.6 1.6 3.2 1.2 4.9.2 4.6-1.6-.4-2.4-3-2.6-4.6-.2Z" />
+        <path d="M8 8.6c-2.4 1.6-2.2 4.2.2 4.6 1.8.3 2.8-1.4 1.6-4.6 1.2-3.2.2-4.9-1.6-4.6-2.4.4-2.6 3-.2 4.6Z" />
+        <path d="M8.1 11.8c.1 1.4.6 2.6 1.6 3.4" fill="none" stroke="#7a9a72" strokeWidth="0.9" strokeLinecap="round" />
+      </svg>
+    </span>
+  )
+}
+
+export function DecorCatBread({ delay = '0s', className = '' }: DelayProps) {
+  return (
+    <span
+      className={`${styles.mark} ${styles.catBread} ${className}`.trim()}
+      style={{ animationDelay: delay }}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 48 42">
+        <path d="M10.4 16.6 7.2 6.8c2.8-.2 6.4 2.4 7.8 6.2" fill="#f3e0c4" stroke="#5c4a38" strokeWidth="1.15" strokeLinejoin="round" />
+        <path d="M37.6 16.8 40.6 7c-2.8-.2-6.2 2.2-7.6 6.2" fill="#f3e0c4" stroke="#5c4a38" strokeWidth="1.15" strokeLinejoin="round" />
+        <path d="M8.6 20.4c.8-8.6 7.2-14.2 15.4-14.2s14.6 5.4 15.4 14.2c.8 8.2-5.6 16.4-15.4 16.4S7.8 28.6 8.6 20.4Z" fill="#f6e6cc" stroke="#5c4a38" strokeWidth="1.2" />
+        <path d="M16.8 17.6c1.4.2 2.4 1.4 1.2 2.2M31.2 17.6c-1.4.2-2.4 1.4-1.2 2.2" fill="none" stroke="#5c4a38" strokeWidth="1.15" strokeLinecap="round" />
+        <path d="M22.4 22.4c.8 1.4 2.4 1.5 3.4.1" fill="none" stroke="#c9897a" strokeWidth="1.05" strokeLinecap="round" />
+        <ellipse cx="17.4" cy="22.8" rx="2.1" ry="1.2" fill="#e8c2b0" opacity="0.7" />
+        <ellipse cx="30.6" cy="22.8" rx="2.1" ry="1.2" fill="#e8c2b0" opacity="0.7" />
+        <path d="M18.8 14.6c2.2-1.4 7.8-1.6 10.6.2" fill="none" stroke="#e6c97a" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    </span>
+  )
+}
+
 export function DecorFood({ kind, delay = '0s', className = '' }: DelayProps & { kind: FoodKind }) {
   return (
     <span
