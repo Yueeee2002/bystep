@@ -4,6 +4,34 @@
   padding: 28px 16px 40px;
 }
 
+.hasBackdrop {
+  position: relative;
+  isolation: isolate;
+}
+
+.hasBackdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image: var(--empty-backdrop);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: sepia(8%) contrast(95%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 32%, transparent 74%);
+  mask-image: radial-gradient(ellipse at center, #000 32%, transparent 74%);
+}
+
+.hasBackdrop h2,
+.hasBackdrop p,
+.hasBackdrop :global(.btn) {
+  position: relative;
+  z-index: 1;
+}
+
 .plain {
   margin-top: 28px;
   padding: 16px 12px 28px;
