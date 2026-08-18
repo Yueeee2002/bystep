@@ -18,7 +18,7 @@ describe('TabArt', () => {
   })
 
   it('places the photo in the middle of the page with more scattered mocha dots', () => {
-    expect(css).toMatch(/top:\s*50%/)
+    expect(css).toMatch(/top:\s*56%/)
     expect(css).toMatch(/left:\s*50%/)
     expect(css).toMatch(/translate\(-50%,\s*-50%\)/)
     expect(css).toMatch(/max-width:\s*420px/)
