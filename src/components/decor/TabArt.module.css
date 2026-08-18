@@ -1,22 +1,55 @@
-.illustrationBg {
+.layer {
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
   z-index: -1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.illustrationBg {
+  display: block;
   width: auto;
   height: auto;
-  max-width: 65%;
-  max-height: 220px;
+  max-width: 420px;
+  max-height: 260px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
   opacity: 0.4;
-  transform: translate(-50%, -50%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
 }
 
+.dots {
+  position: absolute;
+  inset: -44px;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(190, 170, 140, 0.35) 2px, transparent 2px),
+    radial-gradient(circle at 85% 25%, rgba(190, 170, 140, 0.35) 3px, transparent 3px),
+    radial-gradient(circle at 15% 80%, rgba(190, 170, 140, 0.3) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 75% 75%, rgba(190, 170, 140, 0.3) 2px, transparent 2px),
+    radial-gradient(circle at 50% 10%, rgba(190, 170, 140, 0.25) 1.5px, transparent 1.5px);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+:global(html[data-viewport='mobile']) .layer {
+  top: auto;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 :global(html[data-viewport='mobile']) .illustrationBg {
-  max-width: 75vw;
-  max-height: 30vh;
+  max-width: 240px;
+  max-height: 180px;
+  opacity: 0.32;
+}
+
+:global(html[data-viewport='mobile']) .dots {
+  inset: -28px;
+  opacity: 0.42;
 }
