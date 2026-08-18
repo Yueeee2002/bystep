@@ -100,6 +100,7 @@
   position: relative;
   isolation: isolate;
   min-height: 100dvh;
+  background-color: var(--paper);
 }
 
 .results {

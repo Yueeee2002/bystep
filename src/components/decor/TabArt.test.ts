@@ -18,7 +18,7 @@ describe('TabArt', () => {
   })
 
   it('places the photo in the middle of the page with more scattered mocha dots', () => {
-    expect(css).toMatch(/top:\s*56%/)
+    expect(css).toMatch(/top:\s*64%/)
     expect(css).toMatch(/left:\s*50%/)
     expect(css).toMatch(/translate\(-50%,\s*-50%\)/)
     expect(css).toMatch(/max-width:\s*420px/)
@@ -28,6 +28,7 @@ describe('TabArt', () => {
     expect(css).toMatch(/opacity:\s*0\.4/)
     expect(css).toMatch(/opacity:\s*0\.32/)
     expect(css).toMatch(/object-fit:\s*contain/)
+    expect(css).toMatch(/mix-blend-mode:\s*multiply/)
     expect(css).toMatch(/pointer-events:\s*none/)
     expect(css).toMatch(/rgba\(145,\s*115,\s*85,\s*0\.65\)/)
     expect(css).not.toMatch(/object-fit:\s*cover/)
