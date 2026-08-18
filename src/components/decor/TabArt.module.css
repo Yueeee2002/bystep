@@ -1,33 +1,44 @@
 .layer {
   position: absolute;
-  top: auto;
-  left: 50%;
-  bottom: 12px;
+  inset: 0;
   z-index: -1;
-  transform: translateX(-50%);
+  min-height: 100%;
   pointer-events: none;
 }
 
 .dots {
   position: absolute;
-  inset: -40px;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 30% 10%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
-    radial-gradient(circle at 70% 12%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
-    radial-gradient(circle at 92% 36%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
-    radial-gradient(circle at 90% 68%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
-    radial-gradient(circle at 72% 90%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
-    radial-gradient(circle at 32% 88%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
-    radial-gradient(circle at 8% 66%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
-    radial-gradient(circle at 10% 34%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px);
+    radial-gradient(circle at 12% 16%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 28% 10%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
+    radial-gradient(circle at 46% 18%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
+    radial-gradient(circle at 64% 8%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 82% 14%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
+    radial-gradient(circle at 8% 34%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
+    radial-gradient(circle at 22% 42%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 38% 36%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
+    radial-gradient(circle at 72% 32%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 88% 40%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
+    radial-gradient(circle at 14% 58%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 32% 64%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
+    radial-gradient(circle at 68% 54%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
+    radial-gradient(circle at 86% 62%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 18% 78%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px),
+    radial-gradient(circle at 42% 84%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 58% 76%, rgba(145, 115, 85, 0.65) 2.5px, transparent 3px),
+    radial-gradient(circle at 76% 86%, rgba(145, 115, 85, 0.65) 2px, transparent 2.5px),
+    radial-gradient(circle at 90% 80%, rgba(145, 115, 85, 0.65) 1.5px, transparent 2px);
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
 .illustrationBg {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 1;
   display: block;
   width: auto;
@@ -38,18 +49,11 @@
   pointer-events: none;
   user-select: none;
   opacity: 0.4;
-}
-
-:global(html[data-viewport='mobile']) .layer {
-  bottom: 10px;
+  transform: translate(-50%, -50%);
 }
 
 :global(html[data-viewport='mobile']) .illustrationBg {
   max-width: 240px;
   max-height: 180px;
   opacity: 0.32;
-}
-
-:global(html[data-viewport='mobile']) .dots {
-  inset: -28px;
 }
