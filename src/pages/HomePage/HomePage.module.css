@@ -99,6 +99,7 @@
 .page {
   position: relative;
   isolation: isolate;
+  min-height: 100dvh;
 }
 
 .results {

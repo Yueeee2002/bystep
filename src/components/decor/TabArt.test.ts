@@ -17,11 +17,19 @@ describe('TabArt', () => {
     expect(photos[0]?.getAttribute('aria-hidden')).toBe('true')
   })
 
-  it('keeps original aspect ratio and only slightly feathers the edge', () => {
+  it('centers a smaller photo in the page without cropping or a radial mask', () => {
+    expect(css).toMatch(/top:\s*50%/)
+    expect(css).toMatch(/left:\s*50%/)
+    expect(css).toMatch(/translate\(-50%,\s*-50%\)/)
+    expect(css).toMatch(/max-height:\s*220px/)
+    expect(css).toMatch(/max-width:\s*65%/)
+    expect(css).toMatch(/max-width:\s*75vw/)
+    expect(css).toMatch(/max-height:\s*30vh/)
     expect(css).toMatch(/object-fit:\s*contain/)
     expect(css).toMatch(/opacity:\s*0\.4/)
-    expect(css).toMatch(/linear-gradient/)
+    expect(css).toMatch(/pointer-events:\s*none/)
     expect(css).not.toMatch(/radial-gradient/)
     expect(css).not.toMatch(/object-fit:\s*cover/)
+    expect(css).not.toMatch(/bottom:\s*0/)
   })
 })
