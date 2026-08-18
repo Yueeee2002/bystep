@@ -96,6 +96,11 @@
   margin: 4px 0 18px;
 }
 
+.page {
+  position: relative;
+  isolation: isolate;
+}
+
 .results {
   position: relative;
   overflow-anchor: none;

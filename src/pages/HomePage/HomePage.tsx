@@ -11,8 +11,9 @@ import BatchBar from '@/components/common/BatchBar'
 import AppHeader from '@/components/layout/AppHeader'
 import EmptyNote from '@/components/common/EmptyNote'
 import HomeCornerDoodle from '@/components/decor/HomeCornerDoodle'
+import TabArt from '@/components/decor/TabArt'
 import { useCardStore } from '@/store/cardStore'
-import { pickEmptyBackdropUrl } from '@/utils/emptyBackdrop'
+import { pickTabArtUrl } from '@/utils/tabArt'
 import { useConfigStore } from '@/store/configStore'
 import { useTagStore } from '@/store/tagStore'
 import { useUiStore } from '@/store/uiStore'
@@ -84,10 +85,7 @@ export default function HomePage() {
   const tabEmpty = cards.filter((card) => !card.archived && (categoryTab === 'all' || card.categoryGroup === categoryTab)).length === 0
   const isEmptyAll = cards.filter((card) => !card.archived).length === 0
   const isEmptyFilter = !isEmptyAll && !tabEmpty && filtered.length === 0
-  const emptyBackdropUrl = useMemo(() => {
-    if (!isEmptyAll && !tabEmpty) return undefined
-    return pickEmptyBackdropUrl(categoryTab)
-  }, [isEmptyAll, tabEmpty, categoryTab])
+  const tabArtUrl = useMemo(() => pickTabArtUrl(categoryTab), [categoryTab])
 
   const changeView = (mode: ViewMode) => {
     setViewMode(mode)
@@ -130,7 +128,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="app-shell page-enter">
+    <div className={`app-shell page-enter ${styles.page}`}>
       <AppHeader
         home
         badge={weekly > 0}
@@ -331,7 +329,6 @@ export default function HomePage() {
       {isEmptyAll ? (
         <EmptyNote
           plain
-          backdropUrl={emptyBackdropUrl}
           title="还没有收藏小店"
           text="快来记录第一家吧"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
@@ -339,7 +336,6 @@ export default function HomePage() {
       ) : tabEmpty ? (
         <EmptyNote
           plain
-          backdropUrl={emptyBackdropUrl}
           title="这一格还空着"
           text="换个品类看看，或把新的遇见轻轻收进来。"
           action={{ label: '开始收纳', onClick: () => openUpload() }}
@@ -410,6 +406,7 @@ export default function HomePage() {
         {stats.totalLine}｜已打卡：{stats.done}家｜待出发：{stats.pending}家｜累计探店文字：{stats.words}字
       </p>
       <footer className={styles.foot}>留步・收藏每一场不期而遇的探店</footer>
+      {tabArtUrl ? <TabArt src={tabArtUrl} /> : null}
       <button type="button" className={styles.fab} aria-label="新增探店" onClick={() => openUpload()}>
         ＋
       </button>
