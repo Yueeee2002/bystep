@@ -39,7 +39,7 @@
 
 .illustrationBg {
   position: absolute;
-  top: 56%;
+  top: 64%;
   left: 50%;
   z-index: 1;
   display: block;
@@ -51,6 +51,7 @@
   pointer-events: none;
   user-select: none;
   opacity: 0.4;
+  mix-blend-mode: multiply;
   transform: translate(-50%, -50%);
 }
 
@@ -58,4 +59,8 @@
   max-width: 240px;
   max-height: 180px;
   opacity: 0.32;
+}
+
+:global(html[data-theme='night']) .illustrationBg {
+  mix-blend-mode: soft-light;
 }
