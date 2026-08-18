@@ -20,7 +20,7 @@ describe('TabArt', () => {
   it('centers a smaller photo in the page without cropping or a radial mask', () => {
     expect(css).toMatch(/top:\s*50%/)
     expect(css).toMatch(/left:\s*50%/)
-    expect(css).toMatch(/translate\(-50%,\s*-50%\)/)
+    expect(css).toMatch(/translate\(-50%,\s*calc\(-50% \+ 48px\)\)/)
     expect(css).toMatch(/max-height:\s*220px/)
     expect(css).toMatch(/max-width:\s*65%/)
     expect(css).toMatch(/max-width:\s*75vw/)
