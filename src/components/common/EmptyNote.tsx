@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react'
 import JournalScene from '@/components/decor/JournalScene'
 import styles from './EmptyNote.module.css'
 
@@ -21,15 +20,17 @@ export default function EmptyNote({
   backdropUrl,
   action,
 }: EmptyNoteProps) {
-  const backdropStyle = backdropUrl
-    ? ({ '--empty-backdrop': `url("${backdropUrl}")` } as CSSProperties)
-    : undefined
-
   return (
-    <section
-      className={`${styles.wrap} ${plain ? styles.plain : ''} ${backdropUrl ? styles.hasBackdrop : ''}`.trim()}
-      style={backdropStyle}
-    >
+    <section className={`${styles.wrap} ${plain ? styles.plain : ''} ${backdropUrl ? styles.hasBackdrop : ''}`.trim()}>
+      {backdropUrl ? (
+        <img
+          className={styles.backdropPhoto}
+          src={backdropUrl}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
+      ) : null}
       {plain ? null : kind === 'default' ? (
         <div className={styles.art} aria-hidden="true">
           <span />

@@ -52,7 +52,7 @@ describe('emptyBackdrop', () => {
     expect(pickEmptyBackdropUrl('other', assets, () => 0)).toBe('/wild-2')
   })
 
-  it('loads the committed jpg pool through vite glob', () => {
+  it('loads the committed jpg pool through bundled imports', () => {
     expect(Object.keys(emptyBackdropAssets).sort()).toEqual([
       '1.1.jpg',
       '1.2.jpg',
@@ -66,6 +66,7 @@ describe('emptyBackdrop', () => {
       '3.3.jpg',
     ])
     expect(emptyBackdropAssets['2.jpg']).toBeUndefined()
+    expect(pickEmptyBackdropUrl('all')).toMatch(/\.(jpg|jpeg)(\?.*)?$/i)
   })
 
   it('reads the basename from glob keys', () => {

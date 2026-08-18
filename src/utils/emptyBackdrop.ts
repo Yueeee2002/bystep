@@ -1,4 +1,14 @@
 import type { CategoryTab } from '@/types'
+import catering1 from '@/assets/1.1.jpg'
+import catering2 from '@/assets/1.2.jpg'
+import catering3 from '@/assets/1.3.jpg'
+import catering4 from '@/assets/1.4.jpg'
+import catering5 from '@/assets/1.5.jpg'
+import other1 from '@/assets/2.1.jpg'
+import other2 from '@/assets/2.2.jpg'
+import all1 from '@/assets/3.1.jpg'
+import all2 from '@/assets/3.2.jpg'
+import all3 from '@/assets/3.3.jpg'
 
 /** 各 Tab 空状态底图文件名。原图不做裁切或重处理，仅按文件名匹配。 */
 export const EMPTY_BACKDROP_POOLS: Record<CategoryTab, readonly string[]> = {
@@ -9,10 +19,18 @@ export const EMPTY_BACKDROP_POOLS: Record<CategoryTab, readonly string[]> = {
 
 const EMPTY_BACKDROP_FILES = new Set(Object.values(EMPTY_BACKDROP_POOLS).flat())
 
-const globbed = import.meta.glob('../assets/*.jpg', {
-  eager: true,
-  import: 'default',
-}) as Record<string, string>
+const bundledEmptyPhotos = {
+  '1.1.jpg': catering1,
+  '1.2.jpg': catering2,
+  '1.3.jpg': catering3,
+  '1.4.jpg': catering4,
+  '1.5.jpg': catering5,
+  '2.1.jpg': other1,
+  '2.2.jpg': other2,
+  '3.1.jpg': all1,
+  '3.2.jpg': all2,
+  '3.3.jpg': all3,
+} as const
 
 export function fileNameFromAssetPath(path: string): string {
   const trimmed = path.split(/[?#]/, 1)[0] ?? path
@@ -20,7 +38,7 @@ export function fileNameFromAssetPath(path: string): string {
   return parts[parts.length - 1] ?? trimmed
 }
 
-/** 只收录空状态池里的文件；缺文件或 glob 未命中时静默跳过。 */
+/** 只收录空状态池里的文件；缺文件或值为空时静默跳过。 */
 export function collectEmptyBackdropAssets(modules: Record<string, string>): Record<string, string> {
   const out: Record<string, string> = {}
   for (const [path, url] of Object.entries(modules)) {
@@ -31,7 +49,7 @@ export function collectEmptyBackdropAssets(modules: Record<string, string>): Rec
   return out
 }
 
-export const emptyBackdropAssets = collectEmptyBackdropAssets(globbed)
+export const emptyBackdropAssets = collectEmptyBackdropAssets(bundledEmptyPhotos)
 
 export function availableEmptyBackdrops(tab: CategoryTab, assets: Record<string, string>): string[] {
   const urls: string[] = []
