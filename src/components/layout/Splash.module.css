@@ -29,6 +29,8 @@
 .burstStar {
   position: absolute;
   z-index: 1;
+  width: var(--star-size, 14px);
+  height: var(--star-size, 14px);
   pointer-events: none;
   animation: starBurst 450ms ease-out forwards;
 }
