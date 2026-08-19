@@ -8,8 +8,10 @@ interface TabArtProps {
 export default function TabArt({ src }: TabArtProps) {
   return (
     <div className={styles.layer} aria-hidden="true">
-      <span className={styles.dots} />
-      <img className={styles.illustrationBg} src={src} alt="" draggable={false} />
+      <div className={styles.art}>
+        <span className={styles.dots} />
+        <img className={styles.illustrationBg} src={src} alt="" draggable={false} />
+      </div>
     </div>
   )
 }
