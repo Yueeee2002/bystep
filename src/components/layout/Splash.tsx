@@ -3,6 +3,7 @@ import plateSrc from '@/assets/1.png'
 import houseSrc from '@/assets/2.jpg'
 import { DecorDot, DecorStar } from '@/components/decor/JournalMarks'
 import Logo from '@/components/layout/Logo'
+import { pickBurstStarSize } from '@/components/layout/splashStars'
 import { useConfigStore } from '@/store/configStore'
 import styles from './Splash.module.css'
 
@@ -23,13 +24,12 @@ function spawnBurstStars(layer: HTMLElement, x: number, y: number) {
   const count = 2 + Math.floor(Math.random() * 2)
   const base = Math.random() * Math.PI * 2
   for (let i = 0; i < count; i += 1) {
-    const size = 12 + Math.random() * 6
+    const size = pickBurstStarSize()
     const angle = base + (i * Math.PI * 2) / count + (Math.random() - 0.5) * 0.75
     const dist = 20 + Math.random() * 25
     const star = document.createElement('span')
     star.className = styles.burstStar
-    star.style.width = `${size}px`
-    star.style.height = `${size}px`
+    star.style.setProperty('--star-size', `${size}px`)
     star.style.left = `${x - size / 2}px`
     star.style.top = `${y - size / 2}px`
     star.style.setProperty('--tx', `${Math.cos(angle) * dist}px`)
